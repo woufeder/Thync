@@ -1,5 +1,8 @@
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+// import "@/styles/globals.sass";
+import Script from "next/script";
+import { AuthProvider } from "@/hooks/use-auth";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,9 +22,17 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
-      </body>
+      <head>
+        <Script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+          strategy="afterInteractive"
+        />
+      </head>
+      <AuthProvider>
+        <body className={`${geistSans.variable} ${geistMono.variable}`}>
+          {children}
+        </body>
+      </AuthProvider>
     </html>
   );
 }
