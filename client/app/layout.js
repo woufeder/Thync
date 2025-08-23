@@ -1,17 +1,13 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Noto_Sans_TC } from "next/font/google";
 import "bootstrap/dist/css/bootstrap.min.css";
-// import "@/styles/globals.sass";
+import "@/styles/globals.css";
 import Script from "next/script";
 import { AuthProvider } from "@/hooks/use-auth";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const notoSansTC = Noto_Sans_TC({
+  subsets: ["latin", "cjk"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-noto-sans-tc",
 });
 
 export const metadata = {
@@ -21,15 +17,18 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="zh-Hant">
       <head>
         <Script
           src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
           strategy="afterInteractive"
         />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+          integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+          crossOrigin="anonymous" referrerPolicy="no-referrer" />
       </head>
       <AuthProvider>
-        <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <body className={notoSansTC.variable}>
           {children}
         </body>
       </AuthProvider>

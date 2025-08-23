@@ -1,0 +1,26 @@
+/* // @import "bootstrap/scss/bootstrap" */
+:root {
+  --Primary800: #304A6F;
+  --Primary500: #516786;
+  --Primary300: #94AFCA;
+  --Primary100: #D8E2EC;
+  --Secondary800: #8E7471;
+  --Secondary500: #C2B2A3;
+  --Secondary100: #F8F7F3;
+  --Warining100: #FEECC1;
+  --Warining300: #FDDB8A;
+  --Warining500: #FCCA53;
+  --Danger500: #F24E1E;
+  --Danger300: #ECACAC;
+  --Danger100: #F5D2D2;
+  --Black: #101C35;
+  --White: #FFFFFF;}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--Secondary100);
+  font-family: var(--font-noto-sans-tc), "Noto Sans TC", "Microsoft JhengHei", "微軟正黑體", sans-serif;
+}
