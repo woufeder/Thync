@@ -14,13 +14,180 @@
   --Danger300: #ECACAC;
   --Danger100: #F5D2D2;
   --Black: #101C35;
-  --White: #FFFFFF;}
+  --White: #FFFFFF;
+}
 
 * {
   box-sizing: border-box;
 }
 
+h1 {
+  font-size: 4.5rem;
+}
+
+h2 {
+  font-size: 3rem;
+}
+
+h3 {
+  font-size: 2.25rem;
+}
+
+h4 {
+  font-size: 2rem;
+}
+
+h5 {
+  font-size: 1.75rem;
+}
+
+h6 {
+  font-size: 1.375rem;
+}
+
+p {
+  font-size: 1rem;
+}
+
+@media (max-width:767px) {
+  h1 {
+    font-size: 2.5rem;
+  }
+
+  h2 {
+    font-size: 2rem;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+  }
+
+  h4 {
+    font-size: 1.25rem;
+  }
+
+  h5 {
+    font-size: 1.125rem;
+  }
+
+  h6 {
+    font-size: 1rem;
+  }
+
+  p {
+    font-size: 0.95rem;
+  }
+}
+
 body {
   background-color: var(--Secondary100);
   font-family: var(--font-noto-sans-tc), "Noto Sans TC", "Microsoft JhengHei", "微軟正黑體", sans-serif;
+}
+
+/* 如果只是想純掛顏色 */
+.primary800 {
+  color: var(--Primary800);
+}
+
+.primary500 {
+  color: var(--Primary500);
+}
+
+.primary300 {
+  color: var(--Primary300);
+}
+
+.primary100 {
+  color: var(--Primary100);
+}
+
+.secondary800 {
+  color: var(--Secondary800);
+}
+
+.secondary500 {
+  color: var(--Secondary500);
+}
+
+.secondary100 {
+  color: var(--Secondary100);
+}
+
+.warining100 {
+  color: var(--Warining100);
+}
+
+.warining300 {
+  color: var(--Warining300);
+}
+
+.warining500 {
+  color: var(--Warining500);
+}
+
+.danger500 {
+  color: var(--Danger500);
+}
+
+.danger300 {
+  color: var(--Danger300);
+}
+
+.danger100 {
+  color: var(--Danger100);
+}
+
+.black {
+  color: var(--Black);
+}
+
+.white {
+  color: var(--White);
+}
+
+/* header */
+header {
+  background: var(--Secondary100);
+
+  .btn {
+    padding: 6px;
+  }
+
+  .icon-search {
+    width: 24px;
+    height: 24px;
+    color: var(--Primary800);
+    padding: 0;
+  }
+
+  .icon-cart {
+    width: 26px;
+    height: 24px;
+    color: var(--Primary800);
+  }
+
+  .link {
+    font-size: 1rem;
+
+  }
+
+  @media (max-width: 767px) {
+    .link {
+      font-size: 0.95rem;
+    }
+  }
+
+  .nav-item {
+    width: 100%;
+  }
+
+  .nav-link {
+    color: var(--Primary800);
+    font-weight: 700;
+  }
+
+  .nav-link.active {
+    background-color: var(--Primary300);
+    color: var(--White) !important;
+  }
 }
