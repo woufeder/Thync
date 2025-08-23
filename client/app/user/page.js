@@ -4,15 +4,16 @@ import { useAuth } from "@/hooks/use-auth";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect } from "react";
+import UserBtn from "../_components/userBtn";
 
 export default function UserPage() {
-  const {list, users} = useAuth();
+  const { list, users } = useAuth();
 
-  useEffect(()=>{
+  useEffect(() => {
     list();
-  }, [list]);
+  }, []);
 
-  if(!users.length){
+  if (!users.length) {
     return (
       <div className="container py-3">
         <h1>使用者列表頁</h1>
@@ -24,9 +25,10 @@ export default function UserPage() {
       </div>
     );
   }
-  
+
   return (
     <div className="container py-3">
+      <UserBtn />
       <h1>使用者列表頁</h1>
       <table className="table">
         <thead>
@@ -38,14 +40,14 @@ export default function UserPage() {
           </tr>
         </thead>
         <tbody>
-          {users.map((user, index)=>(
+          {users.map((user, index) => (
             <tr key={`user${index}`}>
-              <th scope="row">{index+1}</th>
+              <th scope="row">{index + 1}</th>
               <td>{user.account}</td>
               <td>{user.mail}</td>
               <td>
-              <Link href={`/user/${user.account}`}>
-                <Image src={user.head} width={50} height={50} style={{objectFit: "contain"}} alt="" />
+                <Link href={`/user/${user.account}`}>
+                  <Image src={user.head} width={50} height={50} style={{ objectFit: "contain" }} alt="" />
                 </Link>
               </td>
             </tr>
@@ -54,7 +56,7 @@ export default function UserPage() {
         </tbody>
       </table>
       {/* <div className="btn btn-primary me-1" onClick={list}>取得使用者列表</div> */}
-      <Link className="btn btn-primary" href="/">
+      <Link className="btn btn-primary" href="/user">
         回首頁
       </Link>
     </div>
