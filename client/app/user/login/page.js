@@ -2,8 +2,6 @@
 
 import { useAuth } from "@/hooks/use-auth";
 import { useState } from "react";
-import style from "@/styles/una.module.sass";
-import style2 from "@/styles/woufeder.module.sass";
 import Link from "next/link"
 
 
@@ -53,15 +51,15 @@ export default function UserLoginPage() {
   return (
     <div className="container py-3">
       <h1>
-        <span className={style.color1}>登出</span>
-        <span className={style2.color1}>狀態</span>
+        <span >登出</span>
+        <span >狀態</span>
       </h1>
       <div className="input-group mb-2">
-        <span className={`input-group-text ${style.color1}`}>帳號</span>
+        <span className={`input-group-text`}>帳號</span>
         <input type="text" name="account" className="form-control" value={account} onChange={(e) => { setAccount(e.target.value) }} />
       </div>
       <div className="input-group mb-2">
-        <span className={`input-group-text ${style2.color1}`}>密碼</span>
+        <span className={`input-group-text`}>密碼</span>
         <input type="password" name="password" className="form-control" value={password} onChange={(e) => { setPassword(e.target.value) }} />
       </div>
       <div className="d-flex">

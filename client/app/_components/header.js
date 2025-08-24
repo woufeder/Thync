@@ -4,17 +4,18 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
-import Login from "./login";
+import HeaderUser from "./headerUser";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { faCartShopping } from '@fortawesome/free-solid-svg-icons'
 
 
 
+
 export default function Header() {
   const pathname = usePathname();
   const [isMobile, setIsMobile] = useState(false);
-  const { user, isLoading } = useAuth();
+  const { user, isLoading ,logout } = useAuth();
 
   useEffect(() => {
     const handleResize = () => {
@@ -35,7 +36,7 @@ export default function Header() {
         {isMobile ? (
           // 手機版結構
           <header>
-            <nav className="navbar bg-body-tertiary">
+            <nav className="navbar ">
               <div className="container-fluid">
                 <a className="navbar-brand" href="/">
                   <Image src="/images/LOGO.png" alt="Logo" width={129} height={40} />
@@ -51,13 +52,13 @@ export default function Header() {
                     <FontAwesomeIcon icon={faCartShopping} className="icon-cart" />
                   </a>
                   <div className="user">
-                    {user ? <Login /> : <> <Link href="/user/login" className="btn link">登入</Link> <Link href="/user/register" className="btn link">註冊</Link> </>}
+                    {user ? <HeaderUser /> : <> <Link href="/user/login" className="btn link">登入</Link> <Link href="/user/register" className="btn link">註冊</Link> </>}
                   </div>
                 </div>
               </div>
             </nav>
 
-            <nav className="navbar navbar-expand-lg bg-body-tertiary">
+            <nav className="navbar navbar-expand-lg ">
               <div className="container-fluid">
                 <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                   <span className="navbar-toggler-icon"></span>
@@ -92,7 +93,7 @@ export default function Header() {
         ) : (
           // 桌機版結構
           <header>
-            <nav className="navbar bg-body-tertiary">
+            <nav className="navbar ">
               <div className="container-fluid">
                 <a className="navbar-brand" href="/">
                   <Image src="/images/LOGO.png" alt="Logo" width={129} height={40} />
@@ -108,14 +109,14 @@ export default function Header() {
                     <FontAwesomeIcon icon={faCartShopping} className="icon-cart" />
                   </a>
                   <div className="user">
-                    {user ? <Login /> : <> <Link href="/user/login" className="btn link">登入</Link> <Link href="/user/register" className="btn link">註冊</Link> </>}
+                    {user ? <HeaderUser /> : <> <Link href="/user/login" className="btn link">登入</Link> <Link href="/user/register" className="btn link">註冊</Link> </>}
                   </div>
 
                 </div>
               </div>
             </nav>
 
-            <nav className="navbar navbar-expand-md bg-body-tertiary">
+            <nav className="navbar navbar-expand-md ">
               <div className="container-fluid">
                 <ul className="navbar-nav mb-2 mb-lg-0 w-100 text-center">
                   <li className="nav-item">
