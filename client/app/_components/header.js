@@ -15,7 +15,7 @@ import { faCartShopping } from '@fortawesome/free-solid-svg-icons'
 export default function Header() {
   const pathname = usePathname();
   const [isMobile, setIsMobile] = useState(false);
-  const { user, isLoading ,logout } = useAuth();
+  const { user, isLoading, logout } = useAuth();
 
   useEffect(() => {
     const handleResize = () => {
@@ -32,7 +32,7 @@ export default function Header() {
 
   return (
     <>
-      <>
+      <div className="container header">
         {isMobile ? (
           // 手機版結構
           <header>
@@ -117,15 +117,12 @@ export default function Header() {
             </nav>
 
             <nav className="navbar navbar-expand-md ">
-              <div className="container-fluid">
+              <div className="w-100">
                 <ul className="navbar-nav mb-2 mb-lg-0 w-100 text-center">
-                  <li className="nav-item">
-                    <a className="nav-link" aria-current="page" href="#">最新消息</a>
-                  </li>
                   <li className="nav-item">
                     <Link
                       href="/products"
-                      className={`nav-link${pathname === "/products" ? " active" : ""}`}
+                      className={`nav-link${pathname === "/" ? " active" : ""}`}
                     >
                       所有商品
                     </Link>
@@ -137,6 +134,9 @@ export default function Header() {
                     >
                       所有品牌
                     </Link>
+                  </li>
+                  <li className="nav-item">
+                    <a className="nav-link" aria-current="page" href="#">活動消息</a>
                   </li>
                   <li className="nav-item">
                     <Link
@@ -159,7 +159,7 @@ export default function Header() {
             </nav>
           </header>
         )}
-      </>
+      </div>
 
 
     </>
