@@ -1,11 +1,11 @@
 import express from "express";
-import db from "../db.js"; // 你要自己寫一個 db.js 用 mysql2 建立連線池
 const router = express.Router();
+import connection from "../connect.js";
 
 // 取得某個使用者的購物車
 router.get("/:userId", async (req, res) => {
   try {
-    const [rows] = await db.query(
+    const [rows] = await connection.query(
       `SELECT c.id, c.product_id, p.name, p.image, c.quantity, c.price
        FROM cart c
        JOIN products p ON c.product_id = p.id
@@ -22,7 +22,7 @@ router.get("/:userId", async (req, res) => {
 router.post("/", async (req, res) => {
   const { user_id, product_id, quantity, price } = req.body;
   try {
-    await db.query(
+    await connection.query(
       `INSERT INTO cart (user_id, product_id, quantity, price)
        VALUES (?, ?, ?, ?)
        ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity)`,
@@ -37,7 +37,7 @@ router.post("/", async (req, res) => {
 // 移除購物車項目
 router.delete("/:id", async (req, res) => {
   try {
-    await db.query(`DELETE FROM cart WHERE id = ?`, [req.params.id]);
+    await connection.query(`DELETE FROM cart WHERE id = ?`, [req.params.id]);
     res.json({ message: "已刪除" });
   } catch (err) {
     res.status(500).json({ error: err.message });

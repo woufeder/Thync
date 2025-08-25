@@ -1,11 +1,11 @@
 import express from "express";
-import db from "../db.js";
+import connection from "../connect.js";
 const router = express.Router();
 
 // 查詢全部可用的優惠券
 router.get("/", async (req, res) => {
   try {
-    const [rows] = await db.query(
+    const [rows] = await connection.query(
       `SELECT id, code, \`desc\`, type, value, min, start_at, expires_at, is_valid, is_active
        FROM coupon
        WHERE is_active = 1 AND is_valid = 1 AND expires_at > NOW()`
@@ -20,7 +20,7 @@ router.get("/", async (req, res) => {
 router.post("/claim", async (req, res) => {
   const { user_id, coupon_id } = req.body;
   try {
-    await db.query(
+    await connection.query(
       `INSERT INTO user_coupons (user_id, coupon_id) VALUES (?, ?)`,
       [user_id, coupon_id]
     );
@@ -33,7 +33,7 @@ router.post("/claim", async (req, res) => {
 // 查詢使用者已領取的優惠券
 router.get("/user/:userId", async (req, res) => {
   try {
-    const [rows] = await db.query(
+    const [rows] = await connection.query(
       `SELECT uc.id, c.code, c.\`desc\`, c.value, c.min, uc.is_used, uc.used_at
        FROM user_coupons uc
        JOIN coupon c ON uc.coupon_id = c.id
