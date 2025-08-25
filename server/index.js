@@ -2,13 +2,11 @@ import express from "express";
 import multer from "multer";
 import cors from "cors";
 import moment from "moment";
-import {v4 as uuidv4} from "uuid";
+import { v4 as uuidv4 } from "uuid";
 import usersRouter from "./routes/users.js";
 import productsRouter from "./routes/products.js";
 import cartRouter from "./routes/cart.js";
 import couponRouter from "./routes/coupon.js";
-
-
 
 // 設定區
 const upload = multer();
@@ -17,21 +15,23 @@ let corsOptions = {
   credentials: true,
   origin(origin, callback) {
     if (!origin || whitelist.includes(origin)) {
-      callback(null, true)
+      callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'))
+      callback(new Error("Not allowed by CORS"));
     }
-  }
-}
+  },
+};
 
-
-// 路由區
+// 環境設定
 const app = express();
+
+// 全域中介軟體
 app.use(cors(corsOptions));
 app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 
-app.get("/", (req, res)=>{
+// 路由區
+app.get("/", (req, res) => {
   res.send("首頁");
 });
 
@@ -40,14 +40,11 @@ app.use("/api/products", productsRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/coupon", couponRouter);
 
-
-
-
-app.listen(3007, ()=>{
+// 伺服器啟動
+app.listen(3007, () => {
   console.log("主機啟動 http://localhost:3007");
 });
 
-
-function checkToken(req, res, next){
+function checkToken(req, res, next) {
   next();
 }

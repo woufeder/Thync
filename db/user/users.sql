@@ -1,6 +1,7 @@
 DROP TABLE `users`;
 DROP TABLE `gender`;
 DROP TABLE `city`;
+create database restful;
 USE restful;
 CREATE TABLE gender (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -13,10 +14,10 @@ CREATE TABLE city (
 CREATE TABLE `users` (
   `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
   `name` VARCHAR(50) NOT NULL,
-  `email` VARCHAR(255) NOT NULL UNIQUE, 
+  `mail` VARCHAR(255) NOT NULL UNIQUE, 
   `password` VARCHAR(255) NOT NULL, 
   `gender_id` INT,
-  `account` VARCHAR(255) GENERATED ALWAYS AS (email) STORED, 
+  `account` VARCHAR(255) GENERATED ALWAYS AS (mail) STORED, 
   `phone` VARCHAR(20), 
   `city_id` INT,
   `address` VARCHAR(255), 
@@ -59,7 +60,7 @@ INSERT INTO city (name) VALUES
 ('金門縣'),
 ('連江縣');
 INSERT INTO `users`
-(name, email, password, gender_id, phone, city_id, address, year, month, date, img)
+(name, mail, password, gender_id, phone, city_id, address, year, month, date, img)
 VALUES
 ('許志豪', 'zhihao.xu001@gmail.com', 'Mk8pQ3vR9', 1, '0912567834', 12, '員林市中山路二段245號4樓', 1994, 5, 19, 'image_78.jpg'),
 ('Jennifer Lee', 'jennifer.lee001@hotmail.com.tw', 'aB7nL2mK5', 2, '0923678945', 13, '草屯鎮中正路567號', 1987, 10, 4, 'image_41.jpg'),

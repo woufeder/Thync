@@ -9,49 +9,51 @@ const upload = multer();
 const secretKey = process.env.JWT_SECRET_KEY;
 const router = express.Router();
 
-
 // route(s) 路由規則(們)
 // routers (路由物件器)
+
 // 獲取所有使用者
 router.get("/", async (req, res) => {
   try {
     const sql = "SELECT * FROM `users`;";
+    // 等同 let users = (await connection.execute(sql))[0]; 只取陣列的第一個元素（實際資料）
     let [users] = await connection.execute(sql);
 
     res.status(200).json({
       status: "success",
       data: users,
-      message: "已 獲取所有使用者"
+      message: "已 獲取所有使用者",
     });
   } catch (error) {
-    // 補獲錯誤
     console.log(error);
     const statusCode = error.code ?? 401;
     const statusText = error.status ?? "error";
     const message = error.message ?? "身份驗證錯誤，請洽管理人員";
     res.status(statusCode).json({
       status: statusText,
-      message
+      message,
     });
   }
 });
 
 // 搜尋使用者
 router.get("/search", (req, res) => {
-  // 網址參數(查詢參數)會被整理到 req 中的 query 裡
+  // 查詢參數會被整理到 req 中的 query 裡
   const key = req.query.key;
   res.status(200).json({
     status: "success",
     data: { key },
-    message: "搜尋使用者 成功"
+    message: "搜尋使用者 成功",
   });
 });
 
-// 獲取特定 ID 的使用者
+// 獲取特定 ID 使用者
 router.get("/:id", async (req, res) => {
   // 路由參數
   try {
+    // 動態路徑會被整理到 req 中的 params 裡
     const account = req.params.id;
+    // 業務邏輯錯誤需手動拋出
     if (!account) {
       const err = new Error("請提供使用者 ID");
       err.code = 400;
@@ -60,9 +62,15 @@ router.get("/:id", async (req, res) => {
     }
 
     const sqlCheck1 = "SELECT * FROM `users` WHERE `account` = ?;";
-    let user = await connection.execute(sqlCheck1, [account]).then(([result]) => {
-      return result[0];
-    });
+    let user = await connection
+      // [account]代表？
+      .execute(sqlCheck1, [account])
+      // [result] 直接取得第一個元素
+      .then(([result]) => {
+        // 取得第一筆資料的物件
+        return result[0];
+      });
+
     if (!user) {
       const err = new Error("找不到使用者");
       err.code = 404;
@@ -70,13 +78,16 @@ router.get("/:id", async (req, res) => {
       throw err;
     }
 
+    // 排除敏感資料不傳給前端
     const { id, password, ...data } = user;
 
     res.status(200).json({
       status: "success",
       data,
-      message: "查詢成功"
+      message: "查詢成功",
     });
+
+    // 只會處理自動拋出的系統錯誤
   } catch (error) {
     // 補獲錯誤
     console.log(error);
@@ -85,7 +96,7 @@ router.get("/:id", async (req, res) => {
     const message = error.message ?? "身份驗證錯誤，請洽管理人員";
     res.status(statusCode).json({
       status: statusText,
-      message
+      message,
     });
   }
 });
@@ -100,31 +111,37 @@ router.post("/", upload.none(), async (req, res) => {
     if (!account || !password || !mail) {
       // 設定 Error 物件
       const err = new Error("請提供完整的使用者資訊"); // Error 物件只能在小括號中自訂錯誤訊息
-      err.code = 400; // 利用物件的自訂屬性把 HTTP 狀態碼帶到 catch
+      // err.code = 400; // 利用物件的自訂屬性把 HTTP 狀態碼帶到 catch
+      // 原本 err.code = 400;
+      err.httpCode = 400;
       err.status = "fail"; // 利用物件的自訂屬性把status字串帶到 catch
       throw err;
     }
 
-    // 檢查 account 有沒有使用過 
+    // 檢查 account 有沒有使用過
     const sqlCheck1 = "SELECT * FROM `users` WHERE `account` = ?;";
-    let user = await connection.execute(sqlCheck1, [account]).then(([result]) => {
-      return result[0];
-    });
+    let user = await connection
+      .execute(sqlCheck1, [account])
+      .then(([result]) => {
+        return result[0];
+      });
     if (user) {
       const err = new Error("提供的註冊內容已被使用1");
-      err.code = 400;
+      // 原本 err.code = 400;
+      err.httpCode = 400;
       err.status = "fail";
       throw err;
     }
 
-    // 檢查 mail 有沒有使用過 
+    // 檢查 mail 有沒有使用過
     const sqlCheck2 = "SELECT * FROM `users` WHERE `mail` = ?;";
     user = await connection.execute(sqlCheck2, [mail]).then(([result]) => {
       return result[0];
     });
     if (user) {
       const err = new Error("提供的註冊內容已被使用2");
-      err.code = 400;
+      // 原本 err.code = 400;
+      err.httpCode = 400;
       err.status = "fail";
       throw err;
     }
@@ -135,25 +152,25 @@ router.post("/", upload.none(), async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // 建立 SQL 語法
-    const sql = "INSERT INTO `users` (account, password, mail, head) VALUES (?, ?, ?, ?);";
-    await connection.execute(
-      sql, [account, hashedPassword, mail, head]
-    );
+    const sql =
+      "INSERT INTO `users` (account, password, mail, head) VALUES (?, ?, ?, ?);";
+    await connection.execute(sql, [account, hashedPassword, mail, head]);
 
     res.status(201).json({
       status: "success",
       data: {},
-      message: "新增一個使用者 成功"
+      message: "新增一個使用者 成功",
     });
   } catch (error) {
     // 補獲錯誤
     console.log(error);
-    const statusCode = error.code ?? 500;
+    // 原本 const statusCode = error.code ?? 500;
+    const statusCode = error.httpCode ?? 500;
     const statusText = error.status ?? "error";
     const message = error.message ?? "註冊失敗，請洽管理人員";
     res.status(statusCode).json({
       status: statusText,
-      message
+      message,
     });
   }
 });
@@ -164,7 +181,7 @@ router.put("/:id", (req, res) => {
   res.status(200).json({
     status: "success",
     data: { id },
-    message: "更新(特定 ID 的)使用者 成功"
+    message: "更新(特定 ID 的)使用者 成功",
   });
 });
 
@@ -174,10 +191,9 @@ router.delete("/:id", (req, res) => {
   res.status(200).json({
     status: "success",
     data: { id },
-    message: "刪除(特定 ID 的)使用者 成功"
+    message: "刪除(特定 ID 的)使用者 成功",
   });
 });
-
 
 // 使用者登入
 router.post("/login", upload.none(), async (req, res) => {
@@ -186,9 +202,11 @@ router.post("/login", upload.none(), async (req, res) => {
     console.log(account);
 
     const sqlCheck1 = "SELECT * FROM `users` WHERE `account` = ?;";
-    let user = await connection.execute(sqlCheck1, [account]).then(([result]) => {
-      return result[0];
-    });
+    let user = await connection
+      .execute(sqlCheck1, [account])
+      .then(([result]) => {
+        return result[0];
+      });
 
     if (!user) {
       const err = new Error("帳號或密碼錯誤1");
@@ -219,7 +237,7 @@ router.post("/login", upload.none(), async (req, res) => {
       account: user.account,
       mail: user.mail,
       head: user.head,
-    }
+    };
 
     res.status(200).json({
       status: "success",
@@ -234,7 +252,7 @@ router.post("/login", upload.none(), async (req, res) => {
     const message = error.message ?? "登入失敗，請洽管理人員";
     res.status(statusCode).json({
       status: statusText,
-      message
+      message,
     });
   }
 });
@@ -245,9 +263,11 @@ router.post("/logout", checkToken, async (req, res) => {
     const { account } = req.decoded;
 
     const sqlCheck1 = "SELECT * FROM `users` WHERE `account` = ?;";
-    let user = await connection.execute(sqlCheck1, [account]).then(([result]) => {
-      return result[0];
-    });
+    let user = await connection
+      .execute(sqlCheck1, [account])
+      .then(([result]) => {
+        return result[0];
+      });
     if (!user) {
       const err = new Error("登出失敗");
       err.code = 401;
@@ -275,7 +295,7 @@ router.post("/logout", checkToken, async (req, res) => {
     const message = error.message ?? "登出失敗，請洽管理人員";
     res.status(statusCode).json({
       status: statusText,
-      message
+      message,
     });
   }
 });
@@ -286,9 +306,11 @@ router.post("/status", checkToken, async (req, res) => {
     const { account } = req.decoded;
 
     const sqlCheck1 = "SELECT * FROM `users` WHERE `account` = ?;";
-    let user = await connection.execute(sqlCheck1, [account]).then(([result]) => {
-      return result[0];
-    });
+    let user = await connection
+      .execute(sqlCheck1, [account])
+      .then(([result]) => {
+        return result[0];
+      });
     if (!user) {
       const err = new Error("請登入");
       err.code = 401;
@@ -310,7 +332,7 @@ router.post("/status", checkToken, async (req, res) => {
       account: user.account,
       mail: user.mail,
       head: user.head,
-    }
+    };
 
     res.status(200).json({
       status: "success",
@@ -325,7 +347,7 @@ router.post("/status", checkToken, async (req, res) => {
     const message = error.message ?? "身份驗證錯誤，請洽管理人員";
     res.status(statusCode).json({
       status: statusText,
-      message
+      message,
     });
   }
 });
@@ -359,7 +381,8 @@ async function getRandomAvatar() {
   const API = "https://randomuser.me/api";
   try {
     const response = await fetch(API);
-    if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`);
+    if (!response.ok)
+      throw new Error(`${response.status}: ${response.statusText}`);
     const result = await response.json();
     return result.results[0].picture.large;
   } catch (error) {
