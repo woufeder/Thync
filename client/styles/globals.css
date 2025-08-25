@@ -15,7 +15,7 @@
   --Danger100: #F5D2D2;
   --Black: #101C35;
   --White: #FFFFFF;
-  --card-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+  --card-shadow: 0 4px 10px 0 rgba(48, 74, 111, 0.25);
   --highlight: var(--Primary300) 0px 0px 10px;
 }
 

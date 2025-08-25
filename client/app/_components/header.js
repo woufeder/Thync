@@ -136,7 +136,7 @@ export default function Header() {
                     </Link>
                   </li>
                   <li className="nav-item">
-                    <a className="nav-link" aria-current="page" href="#">活動消息</a>
+                    <a className="nav-link" aria-current="page" href="/#events">活動消息</a>
                   </li>
                   <li className="nav-item">
                     <Link
