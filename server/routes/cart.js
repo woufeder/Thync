@@ -1,23 +1,47 @@
 import express from "express";
+import db from "../db.js"; // 你要自己寫一個 db.js 用 mysql2 建立連線池
 const router = express.Router();
 
-// GET /api/cart → 取得購物車
-router.get("/", (req, res) => {
-  res.json([
-    { id: 1, name: "商品A", price: 500, qty: 1 },
-    { id: 2, name: "商品B", price: 800, qty: 2 },
-  ]);
+// 取得某個使用者的購物車
+router.get("/:userId", async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      `SELECT c.id, c.product_id, p.name, p.image, c.quantity, c.price
+       FROM cart c
+       JOIN products p ON c.product_id = p.id
+       WHERE c.user_id = ?`,
+      [req.params.userId]
+    );
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-// POST /api/cart → 加入商品
-router.post("/", (req, res) => {
-  const { name, price, qty } = req.body;
-  res.json({ message: "已加入購物車", item: { name, price, qty } });
+// 加商品進購物車
+router.post("/", async (req, res) => {
+  const { user_id, product_id, quantity, price } = req.body;
+  try {
+    await db.query(
+      `INSERT INTO cart (user_id, product_id, quantity, price)
+       VALUES (?, ?, ?, ?)
+       ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity)`,
+      [user_id, product_id, quantity, price]
+    );
+    res.json({ message: "已加入購物車" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-// DELETE /api/cart/:id → 移除商品
-router.delete("/:id", (req, res) => {
-  res.json({ message: `商品 ${req.params.id} 已刪除` });
+// 移除購物車項目
+router.delete("/:id", async (req, res) => {
+  try {
+    await db.query(`DELETE FROM cart WHERE id = ?`, [req.params.id]);
+    res.json({ message: "已刪除" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 export default router;
