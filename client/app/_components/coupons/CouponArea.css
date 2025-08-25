@@ -1,0 +1,282 @@
+/* Import Google Fonts */
+@import url("https://fonts.googleapis.com/css?family=Noto+Sans+TC:400,700&display=swap");
+
+/* Base styles */
+.coupon-area {
+  font-family: "Noto Sans TC", sans-serif;
+  background: #f7f6f2;
+  min-height: 100vh;
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  color: #2f4a6f;
+  font-size: 0.95rem;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.breadcrumb svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Title */
+.title {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  background: linear-gradient(90deg, #375177, #88a2bf);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  display: inline-block;
+}
+
+/* Tabs */
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-bottom: 2px solid #e3e8f0;
+  margin-bottom: 24px;
+}
+
+.tab {
+  text-align: center;
+  line-height: normal;
+  padding-bottom: 8px;
+  cursor: pointer;
+  color: #888;
+  font-weight: 500;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.tab:hover {
+  color: #e74c3c;
+  border-bottom: 2px solid #e74c3c;
+}
+
+.tab.active {
+  color: #e74c3c;
+  border-bottom: 2px solid #e74c3c;
+}
+
+/* Filter row */
+.filter-row {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.filter-top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  transition: 0.2s;
+  background: #4f4e4a;
+  color: #fff;
+  border-radius: 10px;
+  padding: 6px 12px;
+  font-weight: 600;
+  font-family: "Noto Sans TC", sans-serif;
+}
+
+.chip:hover,
+.chip.active {
+  background: #c2b2a3;
+  color: #fff;
+}
+
+.filter-toggle {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: #4f4e4a;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: "Noto Sans TC", sans-serif;
+}
+
+.filter-toggle:hover {
+  color: #333;
+}
+
+.filter-toggle svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Filter bottom */
+.filter-bottom {
+  display: flex;
+  gap: 8px;
+  max-width: 420px;
+}
+
+.filter-bottom input {
+  flex: 1;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 12px;
+  font-family: "Noto Sans TC", sans-serif;
+}
+
+.filter-bottom input:focus {
+  outline: none;
+  border-color: #88a2bf;
+}
+
+.redeem-btn {
+  background: #db6161;
+  border: none;
+  outline: none;
+  color: #fff;
+  border-radius: 6px;
+  padding: 6px 16px;
+  cursor: pointer;
+  font-family: "Noto Sans TC", sans-serif;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.redeem-btn:hover {
+  background: #ce5e5e;
+}
+
+/* Coupon list */
+.coupon-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+/* Coupon card */
+.coupon-card {
+  background: #f7f6f2;
+  border: 1px solid #88a2bf;
+  border-radius: 12px;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+.coupon-card .top {
+  padding: 13px 24px;
+}
+
+.coupon-card .type {
+  color: #aaa;
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+.coupon-card .name {
+  font-size: 26px;
+  font-weight: 700;
+  color: #375177;
+  margin-bottom: 6px;
+}
+
+.coupon-card .desc {
+  color: #555;
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+}
+
+.coupon-card .amount {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #375177;
+}
+
+.coupon-card .bottom {
+  border-top: 1px dashed #bbb;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.coupon-card .expire {
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.coupon-card .get-btn {
+  background: #6c7ba0;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-family: "Noto Sans TC", sans-serif;
+  font-weight: 600;
+}
+
+.coupon-card .get-btn:hover {
+  background: #556080;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .coupon-area {
+    padding: 16px;
+  }
+
+  .filter-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .filter-bottom {
+    max-width: none;
+    width: 100%;
+  }
+
+  .coupon-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 24px;
+  }
+
+  .coupon-card .top {
+    padding: 12px 16px;
+  }
+
+  .coupon-card .bottom {
+    padding: 10px 16px;
+  }
+
+  .coupon-card .name {
+    font-size: 20px;
+  }
+}
