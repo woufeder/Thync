@@ -6,6 +6,7 @@ import styles from "@/styles/index.css";
 import Link from "next/link";
 
 import Header from "./_components/header";
+import Footer from "./_components/footer";
 import ArticleCard from "./_components/articleCard";
 
 export default function Home() {
@@ -149,6 +150,10 @@ export default function Home() {
 				<div className="container">
 				</div>
 			</section>
+
+			<footer>
+				<Footer />
+			</footer>
 		</>
 	);
 
