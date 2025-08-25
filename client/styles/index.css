@@ -356,12 +356,6 @@ section {
 					font-weight: 500;
 				}
 
-				.avatar {
-					width: 28px;
-					height: 28px;
-					border-radius: 50%;
-				}
-
 				.btn {
 					color: var(--Primary300);
 					font-weight: 700;
