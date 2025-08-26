@@ -12,6 +12,7 @@ CREATE TABLE user_coupons (
     attr ENUM('force', 'manual') NOT NULL DEFAULT 'manual'
 );
 
+-- 測試用 Query to get all coupons for a specific user (user_id = 113)
 SELECT 
   uc.id AS user_coupon_id,
   uc.user_id,
@@ -28,3 +29,20 @@ SELECT
 FROM user_coupons uc
 JOIN coupon c ON uc.coupon_id = c.id
 WHERE uc.user_id = 113;
+
+-- 測試「已使用」的情境
+UPDATE user_coupons
+SET is_used = 1, used_at = NOW()
+WHERE user_id = 115 AND coupon_id = (SELECT id FROM coupon WHERE code = 'C001');
+
+-- 測試「已過期」的情境
+UPDATE coupon
+SET expires_at = '2024-01-01 00:00:00'
+WHERE code = 'C002';
+
+SELECT * FROM users WHERE id = 115;
+
+SELECT * 
+FROM user_coupons uc
+JOIN coupon c ON uc.coupon_id = c.id
+WHERE uc.user_id = 115 AND c.code = 'C002';
