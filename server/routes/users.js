@@ -52,19 +52,19 @@ router.get("/:id", async (req, res) => {
   // 路由參數
   try {
     // 動態路徑會被整理到 req 中的 params 裡
-    const account = req.params.id;
+    const mail = req.params.id;
     // 業務邏輯錯誤需手動拋出
-    if (!account) {
+    if (!mail) {
       const err = new Error("請提供使用者 ID");
       err.code = 400;
       err.status = "fail";
       throw err;
     }
 
-    const sqlCheck1 = "SELECT * FROM `users` WHERE `account` = ?;";
+    const sqlCheck1 = "SELECT * FROM `users` WHERE `mail` = ?;";
     let user = await connection
-      // [account]代表？
-      .execute(sqlCheck1, [account])
+      // [mail]代表？
+      .execute(sqlCheck1, [mail])
       // [result] 直接取得第一個元素
       .then(([result]) => {
         // 取得第一筆資料的物件
@@ -102,70 +102,55 @@ router.get("/:id", async (req, res) => {
 });
 
 // 新增一個使用者
+// 無檔案上傳的 multipart 表單
 router.post("/", upload.none(), async (req, res) => {
   try {
     // 取得表單中的欄位內容
-    const { account, password, mail } = req.body;
+    const { name, mail, password } = req.body;
 
     // 檢查必填
-    if (!account || !password || !mail) {
+    if (!name || !mail || !password) {
       // 設定 Error 物件
-      const err = new Error("請提供完整的使用者資訊"); // Error 物件只能在小括號中自訂錯誤訊息
-      // err.code = 400; // 利用物件的自訂屬性把 HTTP 狀態碼帶到 catch
-      // 原本 err.code = 400;
-      err.httpCode = 400;
+      const err = new Error("請提供完整使用者資訊"); // Error 物件只能在小括號中自訂錯誤訊息
+      err.code = 400; // 利用物件的自訂屬性把 HTTP 狀態碼帶到 catch
       err.status = "fail"; // 利用物件的自訂屬性把status字串帶到 catch
-      throw err;
-    }
-
-    // 檢查 account 有沒有使用過
-    const sqlCheck1 = "SELECT * FROM `users` WHERE `account` = ?;";
-    let user = await connection
-      .execute(sqlCheck1, [account])
-      .then(([result]) => {
-        return result[0];
-      });
-    if (user) {
-      const err = new Error("提供的註冊內容已被使用1");
-      // 原本 err.code = 400;
-      err.httpCode = 400;
-      err.status = "fail";
+      err.message = "請提供完整使用者資訊";
       throw err;
     }
 
     // 檢查 mail 有沒有使用過
-    const sqlCheck2 = "SELECT * FROM `users` WHERE `mail` = ?;";
-    user = await connection.execute(sqlCheck2, [mail]).then(([result]) => {
+    const sqlCheck1 = "SELECT * FROM `users` WHERE `mail` = ?;";
+    let user = await connection.execute(sqlCheck1, [mail]).then(([result]) => {
       return result[0];
     });
     if (user) {
-      const err = new Error("提供的註冊內容已被使用2");
-      // 原本 err.code = 400;
-      err.httpCode = 400;
+      const err = new Error("提供的註冊內容已被使用1");
+      err.code = 400;
       err.status = "fail";
+      err.message = "信箱已被使用";
       throw err;
     }
 
-    // 從 randomuser.me 取得一個使用者圖片
-    const head = await getRandomAvatar();
+    // 從 randomuser.me 取得預設使用者圖片
+    const img = await getRandomAvatar();
+
     // 把密碼加密
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // 建立 SQL 語法
     const sql =
-      "INSERT INTO `users` (account, password, mail, head) VALUES (?, ?, ?, ?);";
-    await connection.execute(sql, [account, hashedPassword, mail, head]);
+      "INSERT INTO `users` (name, mail, password, img) VALUES (?, ?, ?, ?);";
+    await connection.execute(sql, [name, mail, hashedPassword, img]);
 
     res.status(201).json({
       status: "success",
+      // 不要回傳敏感資料
       data: {},
       message: "新增一個使用者 成功",
     });
   } catch (error) {
-    // 補獲錯誤
     console.log(error);
-    // 原本 const statusCode = error.code ?? 500;
-    const statusCode = error.httpCode ?? 500;
+    const statusCode = error.code ?? 500;
     const statusText = error.status ?? "error";
     const message = error.message ?? "註冊失敗，請洽管理人員";
     res.status(statusCode).json({
@@ -198,20 +183,19 @@ router.delete("/:id", (req, res) => {
 // 使用者登入
 router.post("/login", upload.none(), async (req, res) => {
   try {
-    const { account, password } = req.body;
-    console.log(account);
+    const { mail, password } = req.body;
+    console.log(mail);
 
-    const sqlCheck1 = "SELECT * FROM `users` WHERE `account` = ?;";
-    let user = await connection
-      .execute(sqlCheck1, [account])
-      .then(([result]) => {
-        return result[0];
-      });
+    const sqlCheck1 = "SELECT * FROM `users` WHERE `mail` = ?;";
+    let user = await connection.execute(sqlCheck1, [mail]).then(([result]) => {
+      return result[0];
+    });
 
     if (!user) {
       const err = new Error("帳號或密碼錯誤1");
       err.code = 400;
       err.status = "error";
+      err.message = "使用者不存在";
       throw err;
     }
 
@@ -220,23 +204,23 @@ router.post("/login", upload.none(), async (req, res) => {
       const err = new Error("帳號或密碼錯誤2");
       err.code = 400;
       err.status = "error";
+      err.message = "密碼錯誤";
       throw err;
     }
 
     const token = jwt.sign(
+      // 加密進 token 的內容
       {
-        account: user.account,
         mail: user.mail,
-        head: user.head,
+        img: user.img,
       },
       secretKey,
       { expiresIn: "30m" }
     );
 
     const newUser = {
-      account: user.account,
       mail: user.mail,
-      head: user.head,
+      img: user.img,
     };
 
     res.status(200).json({
@@ -245,7 +229,6 @@ router.post("/login", upload.none(), async (req, res) => {
       data: { token, user: newUser },
     });
   } catch (error) {
-    // 補獲錯誤
     console.log(error);
     const statusCode = error.code ?? 400;
     const statusText = error.status ?? "error";
@@ -260,24 +243,23 @@ router.post("/login", upload.none(), async (req, res) => {
 // 使用者登出
 router.post("/logout", checkToken, async (req, res) => {
   try {
-    const { account } = req.decoded;
+    const { mail } = req.decoded;
 
-    const sqlCheck1 = "SELECT * FROM `users` WHERE `account` = ?;";
-    let user = await connection
-      .execute(sqlCheck1, [account])
-      .then(([result]) => {
-        return result[0];
-      });
+    const sqlCheck1 = "SELECT * FROM `users` WHERE `mail` = ?;";
+    let user = await connection.execute(sqlCheck1, [mail]).then(([result]) => {
+      return result[0];
+    });
+    // 檢查使用者是否存在
     if (!user) {
       const err = new Error("登出失敗");
       err.code = 401;
       err.status = "error";
       throw err;
     }
-
+    // 產生過期 Token
     const token = jwt.sign(
       {
-        message: "過期的token",
+        message: "過期的 token",
       },
       secretKey,
       { expiresIn: "-10s" }
@@ -288,7 +270,6 @@ router.post("/logout", checkToken, async (req, res) => {
       data: token,
     });
   } catch (error) {
-    // 補獲錯誤
     console.log(error);
     const statusCode = error.code ?? 400;
     const statusText = error.status ?? "error";
@@ -303,14 +284,12 @@ router.post("/logout", checkToken, async (req, res) => {
 // 檢查登入狀態
 router.post("/status", checkToken, async (req, res) => {
   try {
-    const { account } = req.decoded;
+    const { mail } = req.decoded;
 
-    const sqlCheck1 = "SELECT * FROM `users` WHERE `account` = ?;";
-    let user = await connection
-      .execute(sqlCheck1, [account])
-      .then(([result]) => {
-        return result[0];
-      });
+    const sqlCheck1 = "SELECT * FROM `users` WHERE `mail` = ?;";
+    let user = await connection.execute(sqlCheck1, [mail]).then(([result]) => {
+      return result[0];
+    });
     if (!user) {
       const err = new Error("請登入");
       err.code = 401;
@@ -320,18 +299,16 @@ router.post("/status", checkToken, async (req, res) => {
 
     const token = jwt.sign(
       {
-        account: user.account,
         mail: user.mail,
-        head: user.head,
+        img: user.img,
       },
       secretKey,
       { expiresIn: "30m" }
     );
 
     const newUser = {
-      account: user.account,
       mail: user.mail,
-      head: user.head,
+      img: user.img,
     };
 
     res.status(200).json({
@@ -340,7 +317,6 @@ router.post("/status", checkToken, async (req, res) => {
       data: { token, user: newUser },
     });
   } catch (error) {
-    // 補獲錯誤
     console.log(error);
     const statusCode = error.code ?? 401;
     const statusText = error.status ?? "error";
@@ -353,9 +329,11 @@ router.post("/status", checkToken, async (req, res) => {
 });
 
 function checkToken(req, res, next) {
+  // 讀取前端送來的 token，從 HTTP Header 取得 Authorization 欄位
   let token = req.get("Authorization");
   console.log(token);
   if (token && token.includes("Bearer ")) {
+    // 純提取 Token 字串，去掉前面的 'Bearer '
     token = token.slice(7);
     jwt.verify(token, secretKey, (error, decoded) => {
       if (error) {
@@ -366,6 +344,7 @@ function checkToken(req, res, next) {
         });
         return;
       }
+      // 將解碼後的 payload(加密的 token 內容) 存入 req 物件，之後路由才知道是誰要登出(執行動作)
       req.decoded = decoded;
       next();
     });

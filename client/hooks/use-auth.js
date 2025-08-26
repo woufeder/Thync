@@ -1,30 +1,30 @@
-"use client"
+"use client";
 
-import { createContext, useContext, useEffect, useState } from "react"
+import { createContext, useContext, useEffect, useState } from "react";
 import jwt from "jsonwebtoken";
 import { usePathname, useRouter } from "next/navigation";
 
 const AuthContext = createContext(null);
-AuthContext.displayName = "AuthContext"
-const appKey = "reactLoginToken"
+AuthContext.displayName = "AuthContext";
+const appKey = "reactLoginToken";
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null)
-  const [users, setUsers] = useState([])
+  const [user, setUser] = useState(null);
+  const [users, setUsers] = useState([]);
   // 這裡只要useState裡面有東西，他就會是登入狀態
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true);
 
-  const router = useRouter()
-  const pathname = usePathname()
-  const loginRoute = "/user/login"
-  const protectedRoutes = ["/user"]
+  const router = useRouter();
+  const pathname = usePathname();
+  const loginRoute = "/user/login";
+  const protectedRoutes = ["/user"];
 
   const login = async (account, password) => {
     console.log(`在use-auth.js裡面，登入帳號: ${account} 密碼: ${password}`);
     const API = "http://localhost:3007/api/users/login";
     const formData = new FormData();
     formData.append("account", account);
-    formData.append("password", password)
+    formData.append("password", password);
     // 這裡的formData是用來傳送表單資料的
 
     try {
@@ -50,105 +50,107 @@ export function AuthProvider({ children }) {
         alert(result.message);
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   const logout = async () => {
-    console.log("logout")
-    const API = "http://localhost:3007/api/users/logout"
+    console.log("logout");
+    const API = "http://localhost:3007/api/users/logout";
     const token = localStorage.getItem(appKey);
     try {
-      if (!token) throw new Error("Token不存在")
+      if (!token) throw new Error("Token不存在");
       const res = await fetch(API, {
         method: "POST",
+        // 前端把 Token 放入 Authorization Header 欄位
         headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      const result = await res.json()
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const result = await res.json();
       if (result.status === "success") {
         const token = result.data;
-        setUser(null)
+        setUser(null);
         localStorage.removeItem(appKey);
       } else {
-        throw new Error(result.message)
+        throw new Error(result.message);
       }
     } catch (error) {
       console.log(`解析token失敗: ${error.message}`);
       setUser(null);
       localStorage.removeItem(appKey);
-      alert(error.message)
+      alert(error.message);
     }
-  }
+  };
 
   const list = async () => {
-    const API = "http://localhost:3007/api/users"
+    const API = "http://localhost:3007/api/users";
 
     try {
-      const res = await fetch(API)
-      const result = await res.json()
-      console.log(result)
+      const res = await fetch(API);
+      const result = await res.json();
+      console.log(result);
 
       if (result.status === "success") {
         setUsers(result.data);
       }
     } catch (error) {
-      console.log(`使用者列表取得: ${error.message}`)
-      setUsers([])
-      alert(error.message)
+      console.log(`使用者列表取得: ${error.message}`);
+      setUsers([]);
+      alert(error.message);
     }
-  }
+  };
 
   // 沒有登入不能夠觀看2
   useEffect(() => {
     if (!isLoading && !user && protectedRoutes.includes(pathname)) {
-      router.replace(loginRoute)
+      router.replace(loginRoute);
     }
-  }, [isLoading, user, pathname])
+  }, [isLoading, user, pathname]);
 
   useEffect(() => {
-    const API = "http://localhost:3007/api/users/status"
+    const API = "http://localhost:3007/api/users/status";
     const token = localStorage.getItem(appKey);
     if (!token) {
       setUser(null);
       setIsLoading(false);
-      return
+      return;
     }
     const checkToken = async () => {
       try {
         const res = await fetch(API, {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${token}`
-          }
-        })
-        const result = await res.json()
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const result = await res.json();
         if (result.status === "success") {
           const token = result.data.token;
-          setUser(result.data.user)
-          localStorage.setItem(appKey, token)
-          setIsLoading(false)
+          setUser(result.data.user);
+          localStorage.setItem(appKey, token);
+          setIsLoading(false);
         } else {
-          setIsLoading(false)
+          setIsLoading(false);
         }
       } catch (error) {
         console.log(`解析token失敗: ${error.message}`);
         setUser(null);
         localStorage.removeItem(appKey);
-
       }
-    }
+    };
     checkToken();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isLoading, list, users }}>
+    <AuthContext.Provider
+      value={{ user, login, logout, isLoading, list, users }}
+    >
       {/* 這裡的第一個大括號表示要寫程式，第二個大括號表示要寫物件 */}
 
       {children}
     </AuthContext.Provider>
-  )
+  );
 }
 
 export const useAuth = () => useContext(AuthContext);

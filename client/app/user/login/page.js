@@ -1,28 +1,21 @@
-"use client"
+"use client";
 
 import { useAuth } from "@/hooks/use-auth";
 import { useState } from "react";
-import Link from "next/link"
-
+import Link from "next/link";
 
 export default function UserLoginPage() {
   const [account, setAccount] = useState("");
   const [password, setPassword] = useState("");
-  const { login, user, logout, isLoading } = useAuth()
+  const { login, user, logout, isLoading } = useAuth();
 
   const onclick = () => {
     login(account, password);
-  }
+  };
 
   if (isLoading) {
-
-    return (
-      <div className="container">
-        Loading......
-      </div>
-    );
+    return <div className="container">Loading......</div>;
   }
-
 
   if (user) {
     return (
@@ -38,8 +31,15 @@ export default function UserLoginPage() {
               <div className="account fs-3">{user.account}</div>
               <div className="mail">{user.mail}</div>
               <div className="d-flex">
-                <div className="btn btn-primary ms-auto btn-logout me-1" onClick={logout}>登出</div>
-                <Link className="btn btn-primary" href="/">回首頁</Link>
+                <div
+                  className="btn btn-primary ms-auto btn-logout me-1"
+                  onClick={logout}
+                >
+                  登出
+                </div>
+                <Link className="btn btn-primary" href="/">
+                  回首頁
+                </Link>
               </div>
             </div>
           </div>
@@ -51,21 +51,44 @@ export default function UserLoginPage() {
   return (
     <div className="container py-3">
       <h1>
-        <span >登出</span>
-        <span >狀態</span>
+        <span>登出</span>
+        <span>狀態</span>
       </h1>
       <div className="input-group mb-2">
         <span className={`input-group-text`}>帳號</span>
-        <input type="text" name="account" className="form-control" value={account} onChange={(e) => { setAccount(e.target.value) }} />
+        <input
+          type="text"
+          name="account"
+          className="form-control"
+          value={account}
+          onChange={(e) => {
+            setAccount(e.target.value);
+          }}
+        />
       </div>
       <div className="input-group mb-2">
         <span className={`input-group-text`}>密碼</span>
-        <input type="password" name="password" className="form-control" value={password} onChange={(e) => { setPassword(e.target.value) }} />
+        <input
+          type="password"
+          name="password"
+          className="form-control"
+          value={password}
+          onChange={(e) => {
+            setPassword(e.target.value);
+          }}
+        />
       </div>
       <div className="d-flex">
-        <div className="btn btn-primary ms-auto btn-login me-1" onClick={onclick}>送出</div>
-        <Link className="btn btn-primary" href="/">回首頁</Link>
+        <div
+          className="btn btn-primary ms-auto btn-login me-1"
+          onClick={onclick}
+        >
+          送出
+        </div>
+        <Link className="btn btn-primary" href="/">
+          回首頁
+        </Link>
       </div>
     </div>
-  )
+  );
 }

@@ -1,7 +1,6 @@
 DROP TABLE `users`;
 DROP TABLE `gender`;
 DROP TABLE `city`;
-create database restful;
 USE restful;
 CREATE TABLE gender (
     id INT AUTO_INCREMENT PRIMARY KEY,
