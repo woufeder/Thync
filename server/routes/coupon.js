@@ -1,5 +1,5 @@
 import express from "express";
-import db from "../db.js";
+import connection from "../connect.js";
 import bcrypt from "bcrypt"; // 如果你要存密碼，記得有裝 bcrypt
 const router = express.Router();
 
@@ -17,10 +17,10 @@ router.post("/register", async (req, res) => {
     const userId = result.insertId;
 
     // 2. 發放固定券 (這裡假設註冊送 couponId = 1)
-    await db.query(
+    await connection.query(
       `INSERT INTO user_coupons (user_id, coupon_id, is_used, created_at, attr)
-       VALUES (?, 1, 0, NOW(), 'force')`,
-      [userId]
+       VALUES (?, ?, 'force')`,
+      [userId, coupon_id]
     );
 
     res.status(201).json({
@@ -37,8 +37,8 @@ router.post("/register", async (req, res) => {
 
 router.get("/user/:userId/available", async (req, res) => {
   try {
-    const [rows] = await db.query(
-      `SELECT uc.id, c.code, c.\`desc\`, c.value, c.min, uc.is_used, uc.used_at, c.expires_at
+    const [rows] = await connection.query(
+      `SELECT uc.id, c.code, c.\`desc\`, c.value, c.min, uc.is_used, uc.used_at
        FROM user_coupons uc
        JOIN coupon c ON uc.coupon_id = c.id
        WHERE uc.user_id = ?
