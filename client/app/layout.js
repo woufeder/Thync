@@ -3,6 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "@/styles/globals.css";
 import Script from "next/script";
 import { AuthProvider } from "@/hooks/use-auth";
+import { ProductProvider } from "@/hooks/use-product";
 
 const notoSansTC = Noto_Sans_TC({
   subsets: ["latin", "cjk"],
@@ -27,11 +28,13 @@ export default function RootLayout({ children }) {
           integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
           crossOrigin="anonymous" referrerPolicy="no-referrer" />
       </head>
-      <AuthProvider>
-        <body className={notoSansTC.variable}>
-          {children}
-        </body>
-      </AuthProvider>
+      <ProductProvider>
+        <AuthProvider>
+          <body className={notoSansTC.variable}>
+            {children}
+          </body>
+        </AuthProvider>
+      </ProductProvider>
     </html>
   );
 }
