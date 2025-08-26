@@ -10,17 +10,19 @@ router.post("/register", async (req, res) => {
   try {
     // 1. 建立使用者
     const hashedPassword = await bcrypt.hash(password, 10);
-    const [result] = await db.query(
+    const [result] = await connection.query(
       "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
       [name, email, hashedPassword]
     );
     const userId = result.insertId;
 
-    // 2. 發放固定券 (這裡假設註冊送 couponId = 1)
+    // 2. 發放固定券 (滿額折扣、新戶專屬、免運優惠各1)
     await connection.query(
       `INSERT INTO user_coupons (user_id, coupon_id, is_used, created_at, attr)
-       VALUES (?, ?, 'force')`,
-      [userId, coupon_id]
+   SELECT ?, c.id, 0, NOW(), 'force'
+   FROM coupon c
+   WHERE c.code IN ('C001', 'C002', 'C003')`,
+      [userId]
     );
 
     res.status(201).json({
@@ -38,7 +40,7 @@ router.post("/register", async (req, res) => {
 router.get("/user/:userId/available", async (req, res) => {
   try {
     const [rows] = await connection.query(
-      `SELECT uc.id, c.code, c.\`desc\`, c.value, c.min, uc.is_used, uc.used_at
+      `SELECT uc.id, c.code, c.\`desc\`, c.value, c.min, uc.is_used, uc.used_at, c.expires_at
        FROM user_coupons uc
        JOIN coupon c ON uc.coupon_id = c.id
        WHERE uc.user_id = ?
@@ -57,7 +59,7 @@ router.get("/user/:userId/available", async (req, res) => {
 
 router.get("/user/:userId/history", async (req, res) => {
   try {
-    const [rows] = await db.query(
+    const [rows] = await connection.query(
       `SELECT uc.id, c.code, c.\`desc\`, c.value, c.min, uc.is_used, uc.used_at, c.expires_at
        FROM user_coupons uc
        JOIN coupon c ON uc.coupon_id = c.id
@@ -77,7 +79,7 @@ router.get("/user/:userId/history", async (req, res) => {
 router.post("/validate", async (req, res) => {
   const { code } = req.body;
   try {
-    const [rows] = await db.query(
+    const [rows] = await connection.query(
       `SELECT id, code, \`desc\`, value, min, start_at, expires_at
        FROM coupon
        WHERE code = ?
