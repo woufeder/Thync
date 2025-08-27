@@ -6,24 +6,31 @@ import { usePathname, useRouter } from "next/navigation";
 
 const AuthContext = createContext(null);
 AuthContext.displayName = "AuthContext";
+// localStorage 的鍵名
 const appKey = "reactLoginToken";
 
 export function AuthProvider({ children }) {
+  // 目前登入的使用者
   const [user, setUser] = useState(null);
+  // 所有使用者列表
   const [users, setUsers] = useState([]);
   // 這裡只要useState裡面有東西，他就會是登入狀態
   const [isLoading, setIsLoading] = useState(true);
 
+  // 設定路由導航規則
   const router = useRouter();
   const pathname = usePathname();
   const loginRoute = "/user/login";
+  // 定義需登入才能訪問的路由列表
   const protectedRoutes = ["/user"];
 
-  const login = async (account, password) => {
-    console.log(`在use-auth.js裡面，登入帳號: ${account} 密碼: ${password}`);
+  const login = async (mail, password) => {
+    console.log(`在 use-auth.js 裡面，登入帳號: ${mail} 密碼: ${password}`);
     const API = "http://localhost:3007/api/users/login";
+    // 創建表單資料物件模仿 HTML 表單提交的資料格式
     const formData = new FormData();
-    formData.append("account", account);
+    // 添加 key value pair 資料
+    formData.append("mail", mail);
     formData.append("password", password);
     // 這裡的formData是用來傳送表單資料的
 
@@ -40,10 +47,10 @@ export function AuthProvider({ children }) {
         alert(result.message);
 
         const token = result.data.token;
-        setUser(result.data.user);
         // 這裡的setUser是用來設定登入後的使用者資料
+        setUser(result.data.user);
+        // 存 token 到瀏覽器的 localStorage
         localStorage.setItem(appKey, token);
-        // 將token存到localStorage裡面
         // 這樣下次進來的時候就可以從localStorage裡面取出token
       } else {
         console.log("登入失敗");
@@ -75,6 +82,7 @@ export function AuthProvider({ children }) {
       } else {
         throw new Error(result.message);
       }
+      // 即使登出失敗，還是要強制清除狀態
     } catch (error) {
       console.log(`解析token失敗: ${error.message}`);
       setUser(null);
@@ -96,6 +104,7 @@ export function AuthProvider({ children }) {
       }
     } catch (error) {
       console.log(`使用者列表取得: ${error.message}`);
+      // 以防保留上次載入的使用者列表
       setUsers([]);
       alert(error.message);
     }
