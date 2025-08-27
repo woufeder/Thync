@@ -12,7 +12,7 @@ const router = express.Router();
 // 獲取所有文章
 router.get("/", async (req, res) => {
   try {
-    const { cid, tag_id, search, sort, order, page = 1, per_page = 5 } = req.query;
+    const { cid, tag_id, search, sort, order, page = 1, per_page = 6 } = req.query;
     let sql = `
     SELECT DISTINCT
       a.*,

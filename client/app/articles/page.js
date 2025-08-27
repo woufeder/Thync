@@ -2,123 +2,171 @@
 import { useEffect, useState } from 'react'
 import Header from '../_components/header'
 import Footer from '../_components/footer'
+import ArticleCard from '../_components/articleCard'
+import useArticle from '../../hooks/use-article'
 import styles from "@/styles/articles.css";
 
 export default function ArticlesPage() {
+    const {
+        articles,
+        loading,
+        error,
+        pagination,
+        categories,
+        tags,
+        fetchArticles,
+        fetchOptions,
+        clearError
+    } = useArticle()
+
     const [searchTerm, setSearchTerm] = useState('')
     const [filters, setFilters] = useState({
-        categories: [],
-        tags: [],
-        timeRange: []
+        cid: '',
+        tag_id: '',
+        search: '',
+        page: 1,
+        per_page: 6
     })
-    
-    // 假文章資料
-    const [articles] = useState([
-        {
-            id: 1,
-      title: '鍵帽的神 GMK 開箱評測',
-      description: '本篇將帶你了解各種機械鍵盤軸體、配列與選購重點，幫助你找到最適合自己的鍵盤！從青軸到茶軸，從60%到全尺寸，一次搞懂所有選擇。',
-      image: 'https://api.builder.io/api/v1/image/assets/TEMP/2da0dcfc129dd042a77f561e5c0beef8d68aa96e?width=919',
-      date: '2024-05-01',
-      category: '機械鍵盤',
-      author: {
-        name: '小明',
-        avatar: 'https://api.builder.io/api/v1/image/assets/TEMP/67035ada45c0b2524655f4fd5ffdb444b7d86af2?width=56'
-      }
-    },
-    {
-            id: 2,
-      title: '桌面升級必備：桌墊選購指南',
-      description: '本篇將帶你了解各種機械鍵盤軸體、配列與選購重點，幫助你找到最適合自己的鍵盤！從青軸到茶軸，從60%到全尺寸，一次搞懂所有選擇。',
-      image: 'https://api.builder.io/api/v1/image/assets/TEMP/c6080f6d278488884a310dc89dbf0175c3207f67?width=919',
-      date: '2024-05-01',
-      category: '機械鍵盤',
-      author: {
-        name: '小明',
-        avatar: 'https://api.builder.io/api/v1/image/assets/TEMP/67035ada45c0b2524655f4fd5ffdb444b7d86af2?width=56'
-      }
-    },
-    {
-            id: 3,
-      title: '線材新潮流：客製化鍵盤線材指南',
-      description: '本篇將帶你了解各種機械鍵盤軸體、配列與選購重點，幫助你找到最適合自己的鍵盤！從青軸到茶軸，從60%到全尺寸，一次搞懂所有選擇。',
-      image: 'https://api.builder.io/api/v1/image/assets/TEMP/d84457a3334d59dd5ce5de2310dce1cb3c9dd6aa?width=919',
-      date: '2024-05-01',
-      category: '機械鍵盤',
-      author: {
-        name: '小明',
-        avatar: 'https://api.builder.io/api/v1/image/assets/TEMP/67035ada45c0b2524655f4fd5ffdb444b7d86af2?width=56'
-      }
-    },
-    {
-            id: 4,
-      title: 'ZF最新討論焦點：鍵盤社群熱門話題',
-      description: '本篇將帶你了解各種機械鍵盤軸體、配列與選購重點，幫助你找到最適合自己的鍵盤！從青軸到茶軸，從60%到全尺寸，一次搞懂所有選擇。',
-      image: 'https://api.builder.io/api/v1/image/assets/TEMP/37c289667a2fda1e824d78c2f6555922b0a883b5?width=919',
-      date: '2024-05-01',
-      category: '機械鍵盤',
-      author: {
-        name: '小明',
-        avatar: 'https://api.builder.io/api/v1/image/assets/TEMP/67035ada45c0b2524655f4fd5ffdb444b7d86af2?width=56'
-      }
-    },
-    {
-            id: 5,
-      title: '日本熱銷機械鍵盤：2024年必買推薦',
-      description: '本篇將帶你了解各種機械鍵盤軸體、配列與選購重點，幫助你找到最適合自己的鍵盤！從青軸到茶軸，從60%到全尺寸，一次搞懂所有選擇。',
-      image: 'https://api.builder.io/api/v1/image/assets/TEMP/5107498c28d52d728d9dad6c49ae41566f4b12c3?width=919',
-      date: '2024-05-01',
-      category: '機械鍵盤',
-      author: {
-        name: '小明',
-        avatar: 'https://api.builder.io/api/v1/image/assets/TEMP/67035ada45c0b2524655f4fd5ffdb444b7d86af2?width=56'
-      }
-    },
-    {
-            id: 6,
-      title: 'YouTuber開箱：最新鍵盤產品實測',
-      description: '本篇將帶你了解各種機械鍵盤軸體、配列與選購重點，幫助你找到最適合自己的鍵盤！從青軸到茶軸，從60%到全尺寸，一次搞懂所有選擇。',
-      image: 'https://api.builder.io/api/v1/image/assets/TEMP/2362d5e86f6f86d50993f0ee64aea45114d9df64?width=919',
-      date: '2024-05-01',
-      category: '機械鍵盤',
-      author: {
-        name: '小明',
-        avatar: 'https://api.builder.io/api/v1/image/assets/TEMP/67035ada45c0b2524655f4fd5ffdb444b7d86af2?width=56'
-      }
-    }
-    ])
 
-    const handleFilterChange = (filterType, value) => {
-        setFilters(prev => {
-            const newFilters = { ...prev }
-            const index = newFilters[filterType].indexOf(value)
-            
-            if (index > -1) {
-                newFilters[filterType].splice(index, 1)
-            } else {
-                newFilters[filterType].push(value)
-            }
-            
-            return newFilters
-        })
+    // 初始化載入
+    useEffect(() => {
+        console.log('🚀 文章頁面初始化載入')
+        fetchOptions()
+        fetchArticles({ page: 1, per_page: 6 })
+    }, [])
+
+    // 篩選變更時重新載入
+    const applyFilters = () => {
+        const params = {
+            page: 1,
+            per_page: filters.per_page
+        }
+        
+        if (filters.cid) params.cid = filters.cid
+        if (filters.tag_id) params.tag_id = filters.tag_id
+        if (searchTerm.trim()) params.search = searchTerm.trim()
+        
+        fetchArticles(params)
+        setFilters(prev => ({ ...prev, page: 1 }))
+    }
+
+    // 分頁變更
+    const handlePageChange = (newPage) => {
+        if (newPage < 1 || newPage > pagination.total_pages) return
+        
+        const params = {
+            page: newPage,
+            per_page: filters.per_page
+        }
+        
+        if (filters.cid) params.cid = filters.cid
+        if (filters.tag_id) params.tag_id = filters.tag_id
+        if (searchTerm.trim()) params.search = searchTerm.trim()
+        
+        fetchArticles(params)
+        setFilters(prev => ({ ...prev, page: newPage }))
+    }
+
+    // 篩選處理
+    const handleCategoryChange = (categoryId) => {
+        setFilters(prev => ({
+            ...prev,
+            cid: prev.cid === categoryId ? '' : categoryId
+        }))
+    }
+
+    const handleTagChange = (tagId) => {
+        setFilters(prev => ({
+            ...prev,
+            tag_id: prev.tag_id === tagId ? '' : tagId
+        }))
     }
 
     const clearFilters = () => {
         setFilters({
-            categories: [],
-            tags: [],
-            timeRange: []
+            cid: '',
+            tag_id: '',
+            search: '',
+            page: 1,
+            per_page: 6
         })
         setSearchTerm('')
+        fetchArticles({ page: 1, per_page: 6 })
     }
 
-  return (
+
+
+    // 搜尋處理
+    const handleSearch = (e) => {
+        e.preventDefault()
+        applyFilters()
+    }
+
+    // 載入狀態
+    if (loading && articles.length === 0) {
+        return (
+            <div className="articles-page">
+                <div className="container header">
+                    <Header />
+                </div>
+                <main className="main-content">
+                    <div className="container">
+                        <div className="loading-container">
+                            <div className="loading-spinner"></div>
+                            <p>載入文章中...</p>
+                            <p style={{fontSize: '12px', color: '#999', marginTop: '8px'}}>
+                                正在連接到 http://localhost:3007/api/articles
+                            </p>
+                        </div>
+                    </div>
+                </main>
+                <footer>
+                    <Footer />
+                </footer>
+            </div>
+        )
+    }
+
+    // 錯誤狀態
+    if (error) {
+        return (
+            <div className="articles-page">
+                <div className="container header">
+                    <Header />
+                </div>
+                <main className="main-content">
+                    <div className="container">
+                        <div className="error-container">
+                            <h3>😔 載入失敗</h3>
+                            <p><strong>錯誤訊息：</strong>{error}</p>
+                            <p style={{fontSize: '14px', color: '#666', marginBottom: '20px'}}>
+                                請檢查：<br/>
+                                • 後端伺服器是否在 http://localhost:3007 運行？<br/>
+                                • 網路連線是否正常？<br/>
+                                • 資料庫是否正確連接？
+                            </p>
+                            <button onClick={() => {
+                                console.log('🔄 用戶點擊重試按鈕')
+                                clearError()
+                                fetchArticles({ page: 1, per_page: 6 })
+                            }}>重試</button>
+                        </div>
+                    </div>
+                </main>
+                <footer>
+                    <Footer />
+                </footer>
+            </div>
+        )
+    }
+
+    return (
         <div className="articles-page">
             <div className="container header">
                 <Header />
             </div>
-    <main className="main-content">
-      <div className="container">
+            <main className="main-content">
+                <div className="container">
                     {/* Breadcrumb */}
                     <nav className="breadcrumb">
                         <svg className="breadcrumb-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -143,19 +191,19 @@ export default function ArticlesPage() {
                     <div className="filter-section">
                         {/* Search Bar */}
                         <div className="articles-filter-header">
-                            <div className="search-container">
+                            <form onSubmit={handleSearch} className="search-container">
                                 <div className="search-input">
                                     <svg className="search-icon" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M15.75 16.25L12.3855 12.8795M14.25 8.375C14.25 11.8955 11.3955 14.75 7.875 14.75C4.3545 14.75 1.5 11.8955 1.5 8.375C1.5 4.8545 4.3545 2 7.875 2C11.3955 2 14.25 4.8545 14.25 8.375Z" stroke="#94AFCA" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                                     </svg>
                                     <input 
                                         type="text" 
-                                        placeholder="搜尋文章標題、內容或標籤..."
+                                        placeholder="搜尋文章標題、內容..."
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
                                     />
                                 </div>
-                            </div>
+                            </form>
                             
                             <div className="filter-actions">
                                 <button className="btn-clear" onClick={clearFilters}>
@@ -164,7 +212,7 @@ export default function ArticlesPage() {
                                     </svg>
                                     清除篩選
                                 </button>
-                                <button className="btn-apply">
+                                <button className="btn-apply" onClick={applyFilters}>
                                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                                         <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" fill="currentColor"/>
                                     </svg>
@@ -185,13 +233,13 @@ export default function ArticlesPage() {
                                     文章分類
                                 </h4>
                                 <div className="filter-tags">
-                                    {['組裝與改造類', '鍵帽與外觀類', '軸體與手感類', '配件與升級類', '使用與應用類', '評測與開箱類', '潮流與專題類'].map(category => (
+                                    {categories.map(category => (
                                         <button 
-                                            key={category} 
-                                            className={`filter-tag ${filters.categories.includes(category) ? 'active' : ''}`}
-                                            onClick={() => handleFilterChange('categories', category)}
+                                            key={category.id} 
+                                            className={`filter-tag ${filters.cid === category.id ? 'active' : ''}`}
+                                            onClick={() => handleCategoryChange(category.id)}
                                         >
-                                            {category}
+                                            {category.name}
                                         </button>
                                     ))}
                                 </div>
@@ -207,35 +255,13 @@ export default function ArticlesPage() {
                                     文章標籤
                                 </h4>
                                 <div className="filter-tags">
-                                    {['機械鍵盤', '藍牙', '無線', 'RGB', '客製化', '軸體評測', '組裝教學', '購買指南'].map(tag => (
+                                    {tags.map(tag => (
                                         <button 
-                                            key={tag} 
-                                            className={`filter-tag ${filters.tags.includes(tag) ? 'active' : ''}`}
-                                            onClick={() => handleFilterChange('tags', tag)}
+                                            key={tag.id} 
+                                            className={`filter-tag ${filters.tag_id === tag.id ? 'active' : ''}`}
+                                            onClick={() => handleTagChange(tag.id)}
                                         >
-                                            #{tag}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Time Filters */}
-                            <div className="filter-group">
-                                <h4 className="filter-title">
-                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                        <circle cx="10" cy="10" r="9" stroke="currentColor" strokeWidth="1.5"/>
-                                        <path d="M10 5v5l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                                    </svg>
-                                    發布時間
-                                </h4>
-                                <div className="filter-tabs">
-                                    {['今天', '本週', '本月', '今年'].map(time => (
-                                        <button 
-                                            key={time} 
-                                            className={`filter-tab ${filters.timeRange.includes(time) ? 'active' : ''}`}
-                                            onClick={() => handleFilterChange('timeRange', time)}
-                                        >
-                                            {time}
+                                            #{tag.name}
                                         </button>
                                     ))}
                                 </div>
@@ -243,50 +269,106 @@ export default function ArticlesPage() {
                         </div>
                     </div>
 
+                    {/* 載入中提示 */}
+                    {loading && (
+                        <div className="loading-overlay">
+                            <div className="loading-spinner"></div>
+                            <p>載入中...</p>
+                        </div>
+                    )}
+
                     {/* Articles Grid */}
-        <div className="articles-grid">
-          {articles.map(article => (
-                            <article key={article.id} className="article-card">
-                                <img src={article.image} alt={article.title} className="article-image" />
-                                <div className="article-content">
-                                    <div className="article-meta">
-                                        <span className="article-date">{article.date}</span>
-                                        <span className="article-category">{article.category}</span>
+                    {!loading && articles.length === 0 ? (
+                        <div className="empty-container">
+                            <p>沒有找到符合條件的文章</p>
+                        </div>
+                    ) : (
+                        <div className="a-cards">
+                            <div className="row">
+                                {articles.map(article => (
+                                    <div key={article.id} className="col">
+                                        <ArticleCard article={article} />
                                     </div>
-                                    <h3 className="article-title">{article.title}</h3>
-                                    <p className="article-description">{article.description}</p>
-                                    <div className="article-footer">
-                                        <div className="author-info">
-                                            <img src={article.author.avatar} alt={article.author.name} className="author-avatar" />
-                                            <span className="author-name">{article.author.name}</span>
-                                        </div>
-                                        <button className="read-more">閱讀更多</button>
-                                    </div>
-                                </div>
-                            </article>
-          ))}
-        </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     {/* Pagination */}
-                    <div className="pagination">
-                        <button className="page-btn" disabled>
-                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M15.1602 7.41L10.5802 12L15.1602 16.59L13.7502 18L7.75016 12L13.7502 6L15.1602 7.41Z" fill="#101C35"/>
-                            </svg>
-                        </button>
-                        <button className="page-btn active">1</button>
-                        <button className="page-btn">2</button>
-                        <button className="page-btn">...</button>
-                        <button className="page-btn">9</button>
-                        <button className="page-btn">10</button>
-                        <button className="page-btn">
-                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M8.83984 7.41L13.4198 12L8.83984 16.59L10.2498 18L16.2498 12L10.2498 6L8.83984 7.41Z" fill="#304A6F"/>
-                            </svg>
-                        </button>
-                    </div>
-      </div>
-    </main>
+                    {pagination && pagination.total_pages > 1 && (
+                        <div className="pagination">
+                            <button 
+                                className="page-btn" 
+                                disabled={!pagination.has_prev}
+                                onClick={() => handlePageChange(pagination.current_page - 1)}
+                            >
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M15.1602 7.41L10.5802 12L15.1602 16.59L13.7502 18L7.75016 12L13.7502 6L15.1602 7.41Z" fill="#101C35"/>
+                                </svg>
+                            </button>
+                            
+                            {(() => {
+                                const currentPage = pagination.current_page
+                                const totalPages = pagination.total_pages
+                                const pages = []
+                                
+                                if (totalPages <= 5) {
+                                    // 如果總頁數 <= 5，顯示所有頁碼
+                                    for (let i = 1; i <= totalPages; i++) {
+                                        pages.push(i)
+                                    }
+                                } else {
+                                    // 如果總頁數 > 5，智能顯示頁碼
+                                    if (currentPage <= 3) {
+                                        // 當前頁在前面，顯示 1, 2, 3, 4, 5
+                                        pages.push(1, 2, 3, 4, 5)
+                                    } else if (currentPage >= totalPages - 2) {
+                                        // 當前頁在後面，顯示最後 5 頁
+                                        for (let i = totalPages - 4; i <= totalPages; i++) {
+                                            pages.push(i)
+                                        }
+                                    } else {
+                                        // 當前頁在中間，顯示前後各 2 頁
+                                        for (let i = currentPage - 2; i <= currentPage + 2; i++) {
+                                            pages.push(i)
+                                        }
+                                    }
+                                }
+                                
+                                return pages.map(pageNum => (
+                                    <button 
+                                        key={pageNum}
+                                        className={`page-btn ${currentPage === pageNum ? 'active' : ''}`}
+                                        onClick={() => handlePageChange(pageNum)}
+                                    >
+                                        {pageNum}
+                                    </button>
+                                ))
+                            })()}
+                            
+                            <button 
+                                className="page-btn" 
+                                disabled={!pagination.has_next}
+                                onClick={() => handlePageChange(pagination.current_page + 1)}
+                            >
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8.83984 7.41L13.4198 12L8.83984 16.59L10.2498 18L16.2498 12L10.2498 6L8.83984 7.41Z" fill="#304A6F"/>
+                                </svg>
+                            </button>
+                        </div>
+                    )}
+
+                    {/* 分頁資訊 */}
+                    {pagination && (
+                        <div className="pagination-info">
+                            <p>
+                                第 {pagination.current_page} 頁，共 {pagination.total_pages} 頁 
+                                （共 {pagination.total} 篇文章）
+                            </p>
+                        </div>
+                    )}
+                </div>
+            </main>
             <footer>
                 <Footer />
             </footer>
