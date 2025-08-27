@@ -8,6 +8,8 @@ export default function ProductPage() {
   const [mid, setMid] = useState("")
   const [cid, setCid] = useState("")
   const [brand, setBrand] = useState("")
+  const [search, setSearch] = useState("");
+
 
   // 抓分類清單
   useEffect(() => {
@@ -40,13 +42,15 @@ export default function ProductPage() {
     if (mid) query += `mid=${mid}&`
     if (cid) query += `cid=${cid}&`
     if (brand) query += `brand_id=${brand}&`
+      if (search) query += `search=${encodeURIComponent(search)}&` // 3. 加入搜尋字
+
     list(query)
   }
 
   return (
     <div>
       <h1>商品列表</h1>
-      
+
       {/* 母分類 */}
       <select value={mid} onChange={handleMainChange}>
         <option value="">-- 全部母分類 --</option>
@@ -76,6 +80,13 @@ export default function ProductPage() {
           </option>
         ))}
       </select>
+
+      <input
+        type="text"
+        placeholder="搜尋關鍵字"
+        value={search}
+        onChange={e => setSearch(e.target.value)} // 2. 綁定 value 和 onChange
+      />
 
       <button onClick={handleSearch}>搜尋</button>
 
