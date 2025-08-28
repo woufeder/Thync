@@ -169,9 +169,7 @@ export default function Home() {
 				</div>
 			</section>
 
-			<footer>
 				<Footer />
-			</footer>
 		</>
 	);
 

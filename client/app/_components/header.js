@@ -122,7 +122,7 @@ export default function Header() {
                   <li className="nav-item">
                     <Link
                       href="/products"
-                      className={`nav-link${pathname === "/" ? " active" : ""}`}
+                      className={`nav-link${pathname === "/products" ? " active" : ""}`}
                     >
                       所有商品
                     </Link>

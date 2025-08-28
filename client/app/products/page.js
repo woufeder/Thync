@@ -1,8 +1,13 @@
 "use client"
 import { useSearchParams, useRouter } from "next/navigation"
+
 import { useProduct } from "@/hooks/use-product"
 import { useEffect, useState } from "react"
 import Breadcrumb from "@/app/_components/breadCrumb"
+import Header from "@/app/_components/header";
+import Footer from "@/app/_components/footer";
+import ProductSelect from "@/app/products/_components/Select";
+import Link from "next/link"
 
 export default function ProductPage() {
   const router = useRouter()
@@ -89,59 +94,47 @@ export default function ProductPage() {
 
   const filteredSubs = categories.sub.filter((s) => s.main_id == mid)
 
+  if (isLoading) {
+
+    return (
+      <div className="container">
+        Loading......
+      </div>
+    );
+  }
+
+
   return (
-    <div>
-      <h1>商品列表</h1>
-      <Breadcrumb />
+    <>
+      <Header />
+      <div className="container">
+        <Breadcrumb />
 
-      {/* 母分類 */}
-      <select value={mid} onChange={handleMainChange}>
-        <option value="">-- 全部母分類 --</option>
-        {categories.main.map((c) => (
-          <option key={c.id} value={c.id}>
-            {c.name}
-          </option>
-        ))}
-      </select>
-
-      {/* 子分類 */}
-      <select value={cid} onChange={handleSubChange}>
-        <option value="">-- 全部子分類 --</option>
-        {filteredSubs.map((s) => (
-          <option key={s.id} value={s.id}>
-            {s.name}
-          </option>
-        ))}
-      </select>
-
-      {/* 品牌 */}
-      <select value={brand} onChange={handleBrandChange}>
-        <option value="">-- 全部品牌 --</option>
-        {categories.brand.map((c) => (
-          <option key={c.id} value={c.id}>
-            {c.name}
-          </option>
-        ))}
-      </select>
-
-      {/* 搜尋 */}
-      <input
-        type="text"
-        placeholder="搜尋關鍵字"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
-      <button onClick={handleSearch}>搜尋</button>
-
-      {isLoading && <p>載入中...</p>}
+        <ProductSelect
+          categories={categories}
+          filteredSubs={filteredSubs}
+          mid={mid}
+          cid={cid}
+          brand={brand}
+          search={search}
+          setSearch={setSearch}
+          handleMainChange={handleMainChange}
+          handleSubChange={handleSubChange}
+          handleBrandChange={handleBrandChange}
+          handleSearch={handleSearch}
+        />
 
       <ul>
         {products.map((p) => (
-          <li key={p.id}>
-            {p.name} - ${p.price}
-          </li>
+          <Link key={p.id} href={`/products/${p.id}`}>
+            <li>
+              {p.name} - ${p.price}
+            </li>
+          </Link>
         ))}
       </ul>
     </div>
+    <Footer />
+    </>
   )
 }

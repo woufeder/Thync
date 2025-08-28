@@ -5,6 +5,7 @@ import Script from "next/script";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProductProvider } from "@/hooks/use-product";
 
+
 const notoSansTC = Noto_Sans_TC({
   subsets: ["latin", "cjk"],
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],

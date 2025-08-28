@@ -1,7 +1,9 @@
 "use client";
-import { use,useEffect } from "react";
-import Breadcrumb from "@/app/_components/breadCrumb";
-import { useProduct } from "@/hooks/use-product";
+import { useProduct } from "@/hooks/use-product"
+import { use, useEffect, useState } from "react"
+import Breadcrumb from "@/app/_components/breadCrumb"
+import Header from "@/app/_components/header";
+import Footer from "@/app/_components/footer";
 
 
 export default function ProductDetailPage({ params }) {
@@ -11,13 +13,26 @@ export default function ProductDetailPage({ params }) {
   useEffect(() => {
     if (pid) getOne(pid);
   }, [pid]);
-  if (isLoading) return <p>載入中...</p>;
+  if (isLoading) {
+    return (
+      <div className="container">
+        Loading......
+      </div>
+    );
+  }
+
   if (!product) return <p>沒有找到商品</p>;
 
+
+
   return (
-    <div>
-      <Breadcrumb product={product} />
-      <h1>{product.product_name}</h1>
-    </div>
+    <>
+      <Header />
+      <div>
+        <Breadcrumb product={product} />
+        <h4>{product.product_name}</h4>
+      </div>
+      <Footer />
+    </>
   );
 }

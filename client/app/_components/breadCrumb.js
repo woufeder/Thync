@@ -2,6 +2,11 @@
 import Link from "next/link"
 import { usePathname, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faHouse } from '@fortawesome/free-solid-svg-icons'
+import { faAngleRight } from '@fortawesome/free-solid-svg-icons'
+
+
 
 export default function Breadcrumb({ product }) {
   const pathname = usePathname()
@@ -33,13 +38,13 @@ export default function Breadcrumb({ product }) {
 
   // 商品頁
   if (pathname === "/products") {
-    items.push({ label: "所有列表", href: "/products" })
+    items.push({ label: "所有商品", href: "/products" })
     if (mid && mainName) items.push({ label: mainName, href: `/products?mid=${mid}` })
     if (cid && subName) items.push({ label: subName, href: `/products?mid=${mid}&cid=${cid}` })
   }
 
   if (pathname.startsWith("/products/") && product) {
-    items.push({ label: "所有列表", href: "/products" })
+    items.push({ label: "所有商品", href: "/products" })
     items.push({ label: product.main_name, href: `/products?mid=${product.main_id}` })
     items.push({ label: product.sub_name, href: `/products?mid=${product.main_id}&cid=${product.sub_id}` })
     items.push({ label: product.product_name, href: `/products/${product.id}` })
@@ -54,12 +59,15 @@ export default function Breadcrumb({ product }) {
   }
 
   return (
-    <nav aria-label="breadcrumb">
-      <ol style={{ display: "flex", gap: "8px", listStyle: "none", padding: 0 }}>
+    <nav aria-label="breadcrumb" className="breadcrumb">
+    <FontAwesomeIcon icon={faHouse} />
+      <ol>
         {items.map((item, idx) => (
           <li key={idx}>
             {item.href ? <Link href={item.href}>{item.label}</Link> : <span>{item.label}</span>}
-            {idx < items.length - 1 && <span> › </span>}
+            {idx < items.length - 1 && <span>
+             <FontAwesomeIcon icon={faAngleRight} />
+             </span>}
           </li>
         ))}
       </ol>
