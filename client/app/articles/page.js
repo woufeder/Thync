@@ -21,8 +21,8 @@ export default function ArticlesPage() {
 
     const [searchTerm, setSearchTerm] = useState('')
     const [filters, setFilters] = useState({
-        cid: '',
-        tag_id: '',
+        cid: [], // 改為陣列以支援多選
+        tag_id: [], // 改為陣列以支援多選
         search: '',
         page: 1,
         per_page: 6
@@ -42,8 +42,10 @@ export default function ArticlesPage() {
             per_page: filters.per_page
         }
         
-        if (filters.cid) params.cid = filters.cid
-        if (filters.tag_id) params.tag_id = filters.tag_id
+        // 將選中的分類ID轉為逗號分隔的字串
+        if (filters.cid.length > 0) params.cid = filters.cid.join(',')
+        // 將選中的標籤ID轉為逗號分隔的字串
+        if (filters.tag_id.length > 0) params.tag_id = filters.tag_id.join(',')
         if (searchTerm.trim()) params.search = searchTerm.trim()
         
         fetchArticles(params)
@@ -59,33 +61,63 @@ export default function ArticlesPage() {
             per_page: filters.per_page
         }
         
-        if (filters.cid) params.cid = filters.cid
-        if (filters.tag_id) params.tag_id = filters.tag_id
+        // 將選中的分類ID轉為逗號分隔的字串
+        if (filters.cid.length > 0) params.cid = filters.cid.join(',')
+        // 將選中的標籤ID轉為逗號分隔的字串
+        if (filters.tag_id.length > 0) params.tag_id = filters.tag_id.join(',')
         if (searchTerm.trim()) params.search = searchTerm.trim()
         
         fetchArticles(params)
         setFilters(prev => ({ ...prev, page: newPage }))
     }
 
-    // 篩選處理
+    // 篩選處理 - 支援多選
     const handleCategoryChange = (categoryId) => {
-        setFilters(prev => ({
-            ...prev,
-            cid: prev.cid === categoryId ? '' : categoryId
-        }))
+        setFilters(prev => {
+            const currentCategories = prev.cid || []
+            const isSelected = currentCategories.includes(categoryId)
+            
+            let newCategories
+            if (isSelected) {
+                // 如果已選中，則移除
+                newCategories = currentCategories.filter(id => id !== categoryId)
+            } else {
+                // 如果未選中，則添加
+                newCategories = [...currentCategories, categoryId]
+            }
+            
+            return {
+                ...prev,
+                cid: newCategories
+            }
+        })
     }
 
     const handleTagChange = (tagId) => {
-        setFilters(prev => ({
-            ...prev,
-            tag_id: prev.tag_id === tagId ? '' : tagId
-        }))
+        setFilters(prev => {
+            const currentTags = prev.tag_id || []
+            const isSelected = currentTags.includes(tagId)
+            
+            let newTags
+            if (isSelected) {
+                // 如果已選中，則移除
+                newTags = currentTags.filter(id => id !== tagId)
+            } else {
+                // 如果未選中，則添加
+                newTags = [...currentTags, tagId]
+            }
+            
+            return {
+                ...prev,
+                tag_id: newTags
+            }
+        })
     }
 
     const clearFilters = () => {
         setFilters({
-            cid: '',
-            tag_id: '',
+            cid: [], // 清空陣列
+            tag_id: [], // 清空陣列
             search: '',
             page: 1,
             per_page: 6
@@ -236,7 +268,7 @@ export default function ArticlesPage() {
                                     {categories.map(category => (
                                         <button 
                                             key={category.id} 
-                                            className={`filter-tag ${filters.cid === category.id ? 'active' : ''}`}
+                                            className={`filter-tag ${filters.cid.includes(category.id) ? 'active' : ''}`}
                                             onClick={() => handleCategoryChange(category.id)}
                                         >
                                             {category.name}
@@ -258,7 +290,7 @@ export default function ArticlesPage() {
                                     {tags.map(tag => (
                                         <button 
                                             key={tag.id} 
-                                            className={`filter-tag ${filters.tag_id === tag.id ? 'active' : ''}`}
+                                            className={`filter-tag ${filters.tag_id.includes(tag.id) ? 'active' : ''}`}
                                             onClick={() => handleTagChange(tag.id)}
                                         >
                                             #{tag.name}

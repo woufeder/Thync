@@ -128,10 +128,20 @@ export default function ArticlePage() {
                             {article.cover_image && (
                                 <div className="hero-image">
                                     <img 
-                                        src={article.cover_image} 
+                                        src={article.cover_image ? `/images/articles/${article.cover_image}` : '/images/articleSample.jpg'} 
                                         alt={article.title}
+                                        loading="eager"
+                                        decoding="async"
+                                        style={{
+                                            imageRendering: 'high-quality',
+                                            backfaceVisibility: 'hidden',
+                                            transform: 'translateZ(0)'
+                                        }}
                                         onError={(e) => {
                                             e.target.src = '/images/articleSample.jpg'
+                                        }}
+                                        onLoad={(e) => {
+                                            e.target.style.opacity = '1';
                                         }}
                                     />
                                     <div className="hero-overlay">
@@ -321,9 +331,14 @@ export default function ArticlePage() {
                                     {relatedArticles.slice(0, 3).map((relatedArticle) => (
                                         <article key={relatedArticle.id} className="related-article">
                                             <img 
-                                                src={relatedArticle.cover_image || '/images/articleSample.jpg'} 
+                                                src={relatedArticle.cover_image ? `/images/articles/${relatedArticle.cover_image}` : '/images/articleSample.jpg'} 
                                                 alt={relatedArticle.title} 
                                                 className="related-image"
+                                                loading="lazy"
+                                                decoding="async"
+                                                style={{
+                                                    imageRendering: 'high-quality'
+                                                }}
                                                 onError={(e) => {
                                                     e.target.src = '/images/articleSample.jpg'
                                                 }}

@@ -30,13 +30,26 @@ router.get("/", async (req, res) => {
     // 只篩選未刪除的文章（如果 is_deleted 欄位存在）
     sql += " AND (a.is_deleted = 0 OR a.is_deleted IS NULL)";
 
+    // 支援多個分類ID（用逗號分隔）
     if (cid) {
-      sql += " AND a.category_id = ?";
-      params.push(cid);
+      const categoryIds = cid.split(',').map(id => id.trim()).filter(id => id);
+      if (categoryIds.length > 0) {
+        sql += ` AND a.category_id IN (${categoryIds.map(() => '?').join(',')})`;
+        params.push(...categoryIds);
+      }
     }
+    
+    // 支援多個標籤ID（用逗號分隔）
     if (tag_id) {
-      sql += " AND EXISTS (SELECT 1 FROM article_tags at2 WHERE at2.article_id = a.id AND at2.tag_id = ?)";
-      params.push(tag_id);
+      const tagIds = tag_id.split(',').map(id => id.trim()).filter(id => id);
+      if (tagIds.length > 0) {
+        sql += ` AND EXISTS (
+          SELECT 1 FROM article_tags at2 
+          WHERE at2.article_id = a.id 
+          AND at2.tag_id IN (${tagIds.map(() => '?').join(',')})
+        )`;
+        params.push(...tagIds);
+      }
     }
     if (search) {
       sql += " AND (a.title LIKE ? OR a.content LIKE ?)";
@@ -74,13 +87,26 @@ router.get("/", async (req, res) => {
     // 同樣的篩選條件
     countSql += " AND (a.is_deleted = 0 OR a.is_deleted IS NULL)";
     
+    // 支援多個分類ID（用逗號分隔）
     if (cid) {
-      countSql += " AND a.category_id = ?";
-      countParams.push(cid);
+      const categoryIds = cid.split(',').map(id => id.trim()).filter(id => id);
+      if (categoryIds.length > 0) {
+        countSql += ` AND a.category_id IN (${categoryIds.map(() => '?').join(',')})`;
+        countParams.push(...categoryIds);
+      }
     }
+    
+    // 支援多個標籤ID（用逗號分隔）
     if (tag_id) {
-      countSql += " AND EXISTS (SELECT 1 FROM article_tags at2 WHERE at2.article_id = a.id AND at2.tag_id = ?)";
-      countParams.push(tag_id);
+      const tagIds = tag_id.split(',').map(id => id.trim()).filter(id => id);
+      if (tagIds.length > 0) {
+        countSql += ` AND EXISTS (
+          SELECT 1 FROM article_tags at2 
+          WHERE at2.article_id = a.id 
+          AND at2.tag_id IN (${tagIds.map(() => '?').join(',')})
+        )`;
+        countParams.push(...tagIds);
+      }
     }
     if (search) {
       countSql += " AND (a.title LIKE ? OR a.content LIKE ?)";

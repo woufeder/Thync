@@ -41,7 +41,7 @@ export default function ArticleCard({ article }) {
         <Link href={`/articles/${article.id}`} className="article-card-link">
             <div>
                 <img 
-                    src={article.cover_image || '/images/articleSample.jpg'} 
+                    src={article.cover_image ? `/images/articles/${article.cover_image}` : '/images/articleSample.jpg'} 
                     alt={article.title} 
                     className="image"
                     onError={(e) => {

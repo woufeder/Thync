@@ -27,6 +27,14 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    image-rendering: high-quality;
+    -ms-interpolation-mode: bicubic;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    transition: opacity 0.3s ease;
 }
 
 .hero-overlay {
@@ -905,7 +913,12 @@
     height: 160px;
     width: 100%;
     object-fit: cover;
+    object-position: center;
     border-radius: 16px 16px 0 0;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    image-rendering: high-quality;
+    -ms-interpolation-mode: bicubic;
 }
 
 .related-content {
