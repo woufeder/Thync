@@ -96,14 +96,47 @@ router.get("/categories", async (req, res) => {
 });
 
 // 獲取特定 ID 的商品
-router.get("/:id", (req, res) => {
-  // 路由參數
-  const id = req.params.id;
-  res.status(200).json({
-    status: "success",
-    data: { id },
-    message: `已 獲取 ${id} 的商品`
-  });
+router.get("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const sql = `
+      SELECT 
+        p.id,
+        p.name AS product_name,
+        m.id AS main_id, m.name AS main_name,
+        s.id AS sub_id, s.name AS sub_name,
+        b.id AS brand_id, b.name AS brand_name
+      FROM products p
+      JOIN category_main m ON p.category_main_id = m.id
+      JOIN category_sub s ON p.category_sub_id = s.id
+      JOIN brands b ON p.brand_id = b.id
+      WHERE p.is_valid = 1
+        AND p.id = ?
+      LIMIT 1
+    `;
+
+    const [rows] = await connection.execute(sql, [id]);
+
+    if (!rows.length) {
+      return res.status(404).json({
+        status: "error",
+        message: "找不到商品"
+      });
+    }
+
+    res.status(200).json({
+      status: "success",
+      data: rows[0],
+      message: "已獲取單一商品"
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: "error",
+      message: "商品細節讀取錯誤"
+    });
+  }
 });
 
 
