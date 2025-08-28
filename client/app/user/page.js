@@ -19,7 +19,9 @@ export default function UserPage() {
       <div className="container py-3">
         <h1>使用者列表頁</h1>
         <h2>沒有使用者資訊</h2>
-        <div className="btn btn-primary me-1" onClick={list}>取得使用者列表</div>
+        <div className="btn btn-primary me-1" onClick={list}>
+          取得使用者列表
+        </div>
         <Link className="btn btn-primary" href="/">
           回首頁
         </Link>
@@ -36,25 +38,28 @@ export default function UserPage() {
         <thead>
           <tr>
             <th scope="col">#</th>
-            <th scope="col">account</th>
             <th scope="col">mail</th>
-            <th scope="col">head</th>
+            <th scope="col">img</th>
           </tr>
         </thead>
         <tbody>
           {users.map((user, index) => (
             <tr key={`user${index}`}>
               <th scope="row">{index + 1}</th>
-              <td>{user.account}</td>
               <td>{user.mail}</td>
-              <td>
-                <Link href={`/user/${user.account}`}>
-                  <Image src={user.head} width={50} height={50} style={{ objectFit: "contain" }} alt="" />
+              {/* <td>
+                <Link href={`/user/${user.mail}`}>
+                  <Image
+                    src={user.img}
+                    width={50}
+                    height={50}
+                    style={{ objectFit: "contain" }}
+                    alt=""
+                  />
                 </Link>
-              </td>
+              </td> */}
             </tr>
           ))}
-
         </tbody>
       </table>
       {/* <div className="btn btn-primary me-1" onClick={list}>取得使用者列表</div> */}

@@ -91,6 +91,35 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const add = async (name, mail, password) => {
+    console.log(`在 use-auth.js 裡面，註冊帳號: ${mail} 密碼: ${password}`);
+    const API = "http://localhost:3007/api/users";
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("mail", mail);
+    formData.append("password", password);
+
+    try {
+      const res = await fetch(API, {
+        method: "POST",
+        body: formData,
+      });
+      const result = await res.json();
+      console.log(result);
+      if (result.status === "success") {
+        console.log("註冊成功");
+        alert(result.message);
+        router.replace("/user/login");
+      } else {
+        console.log("註冊失敗");
+        alert(result.message);
+      }
+    } catch (error) {
+      console.log(`註冊失敗: ${error.message}`);
+      alert(error.message);
+    }
+  };
+
   const list = async () => {
     const API = "http://localhost:3007/api/users";
 
@@ -111,12 +140,14 @@ export function AuthProvider({ children }) {
   };
 
   // 沒有登入不能夠觀看2
+  // 路由保護
   useEffect(() => {
     if (!isLoading && !user && protectedRoutes.includes(pathname)) {
       router.replace(loginRoute);
     }
   }, [isLoading, user, pathname]);
 
+  // Token 驗證
   useEffect(() => {
     const API = "http://localhost:3007/api/users/status";
     const token = localStorage.getItem(appKey);
@@ -153,7 +184,7 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, login, logout, isLoading, list, users }}
+      value={{ user, login, logout, isLoading, list, users, add }}
     >
       {/* 這裡的第一個大括號表示要寫程式，第二個大括號表示要寫物件 */}
 

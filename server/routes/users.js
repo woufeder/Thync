@@ -146,7 +146,7 @@ router.post("/", upload.none(), async (req, res) => {
       status: "success",
       // 不要回傳敏感資料
       data: {},
-      message: "新增一個使用者 成功",
+      message: "註冊成功",
     });
   } catch (error) {
     console.log(error);
