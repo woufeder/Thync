@@ -1,0 +1,176 @@
+.container {
+  padding-bottom: 150px;
+}
+
+.cartContainer {
+  display: flex;
+  gap: 16px;
+  box-shadow: 0 4px 4px rgba(39, 74, 120, .1);
+}
+
+.cartMain {
+  position: relative;
+  flex: 3;
+  background: #F7F6F2;
+  border-radius: 6px;
+  box-shadow: 0 4px 4px rgba(39, 74, 120, .4);
+}
+
+.cartMain::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 5px;
+  width: 100%;
+  border-radius: 6px 6px 0 0;
+  background: linear-gradient(90deg, #88A2BF, #375177);
+  z-index: 1;
+}
+
+/* 商品表格 */
+.cartTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cartTable th,
+.cartTable td {
+  color: #375177;
+  padding: 24px 12px;
+  border-bottom: 1px solid #eee;
+  text-align: center;
+}
+
+.productInfo {
+  font-weight: 600;
+  padding: 20px 0;
+  min-height: 130px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.productInfo img {
+  width: 150px;
+  border-radius: 4px;
+}
+
+.qtyControl button {
+  width: 40px;
+  height: 40px;
+  background-color: #F7F6F2;
+  border: none;
+  color: #375177;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btnRemove {
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* 折扣碼 */
+.couponBox {
+  padding: 16px 12px;
+  display: flex;
+  justify-content: flex-end;
+  max-width: 300px;
+  margin-left: auto;
+}
+
+.inputCoupon {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #88A2BF;
+  border-right: none;
+  border-radius: 4px 0 0 4px;
+  font-size: 14px;
+  background-color: #F7F6F2;
+}
+
+.btnUse {
+  padding: 8px 16px;
+  border: 1px solid #88A2BF;
+  border-radius: 0 4px 4px 0;
+  background: #375177;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* 結帳明細 */
+.cartSummary {
+  position: relative;
+  background: #F7F6F2;
+  border-radius: 6px;
+  width: 22%;
+  box-shadow: 0 4px 4px rgba(39, 74, 120, .4);
+  overflow: hidden;
+}
+
+.cartSummary::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, #88A2BF, #375177);
+  border-radius: 6px 6px 0 0;
+  z-index: 1;
+}
+
+.cartSummary h3 {
+  margin: 0 0 12px;
+  padding: 20px 8px;
+  text-align: center;
+  color: #375177;
+  font-weight: 700;
+  background: #F7F6F2;
+  box-shadow: 0 4px 4px rgba(39, 74, 120, .15);
+}
+
+.summaryContainer {
+  padding: 20px 18px;
+}
+
+.cartSummary ul {
+  list-style: none;
+  margin: 0;
+  padding: 8px 4px 0;
+}
+
+.cartSummary li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 4px;
+  color: #375177;
+}
+
+.cartSummary .total .right {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+  gap: 4px;
+}
+
+.btnCheckout {
+  width: 50%;
+  background: #e74c3c;
+  color: #fff;
+  border: 0;
+  margin: 90px auto 0 auto;
+  padding: 12px 0;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: block;
+}
