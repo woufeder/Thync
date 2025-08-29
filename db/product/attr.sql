@@ -1,3 +1,4 @@
+-- Active: 1755956957471@@127.0.0.1@3306@restful
 CREATE TABLE attributes (
     id INT AUTO_INCREMENT PRIMARY KEY,  -- 屬性 ID
     name VARCHAR(100) NOT NULL,         -- 屬性名稱
@@ -76,6 +77,7 @@ CREATE TABLE products_attribute_values (
     FOREIGN KEY (option_id) REFERENCES attribute_option(id)
 );
 
+DROP TABLE products_attribute_values;
 
 SELECT 
     pav.product_id,
@@ -87,3 +89,7 @@ JOIN products p ON pav.product_id = p.id
 JOIN attributes a ON pav.attribute_id = a.id
 JOIN attribute_option ao ON pav.option_id = ao.id
 LIMIT 20;
+
+
+INSERT INTO attribute_option (attribute_id, value) VALUES
+(14, '單指向'), (14, '藍牙'),(12, '2.4GHz');
