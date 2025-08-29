@@ -8,7 +8,7 @@ import Script from "next/script";
 import styles from "@/styles/add.css";
 
 export default function UserAddPage() {
-  const [name, setName] = useState("");
+  const [account, setAccount] = useState("");
   const [mail, setMail] = useState("");
   const [password, setPassword] = useState("");
   const [statement, setStatement] = useState(false);
@@ -25,8 +25,8 @@ export default function UserAddPage() {
   }, [lottieLoaded]);
 
   const onclick = () => {
-    console.log("Name:", name, "Mail:", mail, "Password:", password);
-    add(name, mail, password);
+    console.log("account:", account, "Mail:", mail, "Password:", password);
+    add(account, mail, password);
   };
 
   // Lottie 動畫初始化
@@ -179,19 +179,19 @@ export default function UserAddPage() {
                   onclick();
                 }}
               >
-                {/* 使用者名稱 */}
+                {/* 帳號 */}
                 <div className="field">
-                  <label htmlFor="user-name" className="label">
-                    使用者名稱
+                  <label htmlFor="account" className="label">
+                    帳號
                   </label>
                   <input
-                    id="user-name"
-                    name="name"
+                    id="account"
+                    name="account"
                     type="text"
                     className="input"
-                    autoComplete="name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    autoComplete="account"
+                    value={account}
+                    onChange={(e) => setAccount(e.target.value)}
                     required
                   />
                 </div>

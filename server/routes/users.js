@@ -106,10 +106,10 @@ router.get("/:account", async (req, res) => {
 router.post("/", upload.none(), async (req, res) => {
   try {
     // 取得表單中的欄位內容
-    const { name, mail, password } = req.body;
+    const { account, mail, password } = req.body;
 
     // 檢查必填
-    if (!name || !mail || !password) {
+    if (!account || !mail || !password) {
       // 設定 Error 物件
       const err = new Error("請提供完整使用者資訊"); // Error 物件只能在小括號中自訂錯誤訊息
       err.code = 400; // 利用物件的自訂屬性把 HTTP 狀態碼帶到 catch
@@ -118,13 +118,28 @@ router.post("/", upload.none(), async (req, res) => {
       throw err;
     }
 
+    // 檢查 account 有沒有使用過
+    const sqlCheck1 = "SELECT * FROM `users` WHERE `account` = ?;";
+    let user = await connection
+      .execute(sqlCheck1, [account])
+      .then(([result]) => {
+        return result[0];
+      });
+    if (user) {
+      const err = new Error("提供的帳號已被使用");
+      err.code = 400;
+      err.status = "fail";
+      err.message = "帳號已被使用";
+      throw err;
+    }
+
     // 檢查 mail 有沒有使用過
-    const sqlCheck1 = "SELECT * FROM `users` WHERE `mail` = ?;";
-    let user = await connection.execute(sqlCheck1, [mail]).then(([result]) => {
+    const sqlCheck2 = "SELECT * FROM `users` WHERE `mail` = ?;";
+    user = await connection.execute(sqlCheck2, [mail]).then(([result]) => {
       return result[0];
     });
     if (user) {
-      const err = new Error("提供的註冊內容已被使用1");
+      const err = new Error("提供信箱已被使用");
       err.code = 400;
       err.status = "fail";
       err.message = "信箱已被使用";
@@ -139,8 +154,8 @@ router.post("/", upload.none(), async (req, res) => {
 
     // 建立 SQL 語法
     const sql =
-      "INSERT INTO `users` (name, mail, password, img) VALUES (?, ?, ?, ?);";
-    await connection.execute(sql, [name, mail, hashedPassword, img]);
+      "INSERT INTO `users` (account, mail, password, img) VALUES (?, ?, ?, ?);";
+    await connection.execute(sql, [account, mail, hashedPassword, img]);
 
     res.status(201).json({
       status: "success",

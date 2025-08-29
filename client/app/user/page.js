@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 import UserBtn from "../_components/userBtn";
 import Header from "../_components/header";
+import Sidebar from "../_components/user/sidebar";
 
 export default function UserPage() {
   const { list, users } = useAuth();
@@ -32,7 +33,8 @@ export default function UserPage() {
   return (
     <div className="container py-3">
       <Header />
-      <UserBtn />
+      {/* <UserBtn /> */}
+      <Sidebar />
       <h1>使用者列表頁</h1>
       <table className="table">
         <thead>

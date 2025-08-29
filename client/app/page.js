@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { useAuth } from "@/hooks/use-auth";
 
 import Image from "next/image";
 import styles from "@/styles/index.css";
@@ -15,7 +14,6 @@ export default function Home() {
   const [isMobile, setIsMobile] = useState(false);
   const [showHeader, setShowHeader] = useState(false);
   const topImgRef = useRef(null);
-  const { user, isLoading } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -41,8 +39,6 @@ export default function Home() {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-
-  if (isLoading) return <div>Loading...</div>;
 
   const eventData = [
     {
@@ -215,10 +211,7 @@ export default function Home() {
         </div>
       </section>
 
-			<footer>
-				<Footer />
-			</footer>
-		</>
-	);
-
+      <Footer />
+    </>
+  );
 }

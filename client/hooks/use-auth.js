@@ -91,11 +91,11 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const add = async (name, mail, password) => {
-    console.log(`在 use-auth.js 裡面，註冊帳號: ${mail} 密碼: ${password}`);
+  const add = async (account, mail, password) => {
+    console.log(`在 use-auth.js 裡面，註冊帳號: ${account} 密碼: ${password}`);
     const API = "http://localhost:3007/api/users";
     const formData = new FormData();
-    formData.append("name", name);
+    formData.append("account", account);
     formData.append("mail", mail);
     formData.append("password", password);
 
