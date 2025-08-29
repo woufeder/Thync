@@ -17,6 +17,12 @@ export default function UserAddPage() {
   const [lottieLoaded, setLottieLoaded] = useState(false);
   const animationRef = useRef(null);
 
+  useEffect(() => {
+    if (lottieLoaded || window.lottie) {
+      initializeLottie();
+    }
+  }, [lottieLoaded]);
+
   const onclick = () => {
     console.log("Name:", name, "Mail:", mail, "Password:", password);
     add(name, mail, password);
@@ -155,12 +161,12 @@ export default function UserAddPage() {
               <img src="/images/users/LOGO_3.png" alt="" />
               <h1 className="register-title">會員註冊</h1>
               <div className="toggle">
-                <a href="#" className="toggle-link">
+                <Link href="/user/login" className="toggle-link">
                   登入
-                </a>
-                <a href="#" className="toggle-active">
+                </Link>
+                <Link href="/user/add" className="toggle-active">
                   註冊
-                </a>
+                </Link>
               </div>
             </header>
             <main>
@@ -258,9 +264,9 @@ export default function UserAddPage() {
 
                 <p className="signin">
                   已經有帳號？{" "}
-                  <a href="#" className="link2">
+                  <Link href="/user/login" className="link2">
                     前往登入！
-                  </a>
+                  </Link>
                 </p>
 
                 <button type="button" className="btn-google google-pc">
