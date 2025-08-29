@@ -10,6 +10,7 @@ import styles from "@/styles/login.css";
 export default function UserLoginPage() {
   const [mail, setMail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const { login, user, logout, isLoading } = useAuth();
   const router = useRouter();
   const [lottieLoaded, setLottieLoaded] = useState(false);
@@ -207,13 +208,20 @@ export default function UserLoginPage() {
                     <input
                       id="password"
                       name="password"
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       className="input"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
                     />
-                    <i className="fa-solid fa-eye-slash"></i>
+                    <i
+                      className={
+                        showPassword
+                          ? "fa-solid fa-eye"
+                          : "fa-solid fa-eye-slash"
+                      }
+                      onClick={() => setShowPassword((prev) => !prev)}
+                    ></i>
                   </div>
                 </div>
 

@@ -12,6 +12,7 @@ export default function UserAddPage() {
   const [mail, setMail] = useState("");
   const [password, setPassword] = useState("");
   const [statement, setStatement] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { user, isLoading, add } = useAuth();
   const router = useRouter();
   const [lottieLoaded, setLottieLoaded] = useState(false);
@@ -221,7 +222,7 @@ export default function UserAddPage() {
                     <input
                       id="password"
                       name="password"
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       className="input"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -230,7 +231,14 @@ export default function UserAddPage() {
                       title="密碼需要至少6位，包含字母和數字"
                       required
                     />
-                    <i className="fa-solid fa-eye-slash"></i>
+                    <i
+                      className={
+                        showPassword
+                          ? "fa-solid fa-eye"
+                          : "fa-solid fa-eye-slash"
+                      }
+                      onClick={() => setShowPassword((prev) => !prev)}
+                    ></i>
                   </div>
                 </div>
 
