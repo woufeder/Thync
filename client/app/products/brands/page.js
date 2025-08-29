@@ -19,10 +19,8 @@ export default function BrandsPage() {
           <BrandBox />
         </div>
       </div>
-
-      <footer>
-        <Footer />
-      </footer>
+      
+      <Footer />
     </>
   )
 }
