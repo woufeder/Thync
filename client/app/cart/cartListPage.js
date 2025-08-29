@@ -29,7 +29,6 @@ export default function CartListPage({ items, recommend }) {
                 />
             </div>
 
-            <RecommendList items={recommend} />
         </main>
     );
 }
