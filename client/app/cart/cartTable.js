@@ -1,3 +1,4 @@
+import "./cart.css";
 export default function CartTable({ items, onQtyChange, onRemove }) {
   return (
     <table className="cart-table">

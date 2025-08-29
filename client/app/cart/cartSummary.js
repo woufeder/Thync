@@ -1,3 +1,4 @@
+import "./cart.css";
 export default function CartSummary({ total, discount, shipping, count }) {
   return (
     <div className="cart-summary">

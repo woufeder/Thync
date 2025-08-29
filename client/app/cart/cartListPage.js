@@ -8,19 +8,16 @@ import "./cart.css";
 export default function CartListPage({ items, recommend }) {
     return (
         <main className="container">
-            <CartHeader onBack={() => history.back()} />
-            <CartSteps active={0} />
-
-            <div className="cartContainer">
-                <div className="cartMain">
+            <div className="cart-container">
+                <div className="cart-main">
                     <CartTable items={items} />
-                    <div className="couponBox">
+                    <div className="coupon-box">
                         <input
-                            className="inputCoupon"
+                            className="inputcoupon"
                             type="text"
                             placeholder="輸入折扣碼"
                         />
-                        <button className="btnUse">使用</button>
+                        <button className="btn-use">使用</button>
                     </div>
                 </div>
 
