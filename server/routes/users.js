@@ -234,6 +234,7 @@ router.post("/login", upload.none(), async (req, res) => {
     );
 
     const newUser = {
+      account: user.account,
       mail: user.mail,
       img: user.img,
     };
@@ -322,6 +323,7 @@ router.post("/status", checkToken, async (req, res) => {
     );
 
     const newUser = {
+      account: user.account,
       mail: user.mail,
       img: user.img,
     };

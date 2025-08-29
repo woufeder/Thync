@@ -143,7 +143,7 @@ export function AuthProvider({ children }) {
   // 路由保護
   useEffect(() => {
     if (!isLoading && !user && protectedRoutes.includes(pathname)) {
-      router.replace(loginRoute);
+      window.location.href = loginRoute;
     }
   }, [isLoading, user, pathname]);
 

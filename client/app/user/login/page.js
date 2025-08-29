@@ -19,7 +19,7 @@ export default function UserLoginPage() {
   // 跳轉會員中心
   useEffect(() => {
     if (!isLoading && user) {
-      window.location.href = "/";
+      window.location.href = "/user";
     }
   }, [user, router, isLoading]);
 
@@ -31,7 +31,6 @@ export default function UserLoginPage() {
 
   const onclick = async () => {
     await login(mail, password);
-    // 不做 router.replace
   };
 
   // Lottie 動畫初始化
