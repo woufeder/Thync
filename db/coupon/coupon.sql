@@ -1,4 +1,4 @@
-use my_project;
+use restful;
 
 CREATE table coupon (
     id int PRIMARY KEY AUTO_INCREMENT,
@@ -33,3 +33,4 @@ WHERE (
     AND is_active = 1;
 
 SHOW COLUMNS FROM coupon LIKE 'expires_at';
+

@@ -1,0 +1,28 @@
+.cartEmpty {
+  padding: 200px 20px;
+  text-align: center;
+  margin: 64px auto;
+}
+
+.cartEmptyTitle {
+  font-size: 20px;
+  color: #375177;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.cartEmptyDesc {
+  color: #888;
+  font-size: 15px;
+  margin-bottom: 24px;
+}
+
+.cartEmptyBtn {
+  background: #95AFCB;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 13px 55px;
+  font-size: 16px;
+  cursor: pointer;
+}
