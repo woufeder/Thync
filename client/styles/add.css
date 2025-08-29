@@ -1,12 +1,12 @@
 /* 1920*1080 */
 /* 14 pro max */
 :root {
-  --black: #101c35;
-  --bg: #f6f4ee;
+  --black: var(--Black);
+  --bg: var(--Secondary100);
 
-  --primary-300: #94afca;
+  --primary-300: var(--Primary300);
 
-  --secondary: #8e7471;
+  --secondary: var(--Secondary800);
 
   --grey-300: #878784;
   --grey-500: #4f4e4a;
@@ -19,7 +19,6 @@
 }
 
 body {
-  font-family: "Noto Sans TC", sans-serif;
   width: 100%;
   height: 100%;
   background: var(--bg);
@@ -52,6 +51,7 @@ img {
   width: 129px;
 }
 header h1 {
+  font-size: 3rem;
   align-self: center;
   background: linear-gradient(92deg, #304a6f 0%, #94afca 100%);
   background-clip: text;

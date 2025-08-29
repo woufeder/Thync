@@ -15,15 +15,22 @@ export default function UserLoginPage() {
   const [lottieLoaded, setLottieLoaded] = useState(false);
   const animationRef = useRef(null);
 
+  // 跳轉會員中心
   useEffect(() => {
-    if (user) {
-      router.replace("/");
+    if (!isLoading && user) {
+      window.location.href = "/";
     }
-  }, [user, router]);
+  }, [user, router, isLoading]);
 
-  const onclick = () => {
-    console.log("Mail:", mail, "Password:", password);
-    login(mail, password);
+  useEffect(() => {
+    if (lottieLoaded || window.lottie) {
+      initializeLottie();
+    }
+  }, [lottieLoaded]);
+
+  const onclick = async () => {
+    await login(mail, password);
+    // 不做 router.replace
   };
 
   // Lottie 動畫初始化
@@ -157,12 +164,12 @@ export default function UserLoginPage() {
               <img src="/images/users/LOGO_3.png" alt="" />
               <h1 className="register-title">會員登入</h1>
               <div className="toggle">
-                <a href="#" className="toggle-active">
+                <Link href="/user/login" className="toggle-active">
                   登入
-                </a>
-                <a href="#" className="toggle-link">
+                </Link>
+                <Link href="/user/add" className="toggle-link">
                   註冊
-                </a>
+                </Link>
               </div>
             </header>
             <main>
@@ -224,7 +231,7 @@ export default function UserLoginPage() {
 
                 <p className="signin">
                   還不是會員？{" "}
-                  <a href="#" className="link2">
+                  <a href="/user/add" className="link2">
                     立即註冊！
                   </a>
                 </p>

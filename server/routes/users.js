@@ -48,23 +48,23 @@ router.get("/search", (req, res) => {
 });
 
 // 獲取特定 ID 使用者
-router.get("/:id", async (req, res) => {
+router.get("/:account", async (req, res) => {
   // 路由參數
   try {
     // 動態路徑會被整理到 req 中的 params 裡
-    const mail = req.params.id;
+    const account = req.params.account;
     // 業務邏輯錯誤需手動拋出
-    if (!mail) {
+    if (!account) {
       const err = new Error("請提供使用者 ID");
       err.code = 400;
       err.status = "fail";
       throw err;
     }
 
-    const sqlCheck1 = "SELECT * FROM `users` WHERE `mail` = ?;";
+    const sqlCheck1 = "SELECT * FROM `users` WHERE `account` = ?;";
     let user = await connection
-      // [mail]代表？
-      .execute(sqlCheck1, [mail])
+      // [account]代表？
+      .execute(sqlCheck1, [account])
       // [result] 直接取得第一個元素
       .then(([result]) => {
         // 取得第一筆資料的物件
