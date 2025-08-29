@@ -6,7 +6,7 @@ import { useEffect, useState } from "react"
 import Breadcrumb from "@/app/_components/breadCrumb"
 import Header from "@/app/_components/header";
 import Footer from "@/app/_components/footer";
-import ProductSelect from "@/app/products/_components/Select";
+import ProductSelect from "@/app/_components/products/Select";
 import Link from "next/link"
 
 export default function ProductPage() {
