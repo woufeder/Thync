@@ -3,17 +3,17 @@
 export default function Footer() {
 
   return (
-    <>
+    <footer>
       <div className="row">
         <div className="col">
           <h5>
             商品
           </h5>
-          <a href="#">鍵盤｜鍵帽｜鍵盤周邊</a>
-          <a href="#">滑鼠｜鼠墊｜滑鼠周邊</a>
-          <a href="#">耳機｜喇叭｜音訊設備</a>
-          <a href="#">機殼｜電源｜散熱設備</a>
-          <a href="#">螢幕｜視訊｜相關設備</a>
+          <a href="http://localhost:3000/products?mid=1">鍵盤｜鍵帽｜鍵盤周邊</a>
+          <a href="http://localhost:3000/products?mid=2">滑鼠｜鼠墊｜滑鼠周邊</a>
+          <a href="http://localhost:3000/products?mid=3">耳機｜喇叭｜音訊設備</a>
+          <a href="http://localhost:3000/products?mid=4">機殼｜電源｜散熱設備</a>
+          <a href="http://localhost:3000/products?mid=5">螢幕｜視訊｜相關設備</a>
         </div>
         <div className="col">
           <h5>
@@ -37,6 +37,6 @@ export default function Footer() {
       <div className="copyright">
         <p>© 2025 Thync. All Rights Reserved.</p>
       </div>
-    </>
+    </footer>
   );
 }
