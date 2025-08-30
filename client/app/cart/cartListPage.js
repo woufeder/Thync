@@ -3,7 +3,6 @@ import CartSteps from "@/app/_components/cart/cartSteps";
 import RecommendList from "@/app/_components/cart/recommendList";
 import CartTable from "./cartTable";
 import CartSummary from "./cartSummary";
-import "./cart.css";
 
 export default function CartListPage({ items, recommend }) {
     return (
