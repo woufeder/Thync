@@ -6,15 +6,15 @@ import CartSteps from "@/app/_components/cart/cartSteps";
 import RecommendList from "@/app/_components/cart/recommendList";
 import Header from "@/app/_components/header";
 import Footer from "@/app/_components/footer";
-import "./ConfirmPage.css";
+import "./confirm.css";
 
-    // 推薦商品假資料
-    const recommend = Array(9).fill({
-        img: "https://picsum.photos/id/1058/600/400",
-        title: "A4tech 雙飛燕 Bloody S98 飛行者 RGB機械式鍵盤 熱插拔 紅軸 英文",
-        price: "$2390",
-    });
-
+// 推薦商品假資料
+const recommend = Array(9).fill({
+    img: "https://picsum.photos/id/1058/600/400",
+    title: "A4tech 雙飛燕 Bloody S98 飛行者 RGB機械式鍵盤 熱插拔 紅軸 英文",
+    price: "$2390",
+});
+export default function Page() {
     return (
         <>
             <header>
@@ -125,10 +125,18 @@ import "./ConfirmPage.css";
 
                         {/* 底部操作 */}
                         <div className="actions">
-                            <button className="btn btn-secondary" type="button">
+                            <button
+                                className="btn btn-secondary"
+                                type="button"
+                                onClick={() => window.location.href = "/cart/checkout"}
+                            >
                                 回到上一頁
                             </button>
-                            <button className="btn btn-primary" type="button">
+                            <button
+                                className="btn btn-primary"
+                                type="button"
+                                onClick={() => window.location.href = "/cart/success"}
+                            >
                                 送出訂單
                             </button>
                         </div>
@@ -162,5 +170,4 @@ import "./ConfirmPage.css";
             </footer>
         </>
     );
-// ...existing code...
-
+}

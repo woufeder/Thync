@@ -6,15 +6,16 @@ import CartSteps from "@/app/_components/cart/cartSteps";
 import RecommendList from "@/app/_components/cart/recommendList";
 import Header from "@/app/_components/header";
 import Footer from "@/app/_components/footer";
-import "./OrderSuccessPage.css";
+import "./success.css";
 
-    // 推薦商品假資料
-    const recommend = Array(9).fill({
-        img: "https://picsum.photos/id/1058/600/400",
-        title: "A4tech 雙飛燕 Bloody S98 飛行者 RGB機械式鍵盤 熱插拔 紅軸 英文",
-        price: "$2390",
-    });
+// 推薦商品假資料
+const recommend = Array(9).fill({
+    img: "https://picsum.photos/id/1058/600/400",
+    title: "A4tech 雙飛燕 Bloody S98 飛行者 RGB機械式鍵盤 熱插拔 紅軸 英文",
+    price: "$2390",
+});
 
+export default function Page() {
     return (
         <>
             <header>
@@ -29,9 +30,13 @@ import "./OrderSuccessPage.css";
                         <div className="cartIcon">
                             <i className="fas fa-shopping-cart"></i> 購物車
                         </div>
-                        <div className="backtomain">
+                        <button
+                            className="backtomain"
+                            type="button"
+                            onClick={() => window.location.href = "/products"}
+                        >
                             <i className="fa-solid fa-turn-down"></i>回上頁
-                        </div>
+                        </button>
                     </div>
 
                     <div className="cart-steps">
@@ -60,8 +65,20 @@ import "./OrderSuccessPage.css";
                         <div className="successMessage">
                             <div className="thanks">感謝您的訂購！</div>
                             <div className="orderNumber">訂單編號：</div>
-                            <button className="product">繼續購物</button>
-                            <button className="order">查看訂單狀態</button>
+                            <button
+                                className="product"
+                                type="button"
+                                onClick={() => window.location.href = "/products"}
+                            >
+                                繼續購物
+                            </button>
+                            <button
+                                className="order"
+                                type="button"
+                                onClick={() => window.location.href = "/user/orders"}
+                            >
+                                查看訂單狀態
+                            </button>
                         </div>
                     </div>
 
@@ -93,4 +110,5 @@ import "./OrderSuccessPage.css";
             </footer>
         </>
     );
+}
 // ...existing code...
