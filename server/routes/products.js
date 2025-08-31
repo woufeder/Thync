@@ -11,21 +11,23 @@ const router = express.Router();
 // route(s) 路由規則(們)
 // routers (路由物件器)
 // 獲取所有商品
+// 獲取所有商品
 router.get("/", async (req, res) => {
   try {
-    const { mid, cid, brand_id, search, sort, order, page = 1, per_page = 1300 } = req.query;
+    const { mid, cid, brand_id, search, sort, order, page = 1, per_page = 1300, options } = req.query;
+
     let sql = `
-  SELECT 
-    products.*,
-    category_main.name AS category_main_name,
-    category_sub.name AS category_sub_name,
-    brands.name AS brand_name
-  FROM products
-  JOIN category_main ON products.category_main_id = category_main.id
-  JOIN category_sub ON products.category_sub_id = category_sub.id
-  JOIN brands ON products.brand_id = brands.id
-  WHERE products.is_valid = 1
-`;
+      SELECT 
+        products.*,
+        category_main.name AS category_main_name,
+        category_sub.name AS category_sub_name,
+        brands.name AS brand_name
+      FROM products
+      JOIN category_main ON products.category_main_id = category_main.id
+      JOIN category_sub ON products.category_sub_id = category_sub.id
+      JOIN brands ON products.brand_id = brands.id
+      WHERE products.is_valid = 1
+    `;
     let params = [];
 
     if (mid) {
@@ -37,12 +39,28 @@ router.get("/", async (req, res) => {
       params.push(cid);
     }
     if (brand_id) {
-      sql += " AND products.brand_id = ?";
-      params.push(brand_id);
+      const ids = brand_id.split(",") // "1,2,3" → ["1","2","3"]
+      sql += ` AND products.brand_id IN (${ids.map(() => "?").join(",")})`
+      params.push(...ids)
     }
     if (search) {
       sql += " AND products.name LIKE ?";
       params.push(`%${search}%`);
+    }
+
+    // 🆕 屬性多對多篩選 (options=1,2,3)
+    if (options) {
+      const optionIds = options.split(","); // "1,2,3" → ["1","2","3"]
+      sql += `
+        AND products.id IN (
+          SELECT product_id
+          FROM products_attribute_values
+          WHERE option_id IN (${optionIds.map(() => "?").join(",")})
+          GROUP BY product_id
+          HAVING COUNT(DISTINCT option_id) = ${optionIds.length}
+        )
+      `;
+      params.push(...optionIds);
     }
 
     // 排序（只允許 price，避免 SQL injection）
@@ -63,7 +81,6 @@ router.get("/", async (req, res) => {
       message: "已 獲取所有商品"
     });
   } catch (error) {
-    // 補獲錯誤
     console.log(error);
     const statusCode = error.code ?? 401;
     const statusText = error.status ?? "error";
@@ -91,7 +108,24 @@ router.get("/categories", async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ status: "error", message: "DB error" });
+    res.status(500).json({ status: "error", message: "商品分類取得錯誤" });
+  }
+});
+
+// 商品屬性的 API
+router.get("/attributes", async (req, res) => {
+  try {
+    // 同時查屬性、值
+    const [attributes] = await connection.execute("SELECT id, name, main_id FROM attributes WHERE 1");
+    const [options] = await connection.execute("SELECT id, attribute_id,value FROM attribute_option WHERE 1");
+    res.json({
+      status: "success",
+      attributes,
+      options
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ status: "error", message: "商品屬性取得錯誤" });
   }
 });
 

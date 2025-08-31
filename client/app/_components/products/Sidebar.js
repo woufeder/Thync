@@ -1,13 +1,23 @@
 "use client"
 
-import Image from "next/image";
-import Link from "next/link";
-
-export default function ProductSelect({ categories, filteredSubs, mid, cid, brands, search, setSearch, handleMainChange, handleSubChange, handleBrandChange, handleSearch }) {
-
-
+export default function Sidebar({
+  categories,
+  filteredSubs,
+  filteredAttrs,
+  mid,
+  cid,
+  brands,
+  search,
+  options,
+  handleMainChange,
+  handleSubChange,
+  handleBrandChange,
+  handleSearch,
+  handleOptionChange,
+  setSearch
+}) {
   return (
-    <>
+    <aside>
       {/* 母分類 */}
       <select value={mid} onChange={handleMainChange}>
         <option value="">-- 全部母分類 --</option>
@@ -41,18 +51,24 @@ export default function ProductSelect({ categories, filteredSubs, mid, cid, bran
         </label>
       ))}
 
+      {/* 屬性 */}
+      {filteredAttrs.map(attr => (
+        <div key={attr.id}>
+          <strong>{attr.name}</strong>
+          {attr.options.map(opt => (
+            <label key={opt.id}>
+              <input
+                type="checkbox"
+                value={opt.id}
+                checked={options.includes(String(opt.id))}
+                onChange={handleOptionChange}
+              />
+              {opt.value}
+            </label>
+          ))}
+        </div>
+      ))}
 
-      {/* 搜尋 */}
-      <input
-        type="text"
-        placeholder="搜尋關鍵字"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
-      <button onClick={handleSearch}>搜尋</button>
-
-
-    </>
-
+    </aside>
   )
 }

@@ -6,7 +6,7 @@ import { useEffect, useState } from "react"
 import Breadcrumb from "@/app/_components/breadCrumb"
 import Header from "@/app/_components/header";
 import Footer from "@/app/_components/footer";
-import ProductSelect from "@/app/_components/products/Select";
+import Sidebar from "@/app/_components/products/Sidebar";
 import Link from "next/link"
 
 export default function ProductPage() {
@@ -14,12 +14,26 @@ export default function ProductPage() {
   const searchParams = useSearchParams()
   const { products, list, isLoading } = useProduct()
   const [categories, setCategories] = useState({ main: [], sub: [], brand: [] })
+  // 屬性（包含 options）
+  const [attributes, setAttributes] = useState([])
+  // 使用者勾選的 options id
+  const [options, setOptions] = useState([])
 
   // 從 URL 讀取條件
   const mid = searchParams.get("mid") || ""
   const cid = searchParams.get("cid") || ""
-  const brand = searchParams.get("brand_id") || ""
+  const [brands, setBrands] = useState([])
   const keyword = searchParams.get("search") || ""
+
+
+  useEffect(() => {
+    const brandParam = searchParams.get("brand_id")
+    if (brandParam) {
+      setBrands(brandParam.split(","))   // "1,2,3" → ["1","2","3"]
+    } else {
+      setBrands([])
+    }
+  }, [searchParams])
 
   // 抓分類清單
   useEffect(() => {
@@ -36,6 +50,23 @@ export default function ProductPage() {
     }
     fetchCategories()
   }, [])
+
+  // 抓取產品屬性
+  useEffect(() => {
+    async function fetchAttributes() {
+      const res = await fetch("http://localhost:3007/api/products/attributes")
+      const result = await res.json()
+      if (result.status === "success") {
+        const attrs = result.attributes.map(attr => ({
+          ...attr,
+          options: result.options.filter(opt => opt.attribute_id === attr.id)
+        }))
+        setAttributes(attrs)
+      }
+    }
+    fetchAttributes()
+  }, [])
+
 
   // URL 變動時，自動打 API
   useEffect(() => {
@@ -70,27 +101,27 @@ export default function ProductPage() {
 
   // 品牌
   const handleBrandChange = (e) => {
-    const params = new URLSearchParams(searchParams.toString())
     const value = e.target.value
-    if (value) {
-      params.set("brand_id", value)
+    let newBrands = []
+
+    if (e.target.checked) {
+      newBrands = [...brands, value]
+    } else {
+      newBrands = brands.filter(id => id !== value)
+    }
+
+    setBrands(newBrands)
+
+    // 更新 URL
+    const params = new URLSearchParams(searchParams.toString())
+    if (newBrands.length > 0) {
+      params.set("brand_id", newBrands.join(","))
     } else {
       params.delete("brand_id")
     }
     router.push(`/products?${params.toString()}`)
   }
 
-  // 搜尋
-  const [search, setSearch] = useState(keyword)
-  const handleSearch = () => {
-    const params = new URLSearchParams(searchParams.toString())
-    if (search) {
-      params.set("search", search)
-    } else {
-      params.delete("search")
-    }
-    router.push(`/products?${params.toString()}`)
-  }
 
   const filteredSubs = categories.sub.filter((s) => s.main_id == mid)
 
@@ -103,6 +134,29 @@ export default function ProductPage() {
     );
   }
 
+  const filteredAttrs = mid
+    ? attributes.filter(attr => String(attr.main_id) === mid)
+    : attributes
+
+  // 屬性選項勾選 (多選 AND)
+  const handleOptionChange = (e) => {
+    const value = e.target.value
+    let newOptions = []
+    if (e.target.checked) {
+      newOptions = [...options, value]
+    } else {
+      newOptions = options.filter(id => id !== value)
+    }
+    setOptions(newOptions)
+
+    const params = new URLSearchParams(searchParams.toString())
+    if (newOptions.length > 0) {
+      params.set("options", newOptions.join(","))
+    } else {
+      params.delete("options")
+    }
+    router.push(`/products?${params.toString()}`)
+  }
 
   return (
     <>
@@ -110,31 +164,31 @@ export default function ProductPage() {
       <div className="container">
         <Breadcrumb />
 
-        <ProductSelect
+        <Sidebar
           categories={categories}
           filteredSubs={filteredSubs}
+          filteredAttrs={filteredAttrs}
           mid={mid}
           cid={cid}
-          brand={brand}
-          search={search}
-          setSearch={setSearch}
+          brands={brands}
+          options={options}
           handleMainChange={handleMainChange}
           handleSubChange={handleSubChange}
           handleBrandChange={handleBrandChange}
-          handleSearch={handleSearch}
+          handleOptionChange={handleOptionChange}
         />
+        <div>
+          {products.map((p) => (
+            <Link key={p.id} href={`/products/${p.id}`}>
+              <li>
+                {p.name} - ${p.price}
+              </li>
+            </Link>
+          ))}
+        </div>
+      </div>
 
-      <ul>
-        {products.map((p) => (
-          <Link key={p.id} href={`/products/${p.id}`}>
-            <li>
-              {p.name} - ${p.price}
-            </li>
-          </Link>
-        ))}
-      </ul>
-    </div>
-    <Footer />
+      <Footer />
     </>
   )
 }
