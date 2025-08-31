@@ -1,5 +1,24 @@
 import "./cart.css";
-export default function CartSummary({ total, discount, shipping, count }) {
+import { useState } from "react";
+export default function CartSummary({ items, couponCode = "" }) {
+  // 狀態管理
+  const [payType, setPayType] = useState("貨到付款");
+  const [shippingType, setShippingType] = useState("超商取貨");
+  const [payOpen, setPayOpen] = useState(false);
+  const [shippingOpen, setShippingOpen] = useState(false);
+
+  // 計算總計、折扣、運費、件數
+  const count = items.reduce((sum, item) => sum + (item.qty || 1), 0);
+  const subtotal = items.reduce((sum, item) => sum + (item.price * (item.qty || 1)), 0);
+
+  // 折扣規則：couponCode = "DISCOUNT50" 折 50 元，否則 0 元 // 會再改
+  let discount = 0;
+  if (couponCode === "DISCOUNT50") discount = 50;
+
+  // 運費規則
+  const shipping = shippingType === "宅配到府" ? 80 : 60;
+  const total = subtotal + shipping - discount;
+
   return (
     <div className="cart-summary">
       <h3>結帳明細</h3>
@@ -7,27 +26,50 @@ export default function CartSummary({ total, discount, shipping, count }) {
           <ul>
             <li>
               <span>付款方式</span>
-              <div className="custom-select">
-                <button className="cs-trigger" aria-expanded="false">
-                  <span className="cs-text">貨到付款</span>
+              <div className={`custom-select${payOpen ? " is-open" : ""}`}>
+                <button
+                  className="cs-trigger"
+                  aria-expanded={payOpen}
+                  onClick={() => setPayOpen((open) => !open)}
+                >
+                  <span className="cs-text">{payType}</span>
                 </button>
                 <ul className="cs-menu">
-                  <li className="cs-option">貨到付款</li>
-                  <li className="cs-option">信用卡</li>
-                  <li className="cs-option">Line Pay</li>
+                  <li
+                    className={`cs-option${payType === "貨到付款" ? " is-selected" : ""}`}
+                    onClick={() => { setPayType("貨到付款"); setPayOpen(false); }}
+                  >貨到付款</li>
+                  <li
+                    className={`cs-option${payType === "信用卡" ? " is-selected" : ""}`}
+                    onClick={() => { setPayType("信用卡"); setPayOpen(false); }}
+                  >信用卡</li>
+                  <li
+                    className={`cs-option${payType === "Line Pay" ? " is-selected" : ""}`}
+                    onClick={() => { setPayType("Line Pay"); setPayOpen(false); }}
+                  >Line Pay</li>
                 </ul>
               </div>
             </li>
 
             <li>
               <span>運送方式</span>
-              <div className="custom-select">
-                <button className="cs-trigger" aria-expanded="false">
-                  <span className="cs-text">超商取貨</span>
+              <div className={`custom-select${shippingOpen ? " is-open" : ""}`}>
+                <button
+                  className="cs-trigger"
+                  aria-expanded={shippingOpen}
+                  onClick={() => setShippingOpen((open) => !open)}
+                >
+                  <span className="cs-text">{shippingType}</span>
                 </button>
                 <ul className="cs-menu">
-                  <li className="cs-option">超商取貨</li>
-                  <li className="cs-option">宅配到府</li>
+                  <li
+                    className={`cs-option${shippingType === "超商取貨" ? " is-selected" : ""}`}
+                    onClick={() => { setShippingType("超商取貨"); setShippingOpen(false); }}
+                  >超商取貨</li>
+                  <li
+                    className={`cs-option${shippingType === "宅配到府" ? " is-selected" : ""}`}
+                    onClick={() => { setShippingType("宅配到府"); setShippingOpen(false); }}
+                  >宅配到府</li>
                 </ul>
               </div>
             </li>

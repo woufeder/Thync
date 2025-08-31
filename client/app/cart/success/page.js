@@ -26,37 +26,6 @@ export default function Page() {
                 <CartSteps active={2} />
                 <div className="container">
                     {/* 頂部：購物車 + 回上頁 + 流程條 */}
-                    <div className="cart-header">
-                        <div className="cartIcon">
-                            <i className="fas fa-shopping-cart"></i> 購物車
-                        </div>
-                        <button
-                            className="backtomain"
-                            type="button"
-                            onClick={() => window.location.href = "/products"}
-                        >
-                            <i className="fa-solid fa-turn-down"></i>回上頁
-                        </button>
-                    </div>
-
-                    <div className="cart-steps">
-                        <div className="cart-step done">
-                            <div className="cart-step-circle"></div>
-                            <div className="cart-step-label">訂單明細</div>
-                        </div>
-                        <div className="cart-step done">
-                            <div className="cart-step-circle"></div>
-                            <div className="cart-step-label">填寫收件資料</div>
-                        </div>
-                        <div className="cart-step done">
-                            <div className="cart-step-circle"></div>
-                            <div className="cart-step-label">確認訂單</div>
-                        </div>
-                        <div className="cart-step active">
-                            <div className="cart-step-circle"></div>
-                            <div className="cart-step-label">購物完成</div>
-                        </div>
-                    </div>
 
                     <hr className="progressLine" />
 
@@ -111,4 +80,3 @@ export default function Page() {
         </>
     );
 }
-// ...existing code...

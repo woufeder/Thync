@@ -14,7 +14,21 @@ const recommend = Array(9).fill({
     title: "A4tech 雙飛燕 Bloody S98 飛行者 RGB機械式鍵盤 熱插拔 紅軸 英文",
     price: "$2390",
 });
+
+function getCheckoutForm() {
+    if (typeof window !== "undefined") {
+        const data = localStorage.getItem("checkoutForm");
+        if (data) return JSON.parse(data);
+    }
+    return {};
+}
 export default function Page() {
+    const [form, setForm] = useState({});
+
+    useEffect(() => {
+        setForm(getCheckoutForm());
+    }, []);
+
     return (
         <>
             <header>
@@ -59,15 +73,15 @@ export default function Page() {
                             <h3 className="panel-title">收件與運送</h3>
                             <div className="panel-body">
                                 <div className="row">
-                                    <label className="radio">收貨人：王小明</label>
-                                    <label className="radio">手機號碼：0912-345-678</label>
+                                    <label className="radio">收貨人：{form.receiverName}</label>
+                                    <label className="radio">手機號碼：{form.receiverPhone }</label>
                                 </div>
                                 <div className="row">
-                                    <label className="radio">運送方式：7-11 取貨</label>
-                                    <label className="radio">門市名稱：台北忠孝店</label>
+                                    <label className="radio">運送方式：{form.shippingType}</label>
+                                    <label className="radio">門市名稱：{form.storeName}</label>
                                 </div>
                                 <div className="row">
-                                    <label className="radio">門市地址：台北市大安區忠孝東路四段 100 號</label>
+                                    <label className="radio">門市地址：{form.storeAddress}</label>
                                 </div>
                             </div>
                         </div>
@@ -85,15 +99,15 @@ export default function Page() {
                             <h3 className="panel-title">購買人資訊</h3>
                             <div className="panel-body">
                                 <div className="row">
-                                    <label className="radio">姓名：王小明</label>
-                                    <label className="radio">手機號碼：0912-345-678</label>
+                                    <label className="radio">姓名：{form.receiverName}</label>
+                                    <label className="radio">手機號碼：{form.receiverPhone }</label>
                                 </div>
                                 <div className="row">
-                                    <label className="radio">Email：test@example.com</label>
+                                    <label className="radio">Email：{form.receiverEmail}</label>
                                 </div>
                                 <div className="row wrap">
                                     <span className="bill">發票類型：</span>
-                                    <label className="radio">手機載具（/ABC1234）</label>
+                                    <label className="radio">{form.invoiceType }</label>
                                 </div>
                             </div>
                         </div>
@@ -124,22 +138,22 @@ export default function Page() {
                         </div>
 
                         {/* 底部操作 */}
-                        <div className="actions">
-                            <button
-                                className="btn btn-secondary"
-                                type="button"
-                                onClick={() => window.location.href = "/cart/checkout"}
-                            >
-                                回到上一頁
-                            </button>
-                            <button
-                                className="btn btn-primary"
-                                type="button"
-                                onClick={() => window.location.href = "/cart/success"}
-                            >
-                                送出訂單
-                            </button>
-                        </div>
+                                            <div className="actions">
+                                                <button
+                                                    className="btn btn-secondary"
+                                                    type="button"
+                                                    onClick={() => window.location.href = "/cart/checkout"}
+                                                >
+                                                    回到上一頁
+                                                </button>
+                                                <button
+                                                    className="btn btn-primary"
+                                                    type="button"
+                                                    onClick={() => window.location.href = "/cart/success"}
+                                                >
+                                                    送出訂單
+                                                </button>
+                                            </div>
                     </section>
 
                     {/* 推薦商品 */}
