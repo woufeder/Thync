@@ -70,7 +70,7 @@ export default function Breadcrumb({ product }) {
   }
 
   return (
-    <nav aria-label="breadcrumb" className="breadcrumb">
+    <nav aria-label="breadcrumb" className="breadcrumb mt-4">
     <FontAwesomeIcon icon={faHouse} />
       <ol>
         {items.map((item, idx) => (

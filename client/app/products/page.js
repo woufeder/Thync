@@ -76,7 +76,7 @@ export default function ProductPage() {
   }, [searchParams])
 
   // 母分類改變時 → 更新 URL (並清掉子分類)
-  const handleMainChange = (e) => {
+  const MainChange = (e) => {
     const params = new URLSearchParams(searchParams.toString())
     const value = e.target.value
     if (value) {
@@ -90,7 +90,7 @@ export default function ProductPage() {
   }
 
   // 子分類
-  const handleSubChange = (e) => {
+  const SubChange = (e) => {
     const params = new URLSearchParams(searchParams.toString())
     const value = e.target.value
     if (value) {
@@ -102,7 +102,7 @@ export default function ProductPage() {
   }
 
   // 品牌
-  const handleBrandChange = (e) => {
+  const BrandChange = (e) => {
     const value = e.target.value
     let newBrands = []
 
@@ -125,7 +125,7 @@ export default function ProductPage() {
   }
 
   // 價格篩選
-  const handlePriceChange = () => {
+  const PriceChange = () => {
     const params = new URLSearchParams(searchParams.toString())
 
     if (priceMin) {
@@ -160,7 +160,7 @@ export default function ProductPage() {
     : attributes
 
   // 屬性選項勾選 (多選 AND)
-  const handleOptionChange = (e) => {
+  const OptionChange = (e) => {
     const value = e.target.value
     let newOptions = []
     if (e.target.checked) {
@@ -180,7 +180,7 @@ export default function ProductPage() {
   }
 
   // 清空屬性和價格
-  const handleClearFilters = () => {
+  const ClearFilters = () => {
     const params = new URLSearchParams(searchParams.toString())
 
     // 清掉屬性
@@ -200,9 +200,7 @@ export default function ProductPage() {
   return (
     <>
       <Header />
-      <div className="container">
-        <Breadcrumb />
-
+      <div className="container p-page">
         <Sidebar
           categories={categories}
           filteredSubs={filteredSubs}
@@ -215,24 +213,25 @@ export default function ProductPage() {
           priceMax={priceMax}
           setPriceMin={setPriceMin}
           setPriceMax={setPriceMax}
-          handleMainChange={handleMainChange}
-          handleSubChange={handleSubChange}
-          handleBrandChange={handleBrandChange}
-          handleOptionChange={handleOptionChange}
-          handlePriceChange={handlePriceChange}
-          handleClearFilters={handleClearFilters}
+          MainChange={MainChange}
+          SubChange={SubChange}
+          BrandChange={BrandChange}
+          OptionChange={OptionChange}
+          PriceChange={PriceChange}
+          ClearFilters={ClearFilters}
         />
-
-
-        <div>
-          {products.map((p) => (
-            <Link key={p.id} href={`/products/${p.id}`}>
-              <li>
-                {p.name} - ${p.price}
-              </li>
-            </Link>
-          ))}
-        </div>
+        <main>
+          <Breadcrumb />
+          <div>
+            {products.map((p) => (
+              <Link key={p.id} href={`/products/${p.id}`}>
+                <li>
+                  {p.name} - ${p.price}
+                </li>
+              </Link>
+            ))}
+          </div>
+        </main>
       </div>
 
       <Footer />
