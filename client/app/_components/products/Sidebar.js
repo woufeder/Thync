@@ -7,15 +7,19 @@ export default function Sidebar({
   mid,
   cid,
   brands,
-  search,
   options,
+  priceMin,
+  priceMax,
+  setPriceMin,
+  setPriceMax,
   handleMainChange,
   handleSubChange,
   handleBrandChange,
-  handleSearch,
   handleOptionChange,
-  setSearch
+  handlePriceChange,
+  handleClearFilters   // ⭐ 新增
 }) {
+
   return (
     <aside>
       {/* 母分類 */}
@@ -68,6 +72,27 @@ export default function Sidebar({
           ))}
         </div>
       ))}
+
+      <div>
+        <strong>價格區間</strong>
+        <div>
+          <input
+            type="number"
+            placeholder="最低"
+            value={priceMin}
+            onChange={(e) => setPriceMin(e.target.value)}
+          />
+          <input
+            type="number"
+            placeholder="最高"
+            value={priceMax}
+            onChange={(e) => setPriceMax(e.target.value)}
+          />
+          <button onClick={handlePriceChange}>套用篩選</button>
+          <button onClick={handleClearFilters}>清除篩選</button>
+        </div>
+      </div>
+
 
     </aside>
   )

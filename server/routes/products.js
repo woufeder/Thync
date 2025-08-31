@@ -63,6 +63,13 @@ router.get("/", async (req, res) => {
       params.push(...optionIds);
     }
 
+    // 預設值：沒帶參數就用 0 ~ 超大值
+    const priceMin = req.query.price_min ? Number(req.query.price_min) : 0
+    const priceMax = req.query.price_max ? Number(req.query.price_max) : 9999999
+
+    sql += " AND products.price BETWEEN ? AND ?"
+    params.push(priceMin, priceMax)
+
     // 排序（只允許 price，避免 SQL injection）
     if (sort && ["price"].includes(sort)) {
       sql += ` ORDER BY products.${sort} ${order === "desc" ? "DESC" : "ASC"}`;

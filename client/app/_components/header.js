@@ -248,7 +248,7 @@ export default function Header() {
                   <li className="nav-item">
                     <Link
                       href="/products/sales"
-                      className={`nav-link${pathname === "/sales" ? " active" : ""
+                      className={`nav-link${pathname === "/products/sales" ? " active" : ""
                         }`}
                     >
                       限時出清

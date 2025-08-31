@@ -18,12 +18,14 @@ export default function ProductPage() {
   const [attributes, setAttributes] = useState([])
   // 使用者勾選的 options id
   const [options, setOptions] = useState([])
+  // 價格範圍
+  const [priceMin, setPriceMin] = useState("")
+  const [priceMax, setPriceMax] = useState("")
 
   // 從 URL 讀取條件
   const mid = searchParams.get("mid") || ""
   const cid = searchParams.get("cid") || ""
   const [brands, setBrands] = useState([])
-  const keyword = searchParams.get("search") || ""
 
 
   useEffect(() => {
@@ -122,6 +124,25 @@ export default function ProductPage() {
     router.push(`/products?${params.toString()}`)
   }
 
+  // 價格篩選
+  const handlePriceChange = () => {
+    const params = new URLSearchParams(searchParams.toString())
+
+    if (priceMin) {
+      params.set("price_min", priceMin)
+    } else {
+      params.delete("price_min")
+    }
+
+    if (priceMax) {
+      params.set("price_max", priceMax)
+    } else {
+      params.delete("price_max")
+    }
+
+    router.push(`/products?${params.toString()}`)
+  }
+
 
   const filteredSubs = categories.sub.filter((s) => s.main_id == mid)
 
@@ -158,6 +179,24 @@ export default function ProductPage() {
     router.push(`/products?${params.toString()}`)
   }
 
+  // 清空屬性和價格
+  const handleClearFilters = () => {
+    const params = new URLSearchParams(searchParams.toString())
+
+    // 清掉屬性
+    params.delete("options")
+    setOptions([])
+
+    // 清掉價格
+    params.delete("price_min")
+    params.delete("price_max")
+    setPriceMin("")
+    setPriceMax("")
+
+    // 保留 mid / cid / brand_id
+    router.push(`/products?${params.toString()}`)
+  }
+
   return (
     <>
       <Header />
@@ -172,11 +211,19 @@ export default function ProductPage() {
           cid={cid}
           brands={brands}
           options={options}
+          priceMin={priceMin}
+          priceMax={priceMax}
+          setPriceMin={setPriceMin}
+          setPriceMax={setPriceMax}
           handleMainChange={handleMainChange}
           handleSubChange={handleSubChange}
           handleBrandChange={handleBrandChange}
           handleOptionChange={handleOptionChange}
+          handlePriceChange={handlePriceChange}
+          handleClearFilters={handleClearFilters}
         />
+
+
         <div>
           {products.map((p) => (
             <Link key={p.id} href={`/products/${p.id}`}>
