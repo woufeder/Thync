@@ -96,7 +96,7 @@ export default function Sidebar({
       {/* 品牌 */}
       <div className="brand-area">
         <h6>品牌</h6>
-        {categories.brand.slice(0, 10).map((c) => (
+        {categories.brand.slice(0, 6).map((c) => (
           <div key={c.id} className="form-check">
             <input
               className="form-check-input"
@@ -114,7 +114,7 @@ export default function Sidebar({
 
         {/* 收合區域 */}
         <div className="collapse" id="moreBrands">
-          {categories.brand.slice(10).map((c) => (
+          {categories.brand.slice(6).map((c) => (
             <label key={c.id} className="form-check-label">
               <input
                 className="form-check-input"
@@ -214,13 +214,14 @@ export default function Sidebar({
                 setPriceMax(vals[1]);
               }}
               styles={{
-                track: { backgroundColor: "var(--Primary300)", height: 4 },
+                track: { backgroundColor: "var(--Primary100)", height: 4 },
                 handle: {
-                  borderColor: "var(--Primary500)",
-                  backgroundColor: "var(--Primary500)",
+                  borderColor: "var(--Primary300)",
+                  backgroundColor: "var(--Primary300)",
                   width: 20,
                   height: 20,
                   marginTop: -8,
+                  opacity:1,
                 },
                 rail: { backgroundColor: "#ddd", height: 4 }
               }}
@@ -246,11 +247,11 @@ export default function Sidebar({
             </div>
 
             {/* 按鈕 */}
-            <div className="mt-2 d-flex gap-2">
-              <button className="btn btn-primary btn-sm" onClick={PriceChange}>
+            <div className="mt-3 d-flex gap-2">
+              <button className="btn filterBtn " onClick={PriceChange}>
                 套用篩選
               </button>
-              <button className="btn btn-outline-secondary btn-sm" onClick={ClearFilters}>
+              <button className="btn filterBtn ms-auto" onClick={ClearFilters}>
                 清除篩選
               </button>
             </div>

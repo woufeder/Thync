@@ -11,17 +11,23 @@ const router = express.Router();
 // route(s) 路由規則(們)
 // routers (路由物件器)
 // 獲取所有商品
-// 獲取所有商品
 router.get("/", async (req, res) => {
   try {
     const { mid, cid, brand_id, search, sort, order, page = 1, per_page = 1300, options } = req.query;
+
 
     let sql = `
       SELECT 
         products.*,
         category_main.name AS category_main_name,
         category_sub.name AS category_sub_name,
-        brands.name AS brand_name
+        brands.name AS brand_name,
+        (
+          SELECT file 
+          FROM products_imgs 
+          WHERE product_id = products.id 
+          LIMIT 1
+        ) AS first_image
       FROM products
       JOIN category_main ON products.category_main_id = category_main.id
       JOIN category_sub ON products.category_sub_id = category_sub.id
@@ -136,18 +142,20 @@ router.get("/attributes", async (req, res) => {
   }
 });
 
-// 獲取特定 ID 的商品
+// 獲取特定 ID 的商品 (含圖片/介紹圖)
 router.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
-    const sql = `
+    // 產品基本資料
+    const sqlProduct = `
       SELECT 
         p.id,
         p.name AS product_name,
         m.id AS main_id, m.name AS main_name,
         s.id AS sub_id, s.name AS sub_name,
-        b.id AS brand_id, b.name AS brand_name
+        b.id AS brand_id, b.name AS brand_name,
+        p.price, p.modal, p.intro, p.spec
       FROM products p
       JOIN category_main m ON p.category_main_id = m.id
       JOIN category_sub s ON p.category_sub_id = s.id
@@ -156,19 +164,34 @@ router.get("/:id", async (req, res) => {
         AND p.id = ?
       LIMIT 1
     `;
-
-    const [rows] = await connection.execute(sql, [id]);
-
+    const [rows] = await connection.execute(sqlProduct, [id]);
     if (!rows.length) {
       return res.status(404).json({
         status: "error",
         message: "找不到商品"
       });
     }
+    const product = rows[0];
+
+    // 商品主圖（輪播用）
+    const [images] = await connection.execute(
+      "SELECT id, file FROM products_imgs WHERE product_id = ?",
+      [id]
+    );
+
+    // 商品介紹圖
+    const [introImages] = await connection.execute(
+      "SELECT id, file FROM products_intro_imgs WHERE product_id = ?",
+      [id]
+    );
 
     res.status(200).json({
       status: "success",
-      data: rows[0],
+      data: {
+        ...product,
+        images,
+        introImages
+      },
       message: "已獲取單一商品"
     });
   } catch (error) {
@@ -179,6 +202,7 @@ router.get("/:id", async (req, res) => {
     });
   }
 });
+
 
 
 export default router;

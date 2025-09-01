@@ -218,9 +218,21 @@ export default function ProductPage() {
           <div>
             {products.map((p) => (
               <Link key={p.id} href={`/products/${p.id}`}>
-                <li>
-                  {p.name} - ${p.price}
-                </li>
+                <div className="card">
+                  <img
+                    src={
+                      p.first_image
+                        ? `/images/products/uploads/${p.first_image}`
+                        : "/images/no-image.png"
+                    }
+                    alt={p.name}
+                    className="card-img-top"
+                  />
+                  <div className="card-body">
+                    <p>{p.name}</p>
+                    <p>${p.price}</p>
+                  </div>
+                </div>
               </Link>
             ))}
           </div>
