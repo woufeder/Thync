@@ -185,22 +185,17 @@ router.put("/:account", upload.any(), async (req, res) => {
     if (!account) throw new Error("請提供使用者帳號");
 
     // 取得要更新的欄位
-    let {
-      name,
-      phone,
-      gender_id,
-      year,
-      month,
-      date,
-      city_id,
-      address,
-    } = req.body;
+    let { name, phone, gender_id, year, month, date, city_id, address } =
+      req.body;
 
     // 修正空值型別
     if (city_id === "" || city_id === "null" || city_id === undefined)
       city_id = null;
     if (gender_id === "" || gender_id === "null" || gender_id === undefined)
       gender_id = null;
+    if (year === "" || year === "null" || year === undefined) year = null;
+    if (month === "" || month === "null" || month === undefined) month = null;
+    if (date === "" || date === "null" || date === undefined) date = null;
 
     // 圖片處理
     let img = null;
@@ -221,7 +216,16 @@ router.put("/:account", upload.any(), async (req, res) => {
         address = ?${img ? ", img = ?" : ""}
       WHERE account = ?;
     `;
-    const params = [name, phone, gender_id, year, month, date, city_id, address];
+    const params = [
+      name,
+      phone,
+      gender_id,
+      year,
+      month,
+      date,
+      city_id,
+      address,
+    ];
     if (img) params.push(img);
     params.push(account);
 
@@ -229,7 +233,8 @@ router.put("/:account", upload.any(), async (req, res) => {
 
     // 🔥 關鍵修改：取得更新後的完整用戶資料
     const sqlGetUser = "SELECT * FROM `users` WHERE `account` = ?;";
-    const updatedUser = await connection.execute(sqlGetUser, [account])
+    const updatedUser = await connection
+      .execute(sqlGetUser, [account])
       .then(([result]) => result[0]);
 
     if (!updatedUser) {
@@ -242,12 +247,11 @@ router.put("/:account", upload.any(), async (req, res) => {
     // 回傳前端期待的格式
     res.status(200).json({
       status: "success",
-      data: { 
-        user: userData 
+      data: {
+        user: userData,
       },
       message: "更新成功",
     });
-
   } catch (error) {
     console.error("更新錯誤:", error);
     res.status(500).json({

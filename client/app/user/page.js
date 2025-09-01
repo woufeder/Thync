@@ -25,7 +25,7 @@ export default function UserPage() {
         mail: user.mail ?? "",
         name: user.name ?? "",
         phone: user.phone ?? "",
-        gender_id: user.gender_id ?? "",
+        gender_id: user.gender_id != null ? String(user.gender_id) : "",
         year: user.year ?? "",
         month: user.month ?? "",
         date: user.date ?? "",
@@ -100,13 +100,7 @@ export default function UserPage() {
         }
       }
 
-      // 處理圖片（如有 base64）
-      if (formData.img && formData.img.startsWith("data:")) {
-        const imgResponse = await fetch(formData.img);
-        const blob = await imgResponse.blob();
-        updateData.append("avatar", blob, "avatar.jpg");
-      }
-
+      // 執行 API 更新請求
       const res = await fetch(
         `http://localhost:3007/api/users/${formData.account}`,
         {
@@ -115,7 +109,6 @@ export default function UserPage() {
           body: updateData,
         }
       );
-
       const result = await res.json();
       console.log("更新結果:", result);
 
@@ -191,19 +184,20 @@ export default function UserPage() {
 
               <div className="row mb-3 mb-md-5">
                 <div className="col-12 col-md-6 d-flex justify-content-center align-items-center">
-                  <div className="avatar-wrapper-bg">
-                    <div
-                      className="avatar-bg"
-                      onClick={handleImageClick}
-                      style={{ cursor: isEditing ? "pointer" : "default" }}
-                    >
+                  <div
+                    className="avatar-wrapper-bg"
+                    style={{ cursor: isEditing ? "pointer" : "default" }}
+                  >
+                    <div className="avatar-bg" onClick={handleImageClick}>
                       <img
                         src={
-                          formData.img?.startsWith("data:")
-                            ? formData.img
-                            : formData.img
-                            ? `/images/users/user-photo/${formData.img}`
-                            : "./images/user-photo.jpg"
+                          formData.img
+                            ? formData.img.startsWith("data:")
+                              ? formData.img
+                              : formData.img.startsWith("http")
+                              ? formData.img
+                              : `/images/users/user-photo/${formData.img}`
+                            : "/images/users/user-photo/user.jpg"
                         }
                         alt="avatar"
                       />
@@ -255,7 +249,6 @@ export default function UserPage() {
                       placeholder="請輸入使用者名稱"
                       value={formData.name}
                       onChange={handleInputChange}
-                      disabled={!isEditing}
                       readOnly={!isEditing}
                     />
                   </div>
@@ -269,10 +262,9 @@ export default function UserPage() {
                     type="text"
                     className="form-control"
                     name="phone"
-                    placeholder="請輸入電話號碼"
+                    placeholder="0912-345678"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    disabled={!isEditing}
                     readOnly={!isEditing}
                   />
                 </div>
@@ -281,53 +273,59 @@ export default function UserPage() {
                   <label htmlFor="radio1" className="form-label d-block">
                     性別
                   </label>
-                  <div className="d-flex justify-content-between align-items-center">
-                    <div className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="gender_id"
-                        id="radio1"
-                        value="1"
-                        checked={formData.gender_id === "1"}
-                        onChange={handleInputChange}
-                        disabled={!isEditing}
-                      />
-                      <label className="form-check-label" htmlFor="radio1">
-                        男性
-                      </label>
+                  {isEditing ? (
+                    <div className="d-flex justify-content-between align-items-center">
+                      <div className="form-check form-check-inline">
+                        <input
+                          className="form-check-input"
+                          type="radio"
+                          name="gender_id"
+                          id="radio1"
+                          value="1"
+                          checked={formData.gender_id === "1"}
+                          onChange={handleInputChange}
+                        />
+                        <label className="form-check-label" htmlFor="radio1">
+                          男性
+                        </label>
+                      </div>
+                      <div className="form-check form-check-inline">
+                        <input
+                          className="form-check-input"
+                          type="radio"
+                          name="gender_id"
+                          id="radio2"
+                          value="2"
+                          checked={formData.gender_id === "2"}
+                          onChange={handleInputChange}
+                        />
+                        <label className="form-check-label" htmlFor="radio2">
+                          女性
+                        </label>
+                      </div>
+                      <div className="form-check form-check-inline">
+                        <input
+                          className="form-check-input"
+                          type="radio"
+                          name="gender_id"
+                          id="radio3"
+                          value="3"
+                          checked={formData.gender_id === "3"}
+                          onChange={handleInputChange}
+                        />
+                        <label className="form-check-label" htmlFor="radio3">
+                          其他
+                        </label>
+                      </div>
                     </div>
-                    <div className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="gender_id"
-                        id="radio2"
-                        value="2"
-                        checked={formData.gender_id === "2"}
-                        onChange={handleInputChange}
-                        disabled={!isEditing}
-                      />
-                      <label className="form-check-label" htmlFor="radio2">
-                        女性
-                      </label>
+                  ) : (
+                    <div>
+                      {formData.gender_id === "1" && "男性"}
+                      {formData.gender_id === "2" && "女性"}
+                      {formData.gender_id === "3" && "其他"}
+                      {!["1", "2", "3"].includes(formData.gender_id) && ""}
                     </div>
-                    <div className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="gender_id"
-                        id="radio3"
-                        value="3"
-                        checked={formData.gender_id === "3"}
-                        onChange={handleInputChange}
-                        disabled={!isEditing}
-                      />
-                      <label className="form-check-label" htmlFor="radio3">
-                        其他
-                      </label>
-                    </div>
-                  </div>
+                  )}
                 </div>
 
                 <div className="col-12 col-md-6">
@@ -346,7 +344,6 @@ export default function UserPage() {
                         max="2025"
                         value={formData.year}
                         onChange={handleInputChange}
-                        disabled={!isEditing}
                         readOnly={!isEditing}
                       />
                     </div>
@@ -360,7 +357,6 @@ export default function UserPage() {
                         max="12"
                         value={formData.month}
                         onChange={handleInputChange}
-                        disabled={!isEditing}
                         readOnly={!isEditing}
                       />
                     </div>
@@ -374,7 +370,6 @@ export default function UserPage() {
                         max="31"
                         value={formData.date}
                         onChange={handleInputChange}
-                        disabled={!isEditing}
                         readOnly={!isEditing}
                       />
                     </div>
@@ -385,39 +380,70 @@ export default function UserPage() {
               <div className="row mb-5">
                 <div className="col-12 col-md-2">
                   <label className="form-label">縣市</label>
-                  <select
-                    className="form-select"
-                    name="city_id"
-                    value={formData.city_id}
-                    onChange={handleInputChange}
-                    disabled={!isEditing}
-                  >
-                    <option value="" disabled>
-                      請選擇
-                    </option>
-                    <option value="1">台北市</option>
-                    <option value="2">新北市</option>
-                    <option value="3">桃園市</option>
-                    <option value="4">台中市</option>
-                    <option value="5">台南市</option>
-                    <option value="6">高雄市</option>
-                    <option value="7">基隆市</option>
-                    <option value="8">新竹市</option>
-                    <option value="9">嘉義市</option>
-                    <option value="10">新竹縣</option>
-                    <option value="11">苗栗縣</option>
-                    <option value="12">彰化縣</option>
-                    <option value="13">南投縣</option>
-                    <option value="14">雲林縣</option>
-                    <option value="15">嘉義縣</option>
-                    <option value="16">屏東縣</option>
-                    <option value="17">宜蘭縣</option>
-                    <option value="18">花蓮縣</option>
-                    <option value="19">台東縣</option>
-                    <option value="20">澎湖縣</option>
-                    <option value="21">金門縣</option>
-                    <option value="22">連江縣</option>
-                  </select>
+                  {isEditing ? (
+                    <select
+                      className="form-select"
+                      name="city_id"
+                      value={formData.city_id}
+                      onChange={handleInputChange}
+                    >
+                      <option value="" disabled>
+                        請選擇
+                      </option>
+                      <option value="1">台北市</option>
+                      <option value="2">新北市</option>
+                      <option value="3">桃園市</option>
+                      <option value="4">台中市</option>
+                      <option value="5">台南市</option>
+                      <option value="6">高雄市</option>
+                      <option value="7">基隆市</option>
+                      <option value="8">新竹市</option>
+                      <option value="9">嘉義市</option>
+                      <option value="10">新竹縣</option>
+                      <option value="11">苗栗縣</option>
+                      <option value="12">彰化縣</option>
+                      <option value="13">南投縣</option>
+                      <option value="14">雲林縣</option>
+                      <option value="15">嘉義縣</option>
+                      <option value="16">屏東縣</option>
+                      <option value="17">宜蘭縣</option>
+                      <option value="18">花蓮縣</option>
+                      <option value="19">台東縣</option>
+                      <option value="20">澎湖縣</option>
+                      <option value="21">金門縣</option>
+                      <option value="22">連江縣</option>
+                    </select>
+                  ) : (
+                    <div>
+                      {(() => {
+                        const cityMap = {
+                          1: "台北市",
+                          2: "新北市",
+                          3: "桃園市",
+                          4: "台中市",
+                          5: "台南市",
+                          6: "高雄市",
+                          7: "基隆市",
+                          8: "新竹市",
+                          9: "嘉義市",
+                          10: "新竹縣",
+                          11: "苗栗縣",
+                          12: "彰化縣",
+                          13: "南投縣",
+                          14: "雲林縣",
+                          15: "嘉義縣",
+                          16: "屏東縣",
+                          17: "宜蘭縣",
+                          18: "花蓮縣",
+                          19: "台東縣",
+                          20: "澎湖縣",
+                          21: "金門縣",
+                          22: "連江縣",
+                        };
+                        return cityMap[formData.city_id] || "";
+                      })()}
+                    </div>
+                  )}
                 </div>
                 <div className="col-12 col-md-10">
                   <label className="form-label">地址</label>
@@ -428,7 +454,6 @@ export default function UserPage() {
                     placeholder="請輸入地址"
                     value={formData.address}
                     onChange={handleInputChange}
-                    disabled={!isEditing}
                     readOnly={!isEditing}
                   />
                 </div>
@@ -437,33 +462,41 @@ export default function UserPage() {
               <hr className="mb-5" />
 
               <div className="text-center">
-                <button
-                  type="button"
-                  className="btn btn-password me-5"
-                  onClick={handleChangePassword}
-                  disabled={isEditing}
-                >
-                  <i className="fa-solid fa-key me-1"></i> 修改密碼
-                </button>
-
-                {!isEditing ? (
-                  <button
-                    type="button"
-                    className="btn btn-edit me-5"
-                    onClick={handleEdit}
-                  >
-                    <i className="fa-solid fa-pen-to-square me-1"></i>{" "}
-                    編輯個人資料
-                  </button>
-                ) : (
+                {!isEditing && (
+                  <>
+                    <button
+                      type="button"
+                      className="btn btn-password me-5"
+                      onClick={handleChangePassword}
+                    >
+                      <i className="fa-solid fa-key me-1"></i> 修改密碼
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-edit me-5"
+                      onClick={handleEdit}
+                    >
+                      <i className="fa-solid fa-pen-to-square me-1"></i>{" "}
+                      編輯個人資料
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-del"
+                      onClick={handleDeleteAccount}
+                    >
+                      <i className="fa-solid fa-trash me-1"></i> 刪除帳號
+                    </button>
+                  </>
+                )}
+                {isEditing && (
                   <>
                     <button
                       type="submit"
-                      className="btn btn-success me-3"
+                      className="btn btn-success me-5"
                       disabled={isLoading}
                     >
-                      <i className="fa-solid fa-check me-1"></i>
-                      {isLoading ? "更新中..." : "確認更新"}
+                      <i className="fa-solid fa-check me-2"></i>
+                      更新
                     </button>
                     <button
                       type="button"
@@ -475,15 +508,6 @@ export default function UserPage() {
                     </button>
                   </>
                 )}
-
-                <button
-                  type="button"
-                  className="btn btn-del"
-                  onClick={handleDeleteAccount}
-                  disabled={isEditing}
-                >
-                  <i className="fa-solid fa-trash me-1"></i> 刪除帳號
-                </button>
               </div>
             </form>
           </div>

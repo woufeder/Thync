@@ -12,10 +12,18 @@ export default function Sidebar() {
           <div className="profile">
             <div className="avatar-wrapper">
               <div className="avatar">
-                <img src={`/images/users/${user?.img}`} alt="avatar" />
-                <div className="camera">
-                  <i className="fa-solid fa-camera"></i>
-                </div>
+                <img
+                  src={
+                    user?.img
+                      ? user.img.startsWith("data:")
+                        ? user.img
+                        : user.img.startsWith("http")
+                        ? user.img
+                        : `/images/users/user-photo/${user.img}`
+                      : "/images/users/user-photo/user.jpg"
+                  }
+                  alt="avatar"
+                />
               </div>
             </div>
             <div className="greet">

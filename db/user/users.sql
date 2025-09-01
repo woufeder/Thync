@@ -12,7 +12,7 @@ CREATE TABLE city (
 );
 CREATE TABLE `users` (
   `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
-  `name` VARCHAR(50) NOT NULL,
+  `name` VARCHAR(50),
   `mail` VARCHAR(255) NOT NULL UNIQUE, 
   `password` VARCHAR(255) NOT NULL, 
   `gender_id` INT,
