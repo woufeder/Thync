@@ -2,14 +2,14 @@
 
 import "./cartShared.css";
 
-export default function RecommendList({ items }) {
+export default function RecommendList({ recommend }) {
   return (
     <section className="recommend-section">
       <div className="recommend-title">
         <i className="fa-solid fa-heart"></i>你可能會感興趣的...
       </div>
       <div className="recommend-list">
-        {(items ?? []).map((p, i) => (
+        {(recommend ?? []).map((p, i) => (
           <div key={i} className="recommend-item">
             <img src={p.img} alt={p.title} />
             <div className="recommend-item-title">{p.title}</div>

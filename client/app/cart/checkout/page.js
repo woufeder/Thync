@@ -113,7 +113,7 @@ export default function CheckoutPage() {
                                 </div>
                                 <div className="row">
                                     <label>取貨門市</label>
-                                    <button className="btn btn-light" type="button">
+                                    <button className="checkout-btn checkout-btn-light" type="button">
                                         依地圖選擇
                                     </button>
                                 </div>
@@ -232,14 +232,14 @@ export default function CheckoutPage() {
                         {/* 底部操作 */}
                         <div className="actions">
                             <button
-                                className="btn btn-secondary"
+                                className="checkout-btn checkout-btn-secondary"
                                 type="button"
                                 onClick={() => window.location.href = "/cart"}
                             >
                                 回到購物車
                             </button>
                             <button
-                                className="btn btn-primary"
+                                className="checkout-btn checkout-btn-primary"
                                 type="button"
                                 onClick={handleConfirm}
                             >

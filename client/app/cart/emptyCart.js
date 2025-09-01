@@ -1,6 +1,8 @@
 import styles from "./emptyCart.module.css";
+import { useRouter } from "next/navigation";
 
 export default function EmptyCartPage() {
+  const router = useRouter();
   return (
     <div className={styles.cartEmpty}>
       <div className={styles.cartEmptyTitle}>你的購物車是空的</div>
@@ -10,7 +12,7 @@ export default function EmptyCartPage() {
       <button
         className={styles.cartEmptyBtn}
         type="button"
-        onClick={() => window.location.href = "/products"}
+        onClick={() => router.push("/products")}
       >
         現在開始購物
       </button>

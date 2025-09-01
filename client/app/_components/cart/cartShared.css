@@ -133,7 +133,7 @@ main {
 
 /* ===== Recommend Section ===== */
 .recommend-section {
-  max-width: 90%;
+  max-width: 1200px;
   margin: 32px auto 0;
   background: #f7f6f2;
   border-radius: 8px;
@@ -212,48 +212,4 @@ main {
   align-items: center;
   gap: 6px;
   cursor: pointer;
-}
-
-/* ===== Footer ===== */
-footer {
-  background: #a7bdd7;
-  color: #fff;
-  padding: 32px 0 0 0;
-  margin-top: 48px;
-}
-.footer-content {
-  display: flex;
-  justify-content: space-between;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 40px;
-}
-.footer-section {
-  flex: 1;
-}
-.footer-section h4 {
-  font-size: 1rem;
-  margin-bottom: 12px;
-}
-.footer-section ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-.footer-section li {
-  margin-bottom: 8px;
-}
-.footer-section a {
-  color: #fff;
-  text-decoration: none;
-}
-.footer-bottom {
-  text-align: left;
-  color: #e3e8f0;
-  font-size: 0.95rem;
-}
-hr {
-  border: none;
-  border-top: 1px solid rgba(255, 255, 255, 0.4);
-  margin: 16px 0;
 }
