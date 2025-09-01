@@ -7,8 +7,12 @@ export default function CartSteps({ active = 0 }) {
   return (
     <div className="cart-steps">
       {steps.map((label, i) => (
-        <div key={i} className={`cart-step ${i === active ? "active" : ""}`}>
-          <div className="cart-step-circle"></div>
+        <div key={i} className={`cart-step ${i === active ? "active" : ""} ${i < active ? "done" : ""}`}>
+          <div className="cart-step-circle">
+            {i < active ? (
+              <span className="cart-step-check">✔</span>
+            ) : null}
+          </div>
           <div className="cart-step-label">{label}</div>
         </div>
       ))}
