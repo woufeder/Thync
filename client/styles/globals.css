@@ -15,7 +15,7 @@
   --Danger100: #F5D2D2;
   --Black: #101C35;
   --White: #FFFFFF;
-  --card-shadow: 0 4px 10px 0 rgba(48, 74, 111, 0.25);
+  --card-shadow: 0 4px 5px 0 rgba(148, 175, 202, 0.25);
   --highlight: var(--Primary300) 0px 0px 10px;
 }
 
@@ -152,8 +152,13 @@ body {
 
 /*---------------header----------------*/
 
+header {
+  box-shadow: var(--card-shadow);
+}
 
 .header {
+
+
 
   .btn {
     padding: 6px;
@@ -237,31 +242,36 @@ body {
 }
 
 /* 麵包屑 */
-.breadcrumb{
+.breadcrumb {
   color: var(--Primary800);
   display: flex;
   align-items: center;
-  .fa-house{
+
+  .fa-house {
     margin-right: 8px;
   }
-  ol{
+
+  ol {
     display: flex;
     /* gap: 8px; */
     list-style: none;
     padding: 0;
     margin: 0;
   }
-  a{
+
+  a {
     color: var(--Primary800);
     text-decoration: none;
     transition: all 0.3s ease;
     font-weight: 500;
     font-size: 16px;
+
     &:hover {
       text-decoration: underline;
     }
   }
-  span{
+
+  span {
     margin: 0 12px;
   }
 }

@@ -181,20 +181,12 @@ export default function ProductPage() {
 
   // 清空屬性和價格
   const ClearFilters = () => {
-    const params = new URLSearchParams(searchParams.toString())
-
-    // 清掉屬性
-    params.delete("options")
     setOptions([])
-
-    // 清掉價格
-    params.delete("price_min")
-    params.delete("price_max")
     setPriceMin("")
     setPriceMax("")
+    setBrands([])   // 如果也要清掉品牌記得加這行
 
-    // 保留 mid / cid / brand_id
-    router.push(`/products?${params.toString()}`)
+    router.replace("/products")
   }
 
   return (
@@ -209,6 +201,7 @@ export default function ProductPage() {
           cid={cid}
           brands={brands}
           options={options}
+          setOptions={setOptions}
           priceMin={priceMin}
           priceMax={priceMax}
           setPriceMin={setPriceMin}

@@ -38,7 +38,7 @@ export default function Header() {
 
   return (
     <>
-      <div className="container header">
+      <header >
         {isMobile ? (
           // 手機版結構
           <header>
@@ -167,7 +167,7 @@ export default function Header() {
           </header>
         ) : (
           // 桌機版結構
-          <header>
+          <div className="container header">
             <nav className="navbar ">
               <div className="container-fluid">
                 <a className="navbar-brand" href="/">
@@ -266,9 +266,9 @@ export default function Header() {
                 </ul>
               </div>
             </nav>
-          </header>
+          </div>
         )}
-      </div>
+      </header>
     </>
   );
 }

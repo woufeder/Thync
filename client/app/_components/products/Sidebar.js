@@ -1,7 +1,7 @@
 "use client"
 
 import style from '@/styles/products.css'
-import { useState,useEffect } from "react"
+import { useState, useEffect } from "react"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons"
 
@@ -15,6 +15,7 @@ export default function Sidebar({
   cid,
   brands,
   options,
+  setOptions,
   priceMin,
   priceMax,
   setPriceMin,
@@ -44,11 +45,11 @@ export default function Sidebar({
 
   return (
     <aside>
-
-
-      {/* 母分類 + 子分類 (Bootstrap Collapse) */}
-      <div>
+      <div className='title-area'>
         <h6>所有商品</h6>
+      </div>
+      {/* 母分類 + 子分類 (Bootstrap Collapse) */}
+      <div className='category'>
         {categories.main.map((main) => (
           <div key={main.id}>
             <div
@@ -90,48 +91,15 @@ export default function Sidebar({
         ))}
       </div>
 
-
-
-
-
-
-
-
-      {/* 母分類 */}
-      {/* <select
-        className="form-select"
-        aria-label="select"
-        value={mid}
-        onChange={MainChange}>
-        <option value="">-- 所有母分類 --</option>
-        {categories.main.map((c) => (
-          <option key={c.id} value={c.id}>
-            {c.name}
-          </option>
-        ))}
-      </select> */}
-
-      {/* 子分類 */}
-      {/* <select
-        className="form-select"
-        aria-label="select"
-        value={cid}
-        onChange={SubChange}>
-        <option value="">-- 所有子分類 --</option>
-        {filteredSubs.map((s) => (
-          <option key={s.id} value={s.id}>
-            {s.name}
-          </option>
-        ))}
-      </select> */}
-
       {/* 品牌 */}
-      <div>
-        <strong>品牌</strong>
+
+      <div className='brand-area form-check'>
+        <h6>品牌</h6>
         {/* 前 5 筆 */}
         {categories.brand.slice(0, 5).map((c) => (
-          <label key={c.id} style={{ display: "block" }}>
+          <label key={c.id} className="form-check-label">
             <input
+              className="form-check-input"
               type="checkbox"
               value={c.id}
               checked={brands.includes(String(c.id))}
@@ -144,8 +112,9 @@ export default function Sidebar({
         {/* 收合區域 */}
         <div className="collapse" id="moreBrands">
           {categories.brand.slice(5).map((c) => (
-            <label key={c.id} style={{ display: "block" }}>
+            <label key={c.id} className="form-check-label">
               <input
+                className="form-check-input"
                 type="checkbox"
                 value={c.id}
                 checked={brands.includes(String(c.id))}
@@ -172,21 +141,46 @@ export default function Sidebar({
 
       {/* 屬性 */}
       {filteredAttrs.map(attr => (
-        <div key={attr.id}>
+        <div key={attr.id} style={{ marginBottom: "1rem" }}>
           <strong>{attr.name}</strong>
-          {attr.options.map(opt => (
-            <label key={opt.id}>
-              <input
-                type="checkbox"
-                value={opt.id}
-                checked={options.includes(String(opt.id))}
-                onChange={OptionChange}
-              />
-              {opt.value}
-            </label>
-          ))}
+          <select
+            className="form-select"
+            value={options.find(id => attr.options.some(opt => String(opt.id) === id)) || ""}
+            onChange={e => {
+              const value = e.target.value
+              let newOptions = [...options]
+
+              // 先把同一個屬性的舊選項移除
+              newOptions = newOptions.filter(id => !attr.options.some(opt => String(opt.id) === id))
+
+              // 如果有新值就加進去
+              if (value) {
+                newOptions.push(value)
+              }
+
+              // 更新狀態
+              setOptions(newOptions)
+
+              // 更新 URL
+              const params = new URLSearchParams(window.location.search)
+              if (newOptions.length > 0) {
+                params.set("options", newOptions.join(","))
+              } else {
+                params.delete("options")
+              }
+              window.history.pushState({}, "", `?${params.toString()}`)
+            }}
+          >
+            <option value="">請選擇</option>
+            {attr.options.map(opt => (
+              <option key={opt.id} value={opt.id}>
+                {opt.value}
+              </option>
+            ))}
+          </select>
         </div>
       ))}
+
 
       <div>
         <strong>價格區間</strong>

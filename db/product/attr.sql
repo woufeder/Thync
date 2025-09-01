@@ -1,4 +1,4 @@
--- Active: 1755956957471@@127.0.0.1@3306@restful
+-- Active: 1747618801539@@127.0.0.1@3306@restful
 CREATE TABLE attributes (
     id INT AUTO_INCREMENT PRIMARY KEY,  -- 屬性 ID
     name VARCHAR(100) NOT NULL,         -- 屬性名稱
