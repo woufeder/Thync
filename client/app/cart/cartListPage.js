@@ -39,18 +39,24 @@ export default function CartListPage({
   const shipping = 60; // 可根據條件調整
 
   async function handleUseCoupon() {
-    const res = await fetch("/api/coupon/validate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId, code: couponCode }),
-    });
-    const data = await res.json();
-    if (data.valid) {
-      setDiscount(data.discount);
-      setCouponMsg("折扣已套用！");
-    } else {
+    try {
+      const res = await fetch("/api/coupon/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, code: couponCode }),
+      });
+      if (!res.ok) throw new Error("伺服器錯誤，請稍後再試");
+      const data = await res.json();
+      if (data.valid) {
+        setDiscount(data.discount);
+        setCouponMsg("折扣已套用！");
+      } else {
+        setDiscount(0);
+        setCouponMsg(data.message || "折扣碼無效");
+      }
+    } catch (err) {
       setDiscount(0);
-      setCouponMsg(data.message || "折扣碼無效");
+      setCouponMsg(err.message || "伺服器錯誤，請稍後再試");
     }
   }
 
