@@ -95,8 +95,8 @@ export default function Sidebar({
 
       <div className='brand-area form-check'>
         <h6>品牌</h6>
-        {/* 前 5 筆 */}
-        {categories.brand.slice(0, 5).map((c) => (
+        {/* 前 10 筆 */}
+        {categories.brand.slice(0, 10).map((c) => (
           <label key={c.id} className="form-check-label">
             <input
               className="form-check-input"

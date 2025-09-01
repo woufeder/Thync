@@ -113,12 +113,15 @@ aside {
       color: var(--Primary800);
       cursor: pointer;
 
-      input {
+      .form-check-input {
         margin-right: 8px;
-        accent-color: var(--Primary500);
         width: 16px;
         height: 16px;
         cursor: pointer;
+      }
+
+      .form-check-input:checked {
+        background-color: var(--Primary500) !important;
       }
     }
 
