@@ -8,12 +8,12 @@ import Header from "@/app/_components/header";
 import Footer from "@/app/_components/footer";
 import "./success.css";
 
-// 推薦商品假資料
-const recommend = Array(9).fill({
-    img: "https://picsum.photos/id/1058/600/400",
-    title: "A4tech 雙飛燕 Bloody S98 飛行者 RGB機械式鍵盤 熱插拔 紅軸 英文",
-    price: "$2390",
-});
+    // 推薦商品假資料（與 cartPage.js 統一格式）
+    const recommend = Array(6).fill({
+        img: "https://picsum.photos/id/1058/600/400",
+        title: "A4tech 雙飛燕 Bloody S98",
+        price: "$2390",
+    });
 
 export default function Page() {
     return (
@@ -23,7 +23,7 @@ export default function Page() {
             </header>
             <main>
                 <CartHeader />
-                <CartSteps active={2} />
+                <CartSteps active={3} />
                 <div className="container">
                     {/* 頂部：購物車 + 回上頁 + 流程條 */}
 
@@ -51,27 +51,8 @@ export default function Page() {
                         </div>
                     </div>
 
-                    {/* 推薦商品 */}
-                    <section className="recommend-section">
-                        <div className="recommend-title">
-                            <i className="fa-solid fa-heart"></i>你可能會感興趣的...
-                        </div>
-                        <div className="recommend-list">
-                            {recommend.map((item, i) => (
-                                <div className="recommend-item" key={i}>
-                                    <img src={item.img} alt={`商品${i + 1}`} />
-                                    <div className="recommend-item-title">{item.title}</div>
-                                    <div className="recommend-item-footer">
-                                        <div className="recommend-price">{item.price}</div>
-                                        <button className="recommend-btn">
-                                            <i className="fa-solid fa-plus"></i>
-                                            <i className="fa-solid fa-cart-shopping"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </section>
+                    {/* 推薦商品區塊（與 cartPage.js 統一） */}
+                    <RecommendList recommend={recommend} />
                 </div>
             </main>
             <footer>

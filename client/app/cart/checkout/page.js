@@ -10,29 +10,51 @@ import "./checkout.css";
 
 export default function CheckoutPage() {
     // 表單狀態
-    const [form, setForm] = useState({
-        receiverName: "",
-        receiverPhone: "",
-        receiverEmail: "",
-        shippingType: "7-11取貨",
-        storeName: "",
-        storeAddress: "",
-        invoiceType: "手機載具",
-    });
+
+    // 預設值：如 localStorage 有 checkoutForm，則自動回填
+    const getDefaultForm = () => {
+        if (typeof window !== "undefined") {
+            const data = localStorage.getItem("checkoutForm");
+            if (data) return JSON.parse(data);
+        }
+        return {
+            receiverName: "",
+            receiverPhone: "",
+            receiverEmail: "",
+            shippingType: "7-11取貨",
+            storeName: "",
+            storeAddress: "",
+            invoiceType: "手機載具",
+        };
+    };
+    const [form, setForm] = useState(getDefaultForm());
 
     function handleChange(e) {
         setForm({ ...form, [e.target.name]: e.target.value });
     }
 
     function handleConfirm() {
+        // 檢查必填欄位
+        const required = ["receiverName", "receiverPhone", "receiverEmail", "shippingType", "invoiceType"];
+        for (const key of required) {
+            if (!form[key] || form[key].trim() === "") {
+                alert("請完整填寫所有資料！");
+                return;
+            }
+        }
+        // 若選擇 7-11 取貨，門市名稱和地址也必填
+        if (form.shippingType === "7-11取貨" && (!form.storeName.trim() || !form.storeAddress.trim())) {
+            alert("請填寫門市名稱與地址！");
+            return;
+        }
         localStorage.setItem("checkoutForm", JSON.stringify(form));
         window.location.href = "/cart/confirm";
     }
 
-    // 推薦商品假資料
-    const recommend = Array(9).fill({
+    // 推薦商品假資料（與 cartPage.js 統一格式）
+    const recommend = Array(6).fill({
         img: "https://picsum.photos/id/1058/600/400",
-        title: "A4tech 雙飛燕 Bloody S98 飛行者 RGB機械式鍵盤 熱插拔 紅軸 英文",
+        title: "A4tech 雙飛燕 Bloody S98",
         price: "$2390",
     });
 
@@ -225,27 +247,8 @@ export default function CheckoutPage() {
                             </button>
                         </div>
                     </section>
-                    {/* 推薦商品 */}
-                    <section className="recommend-section">
-                        <div className="recommend-title">
-                            <i className="fa-solid fa-heart"></i>你可能會感興趣的...
-                        </div>
-                        <div className="recommend-list">
-                            {recommend.map((item, i) => (
-                                <div className="recommend-item" key={i}>
-                                    <img src={item.img} alt={`商品${i + 1}`} />
-                                    <div className="recommend-item-title">{item.title}</div>
-                                    <div className="recommend-item-footer">
-                                        <div className="recommend-price">{item.price}</div>
-                                        <button className="recommend-btn">
-                                            <i className="fa-solid fa-plus"></i>
-                                            <i className="fa-solid fa-cart-shopping"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </section>
+                    {/* 推薦商品區塊（與 cartPage.js 統一） */}
+                    <RecommendList recommend={recommend} />
                 </div>
             </main>
             <footer>

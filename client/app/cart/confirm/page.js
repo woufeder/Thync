@@ -8,12 +8,12 @@ import Header from "@/app/_components/header";
 import Footer from "@/app/_components/footer";
 import "./confirm.css";
 
-// 推薦商品假資料
-const recommend = Array(9).fill({
-    img: "https://picsum.photos/id/1058/600/400",
-    title: "A4tech 雙飛燕 Bloody S98 飛行者 RGB機械式鍵盤 熱插拔 紅軸 英文",
-    price: "$2390",
-});
+    // 推薦商品假資料（與 cartPage.js 統一格式）
+    const recommend = Array(6).fill({
+        img: "https://picsum.photos/id/1058/600/400",
+        title: "A4tech 雙飛燕 Bloody S98",
+        price: "$2390",
+    });
 
 function getCheckoutForm() {
     if (typeof window !== "undefined") {
@@ -24,10 +24,23 @@ function getCheckoutForm() {
 }
 export default function Page() {
     const [form, setForm] = useState({});
+    const [cartItems, setCartItems] = useState([]);
+    const [discount, setDiscount] = useState(0);
 
     useEffect(() => {
         setForm(getCheckoutForm());
+        const cartData = localStorage.getItem("cartItems");
+        if (cartData) setCartItems(JSON.parse(cartData));
+        // 折扣可根據 localStorage 或其他資料取得
+        const discountData = localStorage.getItem("discount");
+        setDiscount(discountData ? Number(discountData) : 0);
     }, []);
+
+    // 動態計算金額
+    const count = cartItems.reduce((sum, item) => sum + (item.qty || 1), 0);
+    const subtotal = cartItems.reduce((sum, item) => sum + ((item.priceNum || 0) * (item.qty || 1)), 0);
+    const shipping = form.shippingType === "宅配到府" ? 80 : 60;
+    const total = subtotal + shipping - discount;
 
     return (
         <>
@@ -38,34 +51,7 @@ export default function Page() {
                 <CartHeader />
                 <CartSteps active={2} />
                 <div className="container">
-                    {/* 頂部：購物車 + 回上頁 + 流程條 */}
-                    <div className="cart-header">
-                        <div className="cartIcon">
-                            <i className="fas fa-shopping-cart"></i> 購物車
-                        </div>
-                        <button className="backtomain">
-                            <i className="fa-solid fa-turn-down"></i>回上頁
-                        </button>
-                    </div>
 
-                    <div className="cart-steps">
-                        <div className="cart-step done">
-                            <div className="cart-step-circle"></div>
-                            <div className="cart-step-label">訂單明細</div>
-                        </div>
-                        <div className="cart-step done">
-                            <div className="cart-step-circle"></div>
-                            <div className="cart-step-label">填寫收件資料</div>
-                        </div>
-                        <div className="cart-step active">
-                            <div className="cart-step-circle"></div>
-                            <div className="cart-step-label">確認訂單</div>
-                        </div>
-                        <div className="cart-step">
-                            <div className="cart-step-circle"></div>
-                            <div className="cart-step-label">購物完成</div>
-                        </div>
-                    </div>
 
                     {/* 收件與運送摘要 */}
                     <section className="checkout">
@@ -118,19 +104,19 @@ export default function Page() {
                             <div className="panel-body">
                                 <ul className="summary-list">
                                     <li className="row">
-                                        <span className="label">小計</span><span>$5,300</span>
+                                        <span className="label">小計</span><span>${subtotal}</span>
                                     </li>
                                     <li className="row">
-                                        <span className="label">運費</span><span>$60</span>
+                                        <span className="label">運費</span><span>${shipping}</span>
                                     </li>
                                     <li className="row">
-                                        <span className="label">折扣</span><span>-$50</span>
+                                        <span className="label">折扣</span><span>-{discount}</span>
                                     </li>
                                     <li className="row total">
                                         <span className="label">總計</span>
                                         <div className="right">
-                                            <div>共 2 件</div>
-                                            <div>總共 $5,310</div>
+                                            <div>共 {count} 件</div>
+                                            <div>總共 ${total}</div>
                                         </div>
                                     </li>
                                 </ul>
@@ -156,27 +142,8 @@ export default function Page() {
                                             </div>
                     </section>
 
-                    {/* 推薦商品 */}
-                    <section className="recommend-section">
-                        <div className="recommend-title">
-                            <i className="fa-solid fa-heart"></i>你可能會感興趣的...
-                        </div>
-                        <div className="recommend-list">
-                            {recommend.map((item, i) => (
-                                <div className="recommend-item" key={i}>
-                                    <img src={item.img} alt={`商品${i + 1}`} />
-                                    <div className="recommend-item-title">{item.title}</div>
-                                    <div className="recommend-item-footer">
-                                        <div className="recommend-price">{item.price}</div>
-                                        <button className="recommend-btn">
-                                            <i className="fa-solid fa-plus"></i>
-                                            <i className="fa-solid fa-cart-shopping"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </section>
+                    {/* 推薦商品區塊（與 cartPage.js 統一） */}
+                    <RecommendList recommend={recommend} />
                 </div>
             </main>
             <footer>

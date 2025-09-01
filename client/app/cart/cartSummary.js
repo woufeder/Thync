@@ -1,20 +1,16 @@
 import "./cart.css";
 import { useState } from "react";
-export default function CartSummary({ items, couponCode = "" }) {
+export default function CartSummary({ items, discount = 0, couponCode = "", onCheckout }) {
   // 狀態管理
   const [payType, setPayType] = useState("貨到付款");
   const [shippingType, setShippingType] = useState("超商取貨");
   const [payOpen, setPayOpen] = useState(false);
   const [shippingOpen, setShippingOpen] = useState(false);
 
-  // 計算總計、折扣、運費、件數
-  const count = items.reduce((sum, item) => sum + (item.qty || 1), 0);
-  const subtotal = items.reduce((sum, item) => sum + (item.price * (item.qty || 1)), 0);
-
-  // 折扣規則：couponCode = "DISCOUNT50" 折 50 元，否則 0 元 // 會再改
-  let discount = 0;
-  if (couponCode === "DISCOUNT50") discount = 50;
-
+  // 計算總計、運費、件數
+  const safeItems = Array.isArray(items) ? items : [];
+  const count = safeItems.reduce((sum, item) => sum + (item.qty || 1), 0);
+  const subtotal = safeItems.reduce((sum, item) => sum + ((item.priceNum || 0) * (item.qty || 1)), 0);
   // 運費規則
   const shipping = shippingType === "宅配到府" ? 80 : 60;
   const total = subtotal + shipping - discount;
@@ -86,7 +82,7 @@ export default function CartSummary({ items, couponCode = "" }) {
               </div>
             </li>
           </ul>
-        <button className="btn-checkout">結帳 ({count})</button>
+    <button className="btn-checkout" onClick={onCheckout}>結帳 ({count})</button>
       </div>
     </div>
   );

@@ -9,7 +9,7 @@ export default function RecommendList({ items }) {
         <i className="fa-solid fa-heart"></i>你可能會感興趣的...
       </div>
       <div className="recommend-list">
-        {items.map((p, i) => (
+        {(items ?? []).map((p, i) => (
           <div key={i} className="recommend-item">
             <img src={p.img} alt={p.title} />
             <div className="recommend-item-title">{p.title}</div>

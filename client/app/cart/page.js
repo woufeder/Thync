@@ -11,6 +11,10 @@ import EmptyCartPage from "./emptyCart";
 
 export default function CartPage() {
   const [items, setItems] = useState([]);
+  const [couponCode, setCouponCode] = useState("");
+  const [discount, setDiscount] = useState(0);
+  // TODO: 取得登入會員 id，暫用假資料
+  const userId = 1;
   const recommend = Array(6).fill({
     img: "https://picsum.photos/id/1058/600/400",
     title: "A4tech 雙飛燕 Bloody S98",
@@ -25,6 +29,13 @@ export default function CartPage() {
     }
   }, []);
 
+  // 當 items 變動時，寫回 localStorage
+  useEffect(() => {
+    localStorage.setItem("cartItems", JSON.stringify(items));
+  }, [items]);
+
+
+
   return (
     <>
       <header>
@@ -36,10 +47,19 @@ export default function CartPage() {
         {items.length === 0 ? (
           <EmptyCartPage />
         ) : (
-          <CartListPage items={items} recommend={recommend} />
+          <CartListPage
+            items={items}
+            setItems={setItems}
+            recommend={recommend}
+            couponCode={couponCode}
+            setCouponCode={setCouponCode}
+            discount={discount}
+            setDiscount={setDiscount}
+            userId={userId}
+          />
         )}
         {/* 推薦商品區塊 */}
-        <RecommendList recommend={products} />
+        <RecommendList recommend={recommend} />
       </main>
       <footer>
         <Footer />
