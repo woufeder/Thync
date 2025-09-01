@@ -4,6 +4,8 @@ import style from '@/styles/products.css'
 import { useState, useEffect } from "react"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons"
+import Slider from "rc-slider";
+import "rc-slider/assets/index.css";
 
 
 
@@ -92,26 +94,27 @@ export default function Sidebar({
       </div>
 
       {/* 品牌 */}
-
-      <div className='brand-area form-check'>
+      <div className="brand-area">
         <h6>品牌</h6>
-        {/* 前 10 筆 */}
         {categories.brand.slice(0, 10).map((c) => (
-          <label key={c.id} className="form-check-label">
+          <div key={c.id} className="form-check">
             <input
               className="form-check-input"
               type="checkbox"
+              id={`brand-${c.id}`}   // 每個 checkbox 需要唯一 id
               value={c.id}
               checked={brands.includes(String(c.id))}
               onChange={BrandChange}
             />
-            {c.name}
-          </label>
+            <label className="form-check-label" htmlFor={`brand-${c.id}`}>
+              {c.name}
+            </label>
+          </div>
         ))}
 
         {/* 收合區域 */}
         <div className="collapse" id="moreBrands">
-          {categories.brand.slice(5).map((c) => (
+          {categories.brand.slice(10).map((c) => (
             <label key={c.id} className="form-check-label">
               <input
                 className="form-check-input"
@@ -126,82 +129,134 @@ export default function Sidebar({
         </div>
 
         {/* 切換按鈕 */}
-        {categories.brand.length > 5 && (
+        {categories.brand.length > 10 && (
           <button
-            className="btn btn-sm btn-outline-secondary mt-2"
+            className="btn brand-toggle mt-2"
             type="button"
             data-bs-toggle="collapse"
             data-bs-target="#moreBrands"
             onClick={() => setBrandExpanded(!brandExpanded)}
           >
-            {brandExpanded ? "收合 -" : "更多 +"}
+            {brandExpanded ? (
+              <>
+                收合 <FontAwesomeIcon icon={faMinus} />
+              </>
+            ) : (
+              <>
+                更多 <FontAwesomeIcon icon={faPlus} />
+              </>
+            )}
+
           </button>
         )}
       </div>
 
       {/* 屬性 */}
-      {filteredAttrs.map(attr => (
-        <div key={attr.id} style={{ marginBottom: "1rem" }}>
-          <strong>{attr.name}</strong>
-          <select
-            className="form-select"
-            value={options.find(id => attr.options.some(opt => String(opt.id) === id)) || ""}
-            onChange={e => {
-              const value = e.target.value
-              let newOptions = [...options]
+      <div className="attr-area">
+        <h6>規格</h6>
+        {filteredAttrs.map(attr => (
+          <div
+            className='select-group'
+            key={attr.id} >
+            <strong>{attr.name}</strong>
+            <select
+              className="form-select"
+              value={options.find(id => attr.options.some(opt => String(opt.id) === id)) || ""}
+              onChange={e => {
+                const value = e.target.value
+                let newOptions = [...options]
 
-              // 先把同一個屬性的舊選項移除
-              newOptions = newOptions.filter(id => !attr.options.some(opt => String(opt.id) === id))
+                // 先把同一個屬性的舊選項移除
+                newOptions = newOptions.filter(id => !attr.options.some(opt => String(opt.id) === id))
 
-              // 如果有新值就加進去
-              if (value) {
-                newOptions.push(value)
-              }
+                // 如果有新值就加進去
+                if (value) {
+                  newOptions.push(value)
+                }
 
-              // 更新狀態
-              setOptions(newOptions)
+                // 更新狀態
+                setOptions(newOptions)
 
-              // 更新 URL
-              const params = new URLSearchParams(window.location.search)
-              if (newOptions.length > 0) {
-                params.set("options", newOptions.join(","))
-              } else {
-                params.delete("options")
-              }
-              window.history.pushState({}, "", `?${params.toString()}`)
-            }}
-          >
-            <option value="">請選擇</option>
-            {attr.options.map(opt => (
-              <option key={opt.id} value={opt.id}>
-                {opt.value}
-              </option>
-            ))}
-          </select>
-        </div>
-      ))}
+                // 更新 URL
+                const params = new URLSearchParams(window.location.search)
+                if (newOptions.length > 0) {
+                  params.set("options", newOptions.join(","))
+                } else {
+                  params.delete("options")
+                }
+                window.history.pushState({}, "", `?${params.toString()}`)
+              }}
+            >
+              <option value="">請選擇</option>
+              {attr.options.map(opt => (
+                <option key={opt.id} value={opt.id}>
+                  {opt.value}
+                </option>
+              ))}
+            </select>
+          </div>
+        ))}
 
 
-      <div>
-        <strong>價格區間</strong>
+        {/* 價格區間 */}
         <div>
-          <input
-            type="number"
-            placeholder="最低"
-            value={priceMin}
-            onChange={(e) => setPriceMin(e.target.value)}
-          />
-          <input
-            type="number"
-            placeholder="最高"
-            value={priceMax}
-            onChange={(e) => setPriceMax(e.target.value)}
-          />
-          <button onClick={PriceChange}>套用篩選</button>
-          <button onClick={ClearFilters}>清除篩選</button>
+          <strong>價格區間</strong>
+          <div className="mt-2 mx-2">
+            {/* 雙滑桿 */}
+            <Slider
+              range
+              min={0}
+              max={69900}
+              step={100}
+              value={[Number(priceMin) || 0, Number(priceMax) || 69900]}
+              onChange={(vals) => {
+                setPriceMin(vals[0]);
+                setPriceMax(vals[1]);
+              }}
+              styles={{
+                track: { backgroundColor: "var(--Primary300)", height: 4 },
+                handle: {
+                  borderColor: "var(--Primary500)",
+                  backgroundColor: "var(--Primary500)",
+                  width: 20,
+                  height: 20,
+                  marginTop: -8,
+                },
+                rail: { backgroundColor: "#ddd", height: 4 }
+              }}
+            />
+
+            {/* 輸入框 */}
+            <div className="d-flex align-items-center justify-content-between mt-3">
+              <input
+                type="number"
+                className="form-control w-100"
+                placeholder="最低價"
+                value={priceMin}
+                onChange={(e) => setPriceMin(e.target.value)}
+              />
+              <span className='mx-2'>—</span>
+              <input
+                type="number"
+                className="form-control w-100"
+                placeholder="最高價"
+                value={priceMax}
+                onChange={(e) => setPriceMax(e.target.value)}
+              />
+            </div>
+
+            {/* 按鈕 */}
+            <div className="mt-2 d-flex gap-2">
+              <button className="btn btn-primary btn-sm" onClick={PriceChange}>
+                套用篩選
+              </button>
+              <button className="btn btn-outline-secondary btn-sm" onClick={ClearFilters}>
+                清除篩選
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-
 
     </aside>
   )
