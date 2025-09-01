@@ -1,0 +1,4 @@
+# 忽略 user-photo 資料夾下所有檔案
+client/public/images/users/user-photo/*
+# 可選：保留資料夾結構但不追蹤檔案
+!client/public/images/users/user-photo/.gitkeep

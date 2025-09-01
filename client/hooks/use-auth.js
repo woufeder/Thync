@@ -184,7 +184,7 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, login, logout, isLoading, list, users, add }}
+      value={{ user, login, logout, isLoading, list, users, setUser, add }}
     >
       {/* 這裡的第一個大括號表示要寫程式，第二個大括號表示要寫物件 */}
 
