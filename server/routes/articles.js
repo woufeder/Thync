@@ -257,7 +257,87 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+// 獲取隨機推薦文章 (排除當前文章)
+router.get("/:id/related", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { limit = 3 } = req.query;
+    
+    // 獲取當前文章的分類
+    const [currentArticle] = await connection.execute(
+      "SELECT category_id FROM articles WHERE id = ? AND (is_deleted = 0 OR is_deleted IS NULL)",
+      [id]
+    );
+    
+    if (currentArticle.length === 0) {
+      return res.status(404).json({
+        status: "error",
+        message: "文章不存在"
+      });
+    }
+    
+    const categoryId = currentArticle[0].category_id;
+    
+    // 先嘗試獲取相同分類的文章
+    let sql = `
+      SELECT 
+        a.id,
+        a.title,
+        a.content,
+        a.cover_image,
+        a.created_at,
+        a.views,
+        c.name AS category_name
+      FROM articles a
+      LEFT JOIN categories c ON a.category_id = c.id
+      WHERE a.id != ? 
+        AND (a.is_deleted = 0 OR a.is_deleted IS NULL)
+        AND a.category_id = ?
+      ORDER BY RAND()
+      LIMIT ?
+    `;
+    
+    let [relatedArticles] = await connection.execute(sql, [id, categoryId, parseInt(limit)]);
+    
+    // 如果相同分類的文章不足，補充其他文章
+    if (relatedArticles.length < parseInt(limit)) {
+      const remaining = parseInt(limit) - relatedArticles.length;
+      const excludeIds = [id, ...relatedArticles.map(article => article.id)];
+      
+      const placeholders = excludeIds.map(() => '?').join(',');
+      const otherSql = `
+        SELECT 
+          a.id,
+          a.title,
+          a.content,
+          a.cover_image,
+          a.created_at,
+          a.views,
+          c.name AS category_name
+        FROM articles a
+        LEFT JOIN categories c ON a.category_id = c.id
+        WHERE a.id NOT IN (${placeholders})
+          AND (a.is_deleted = 0 OR a.is_deleted IS NULL)
+        ORDER BY RAND()
+        LIMIT ?
+      `;
+      
+      const [otherArticles] = await connection.execute(otherSql, [...excludeIds, remaining]);
+      relatedArticles = [...relatedArticles, ...otherArticles];
+    }
 
-
+    res.status(200).json({
+      status: "success",
+      data: relatedArticles,
+      message: "已獲取相關文章推薦"
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: "error",
+      message: "獲取相關文章時發生錯誤"
+    });
+  }
+});
 
 export default router;

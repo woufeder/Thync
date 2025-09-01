@@ -3,12 +3,12 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Header from '../../_components/header'
 import Footer from '../../_components/footer'
+import RelatedArticles from '../../_components/articles/RelatedArticles'
 import '../../../styles/article-detail.css'
 
 export default function ArticlePage() {
     const params = useParams()
     const [article, setArticle] = useState(null)
-    const [relatedArticles, setRelatedArticles] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
 
@@ -32,13 +32,6 @@ export default function ArticlePage() {
                 }
                 const data = await response.json()
                 setArticle(data.data)
-                
-                // 獲取相關文章（暫時使用隨機文章）
-                const relatedResponse = await fetch('http://localhost:3007/api/articles?per_page=3')
-                if (relatedResponse.ok) {
-                    const relatedData = await relatedResponse.json()
-                    setRelatedArticles(relatedData.data.articles || [])
-                }
             } catch (err) {
                 setError(err.message)
             } finally {
@@ -242,7 +235,6 @@ export default function ArticlePage() {
                                     {/* Tags Section */}
                                     {article.tags && article.tags.length > 0 && (
                                         <div className="tags-section">
-                                            <h4 className="tags-title">相關標籤</h4>
                                             <div className="tags-container">
                                                 {article.tags.map((tag, index) => (
                                                     <span key={index} className="tag-enhanced">
@@ -257,14 +249,9 @@ export default function ArticlePage() {
                                         </div>
                                     )}
 
-                                    {/* Engagement Section */}
-                                    <div className="engagement-section">
-                                        <div className="engagement-header">
-                                            <h4 className="engagement-title">喜歡這篇文章嗎？</h4>
-                                            <p className="engagement-subtitle">支持作者並分享給更多人知道</p>
-                                        </div>
-                                        
-                                        <div className="engagement-actions">
+                                    {/* Engagement Actions */}
+                                    <div className="engagement-actions">
+                                        <div className="engagement-buttons">
                                             <button className="engagement-btn like-btn">
                                                 <div className="btn-icon">
                                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -321,48 +308,19 @@ export default function ArticlePage() {
                         </article>
 
                         {/* Related Articles Section */}
-                        {relatedArticles.length > 0 && (
-                            <section className="related-section">
-                                <div className="related-header">
-                                    <h2 className="related-title">相關文章推薦</h2>
-                                </div>
-                                
-                                <div className="related-articles">
-                                    {relatedArticles.slice(0, 3).map((relatedArticle) => (
-                                        <article key={relatedArticle.id} className="related-article">
-                                            <img 
-                                                src={relatedArticle.cover_image ? `/images/articles/${relatedArticle.cover_image}` : '/images/articleSample.jpg'} 
-                                                alt={relatedArticle.title} 
-                                                className="related-image"
-                                                loading="lazy"
-                                                decoding="async"
-                                                style={{
-                                                    imageRendering: 'high-quality'
-                                                }}
-                                                onError={(e) => {
-                                                    e.target.src = '/images/articleSample.jpg'
-                                                }}
-                                            />
-                                            <div className="related-content">
-                                                <div className="related-meta">
-                                                    <span className="related-date">{formatDate(relatedArticle.created_at)}</span>
-                                                    <div className="related-category">
-                                                        <span className="related-category-text">{relatedArticle.category_name || '未分類'}</span>
-                                                    </div>
-                                                </div>
-                                                <h3 className="related-article-title">{relatedArticle.title}</h3>
-                                                <p className="related-description">
-                                                    {relatedArticle.content ? 
-                                                        relatedArticle.content.substring(0, 100) + '...' : 
-                                                        '暫無描述'
-                                                    }
-                                                </p>
-                                            </div>
-                                        </article>
-                                    ))}
-                                </div>
-                            </section>
-                        )}
+                        <section className="related-section">
+                            <div className="related-header">
+                                <h2 className="related-title">相關文章推薦</h2>
+                                <p className="related-subtitle">發現更多精彩內容</p>
+                            </div>
+                            
+                            <div className="related-articles">
+                                <RelatedArticles 
+                                    currentArticleId={params.id} 
+                                    limit={3} 
+                                />
+                            </div>
+                        </section>
                     </div>
                 </div>
             </main>
