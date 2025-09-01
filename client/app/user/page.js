@@ -62,7 +62,8 @@ export default function UserPage() {
       reader.onload = (event) => {
         setFormData((prev) => ({
           ...prev,
-          img: event.target.result,
+          img: file, // 儲存檔案物件
+          imgPreview: event.target.result, // 預覽用
         }));
       };
       reader.readAsDataURL(file);
@@ -91,12 +92,16 @@ export default function UserPage() {
       // 準備表單資料
       const updateData = new FormData();
       for (const key in formData) {
-        if (key !== "account" && key !== "mail") {
-          const value =
-            formData[key] === undefined || formData[key] === null
-              ? ""
-              : formData[key];
-          updateData.append(key, value);
+        if (key !== "account" && key !== "mail" && key !== "imgPreview") {
+          if (key === "img" && formData.img instanceof File) {
+            updateData.append("img", formData.img);
+          } else {
+            const value =
+              formData[key] === undefined || formData[key] === null
+                ? ""
+                : formData[key];
+            updateData.append(key, value);
+          }
         }
       }
 
@@ -113,19 +118,30 @@ export default function UserPage() {
       console.log("更新結果:", result);
 
       if (result.status === "success") {
-        alert("個人資料更新成功！");
         console.log("API 回傳 user:", result.data.user);
         setUser(result.data.user);
-        setTimeout(() => {
-          console.log("setUser 後 user 狀態:", user);
-        }, 100);
-        // 確保 token 沒丟掉
-        const token = localStorage.getItem("reactLoginToken");
-        if (token) {
-          localStorage.setItem("reactLoginToken", token);
-        }
+
+        // 更新 formData 以反映服務器的最新狀態
+        setFormData({
+          account: result.data.user.account ?? "",
+          mail: result.data.user.mail ?? "",
+          name: result.data.user.name ?? "",
+          phone: result.data.user.phone ?? "",
+          gender_id:
+            result.data.user.gender_id != null
+              ? String(result.data.user.gender_id)
+              : "",
+          year: result.data.user.year ?? "",
+          month: result.data.user.month ?? "",
+          date: result.data.user.date ?? "",
+          city_id: result.data.user.city_id ?? "",
+          address: result.data.user.address ?? "",
+          img: result.data.user.img ?? "",
+          imgPreview: null, // 清除預覽
+        });
+
         setIsEditing(false);
-        alert("更新成功！");
+        alert("個人資料更新成功！");
       } else {
         alert(result.message || "更新失敗");
       }
@@ -191,10 +207,10 @@ export default function UserPage() {
                     <div className="avatar-bg" onClick={handleImageClick}>
                       <img
                         src={
-                          formData.img
-                            ? formData.img.startsWith("data:")
-                              ? formData.img
-                              : formData.img.startsWith("http")
+                          formData.imgPreview
+                            ? formData.imgPreview
+                            : formData.img && typeof formData.img === "string"
+                            ? formData.img.startsWith("http")
                               ? formData.img
                               : `/images/users/user-photo/${formData.img}`
                             : "/images/users/user-photo/user.jpg"

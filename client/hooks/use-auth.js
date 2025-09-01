@@ -156,7 +156,7 @@ export function AuthProvider({ children }) {
   };
 
   // 沒有登入不能夠觀看2
-  
+
   // useEffect(() => {
   //   if (!isLoading && !user && protectedRoutes.includes(pathname)) {
   //     window.location.href = loginRoute;
@@ -166,13 +166,13 @@ export function AuthProvider({ children }) {
   // 驗證登入狀態 & 同步最新 user 資料
   useEffect(() => {
     const checkToken = async () => {
-    const API = "http://localhost:3007/api/users/status";
-    const token = localStorage.getItem(appKey);
-    if (!token) {
-      setUser(null);
-      setIsLoading(false);
-      return;
-    }
+      const API = "http://localhost:3007/api/users/status";
+      const token = localStorage.getItem(appKey);
+      if (!token) {
+        setUser(null);
+        setIsLoading(false);
+        return;
+      }
       try {
         const res = await fetch(API, {
           method: "POST",
@@ -181,7 +181,7 @@ export function AuthProvider({ children }) {
           },
         });
         const result = await res.json();
-         console.log("status result:", result);
+        console.log("status result:", result);
         if (result.status === "success") {
           const newToken = result.data.token;
           const basicUser = result.data.user;
@@ -217,11 +217,11 @@ export function AuthProvider({ children }) {
 
   // 路由保護
   useEffect(() => {
-      const token = localStorage.getItem(appKey);
-      if (!isLoading && !user && !token && protectedRoutes.includes(pathname)) {
-        router.replace(loginRoute);
-      }
-    }, [isLoading, user, pathname]);
+    const token = localStorage.getItem(appKey);
+    if (!isLoading && !user && !token && protectedRoutes.includes(pathname)) {
+      router.replace(loginRoute);
+    }
+  }, [isLoading, user, pathname]);
 
   return (
     <AuthContext.Provider

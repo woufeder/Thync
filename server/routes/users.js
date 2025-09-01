@@ -6,10 +6,44 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import mysql from "mysql2/promise";
 import connection from "../connect.js";
+import { fileURLToPath } from "url";
 
-const upload = multer();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const secretKey = process.env.JWT_SECRET_KEY;
 const router = express.Router();
+// 上傳圖片邏輯
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadPath = path.join(
+      __dirname,
+      "../../client/public/images/users/user-photo/"
+    );
+    cb(null, uploadPath);
+  },
+  filename: function (req, file, cb) {
+    // 生成唯一文件名
+    const uniqueName =
+      Date.now() + "-" + file.originalname + path.extname(file.originalname);
+    cb(null, uniqueName);
+  },
+});
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB 限制
+  },
+  fileFilter: function (req, file, cb) {
+    // 只允許圖片文件
+    if (file.mimetype.startsWith("image/")) {
+      cb(null, true);
+    } else {
+      cb(new Error("只允許上傳圖片文件"));
+    }
+  },
+});
 
 // route(s) 路由規則(們)
 // routers (路由物件器)
@@ -178,8 +212,7 @@ router.post("/", upload.none(), async (req, res) => {
 });
 
 // 更新(特定 ID 的)使用者
-// 替換你現有的 PUT 路由
-router.put("/:account", upload.any(), async (req, res) => {
+router.put("/:account", upload.single("img"), async (req, res) => {
   try {
     const account = req.params.account;
     if (!account) throw new Error("請提供使用者帳號");
@@ -199,8 +232,9 @@ router.put("/:account", upload.any(), async (req, res) => {
 
     // 圖片處理
     let img = null;
-    if (req.files && req.files.length > 0) {
-      img = req.files[0].filename;
+    if (req.file) {
+      img = req.file.filename; // 這裡現在會有正確的文件名
+      console.log("上傳的圖片文件名:", img);
     }
 
     // 執行更新
@@ -231,7 +265,7 @@ router.put("/:account", upload.any(), async (req, res) => {
 
     await connection.execute(sql, params);
 
-    // 🔥 關鍵修改：取得更新後的完整用戶資料
+    // 取得更新後的完整用戶資料
     const sqlGetUser = "SELECT * FROM `users` WHERE `account` = ?;";
     const updatedUser = await connection
       .execute(sqlGetUser, [account])
@@ -259,6 +293,8 @@ router.put("/:account", upload.any(), async (req, res) => {
       message: error.message || "更新失敗",
     });
   }
+  console.log("req.body:", req.body);
+  console.log("req.file:", req.file);
 });
 
 // 刪除(特定 ID 的)使用者
