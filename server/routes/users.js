@@ -1,5 +1,7 @@
 import express from "express";
 import multer from "multer";
+import path from "path";
+import fs from "fs";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import mysql from "mysql2/promise";
@@ -176,13 +178,83 @@ router.post("/", upload.none(), async (req, res) => {
 });
 
 // 更新(特定 ID 的)使用者
-router.put("/:id", (req, res) => {
-  const id = req.params.id;
-  res.status(200).json({
-    status: "success",
-    data: { id },
-    message: "更新(特定 ID 的)使用者 成功",
-  });
+// 替換你現有的 PUT 路由
+router.put("/:account", upload.any(), async (req, res) => {
+  try {
+    const account = req.params.account;
+    if (!account) throw new Error("請提供使用者帳號");
+
+    // 取得要更新的欄位
+    let {
+      name,
+      phone,
+      gender_id,
+      year,
+      month,
+      date,
+      city_id,
+      address,
+    } = req.body;
+
+    // 修正空值型別
+    if (city_id === "" || city_id === "null" || city_id === undefined)
+      city_id = null;
+    if (gender_id === "" || gender_id === "null" || gender_id === undefined)
+      gender_id = null;
+
+    // 圖片處理
+    let img = null;
+    if (req.files && req.files.length > 0) {
+      img = req.files[0].filename;
+    }
+
+    // 執行更新
+    const sql = `
+      UPDATE users SET
+        name = ?,
+        phone = ?,
+        gender_id = ?,
+        year = ?,
+        month = ?,
+        date = ?,
+        city_id = ?,
+        address = ?${img ? ", img = ?" : ""}
+      WHERE account = ?;
+    `;
+    const params = [name, phone, gender_id, year, month, date, city_id, address];
+    if (img) params.push(img);
+    params.push(account);
+
+    await connection.execute(sql, params);
+
+    // 🔥 關鍵修改：取得更新後的完整用戶資料
+    const sqlGetUser = "SELECT * FROM `users` WHERE `account` = ?;";
+    const updatedUser = await connection.execute(sqlGetUser, [account])
+      .then(([result]) => result[0]);
+
+    if (!updatedUser) {
+      throw new Error("無法取得更新後的使用者資料");
+    }
+
+    // 排除敏感資料
+    const { id, password, ...userData } = updatedUser;
+
+    // 回傳前端期待的格式
+    res.status(200).json({
+      status: "success",
+      data: { 
+        user: userData 
+      },
+      message: "更新成功",
+    });
+
+  } catch (error) {
+    console.error("更新錯誤:", error);
+    res.status(500).json({
+      status: "error",
+      message: error.message || "更新失敗",
+    });
+  }
 });
 
 // 刪除(特定 ID 的)使用者
