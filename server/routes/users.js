@@ -296,14 +296,29 @@ router.put("/:account", upload.single("img"), async (req, res) => {
   console.log("req.file:", req.file);
 });
 
-// 刪除(特定 ID 的)使用者
-router.delete("/:id", (req, res) => {
-  const id = req.params.id;
-  res.status(200).json({
-    status: "success",
-    data: { id },
-    message: "刪除(特定 ID 的)使用者 成功",
-  });
+// 刪除(特定帳號的)使用者
+router.delete("/:account", async (req, res) => {
+  try {
+    const account = req.params.account;
+    if (!account) throw new Error("請提供使用者帳號");
+
+    const sql = "DELETE FROM users WHERE account = ?;";
+    const [result] = await connection.execute(sql, [account]);
+
+    if (result.affectedRows === 0) {
+      throw new Error("找不到該帳號，刪除失敗");
+    }
+
+    res.status(200).json({
+      status: "success",
+      message: "帳號已成功刪除",
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: error.message || "刪除失敗",
+    });
+  }
 });
 
 // 使用者登入

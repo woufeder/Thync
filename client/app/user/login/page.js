@@ -160,7 +160,7 @@ export default function UserLoginPage() {
       <div className="container1">
         <div className="left">
           <div className="block1">
-            <header>
+            <div className="header">
               <img src="/images/users/LOGO_3.png" alt="" />
               <h1 className="register-title">會員登入</h1>
               <div className="toggle">
@@ -171,7 +171,7 @@ export default function UserLoginPage() {
                   註冊
                 </Link>
               </div>
-            </header>
+            </div>
             <main>
               <form
                 id="login-form"

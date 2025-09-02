@@ -158,7 +158,7 @@ export default function UserAddPage() {
       <div className="container1">
         <div className="left">
           <div className="block1">
-            <header>
+            <div className="header">
               <img src="/images/users/LOGO_3.png" alt="" />
               <h1 className="register-title">會員註冊</h1>
               <div className="toggle">
@@ -169,7 +169,7 @@ export default function UserAddPage() {
                   註冊
                 </Link>
               </div>
-            </header>
+            </div>
             <main>
               <form
                 id="register-form"
