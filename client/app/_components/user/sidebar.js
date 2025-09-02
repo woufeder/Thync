@@ -2,8 +2,9 @@ import React from "react";
 import styles from "@/styles/user-center.css";
 import { useAuth } from "@/hooks/use-auth";
 
-const Sidebar = () => {
+export default function Sidebar() {
   const { user } = useAuth();
+
   return (
     <>
       <div className="sidebar me-4">
@@ -11,15 +12,23 @@ const Sidebar = () => {
           <div className="profile">
             <div className="avatar-wrapper">
               <div className="avatar">
-                <img src={user?.img} alt="avatar" />
-                <div className="camera">
-                  <i className="fa-solid fa-camera"></i>
-                </div>
+                <img
+                  src={
+                    user?.img
+                      ? user.img.startsWith("data:")
+                        ? user.img
+                        : user.img.startsWith("http")
+                        ? user.img
+                        : `/images/users/user-photo/${user.img}`
+                      : "/images/users/user-photo/user.jpg"
+                  }
+                  alt="avatar"
+                />
               </div>
             </div>
             <div className="greet">
               <div className="greet-word">您好！</div>
-              <div className="user-name">{user?.account || "未登入"}</div>
+              <div className="user-name">{user?.account}</div>
             </div>
           </div>
           <nav className="menu">
@@ -64,6 +73,4 @@ const Sidebar = () => {
       </div>
     </>
   );
-};
-
-export default Sidebar;
+}

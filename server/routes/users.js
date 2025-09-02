@@ -1,13 +1,48 @@
 import express from "express";
 import multer from "multer";
+import path from "path";
+import fs from "fs";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import mysql from "mysql2/promise";
 import connection from "../connect.js";
+import { fileURLToPath } from "url";
 
-const upload = multer();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const secretKey = process.env.JWT_SECRET_KEY;
 const router = express.Router();
+// 上傳圖片邏輯
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadPath = path.join(
+      __dirname,
+      "../../client/public/images/users/user-photo/"
+    );
+    cb(null, uploadPath);
+  },
+  filename: function (req, file, cb) {
+    // 生成唯一文件名
+    const uniqueName = Date.now() + "-" + file.originalname;
+    cb(null, uniqueName);
+  },
+});
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB 限制
+  },
+  fileFilter: function (req, file, cb) {
+    // 只允許圖片文件
+    if (file.mimetype.startsWith("image/")) {
+      cb(null, true);
+    } else {
+      cb(new Error("只允許上傳圖片文件"));
+    }
+  },
+});
 
 // route(s) 路由規則(們)
 // routers (路由物件器)
@@ -176,13 +211,89 @@ router.post("/", upload.none(), async (req, res) => {
 });
 
 // 更新(特定 ID 的)使用者
-router.put("/:id", (req, res) => {
-  const id = req.params.id;
-  res.status(200).json({
-    status: "success",
-    data: { id },
-    message: "更新(特定 ID 的)使用者 成功",
-  });
+router.put("/:account", upload.single("img"), async (req, res) => {
+  try {
+    const account = req.params.account;
+    if (!account) throw new Error("請提供使用者帳號");
+
+    // 取得要更新的欄位
+    let { name, phone, gender_id, year, month, date, city_id, address } =
+      req.body;
+
+    // 修正空值型別
+    if (city_id === "" || city_id === "null" || city_id === undefined)
+      city_id = null;
+    if (gender_id === "" || gender_id === "null" || gender_id === undefined)
+      gender_id = null;
+    if (year === "" || year === "null" || year === undefined) year = null;
+    if (month === "" || month === "null" || month === undefined) month = null;
+    if (date === "" || date === "null" || date === undefined) date = null;
+
+    // 圖片處理
+    let img = null;
+    if (req.file) {
+      img = req.file.filename; // 這裡現在會有正確的文件名
+      console.log("上傳的圖片文件名:", img);
+    }
+
+    // 執行更新
+    const sql = `
+      UPDATE users SET
+        name = ?,
+        phone = ?,
+        gender_id = ?,
+        year = ?,
+        month = ?,
+        date = ?,
+        city_id = ?,
+        address = ?${img ? ", img = ?" : ""}
+      WHERE account = ?;
+    `;
+    const params = [
+      name,
+      phone,
+      gender_id,
+      year,
+      month,
+      date,
+      city_id,
+      address,
+    ];
+    if (img) params.push(img);
+    params.push(account);
+
+    await connection.execute(sql, params);
+
+    // 取得更新後的完整用戶資料
+    const sqlGetUser = "SELECT * FROM `users` WHERE `account` = ?;";
+    const updatedUser = await connection
+      .execute(sqlGetUser, [account])
+      .then(([result]) => result[0]);
+
+    if (!updatedUser) {
+      throw new Error("無法取得更新後的使用者資料");
+    }
+
+    // 排除敏感資料
+    const { id, password, ...userData } = updatedUser;
+
+    // 回傳前端期待的格式
+    res.status(200).json({
+      status: "success",
+      data: {
+        user: userData,
+      },
+      message: "更新成功",
+    });
+  } catch (error) {
+    console.error("更新錯誤:", error);
+    res.status(500).json({
+      status: "error",
+      message: error.message || "更新失敗",
+    });
+  }
+  console.log("req.body:", req.body);
+  console.log("req.file:", req.file);
 });
 
 // 刪除(特定 ID 的)使用者
@@ -234,6 +345,7 @@ router.post("/login", upload.none(), async (req, res) => {
     );
 
     const newUser = {
+      account: user.account,
       mail: user.mail,
       img: user.img,
     };
@@ -322,6 +434,7 @@ router.post("/status", checkToken, async (req, res) => {
     );
 
     const newUser = {
+      account: user.account,
       mail: user.mail,
       img: user.img,
     };

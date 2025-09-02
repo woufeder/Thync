@@ -24,43 +24,60 @@ export function AuthProvider({ children }) {
   // 定義需登入才能訪問的路由列表
   const protectedRoutes = ["/user"];
 
+  // 登入
   const login = async (mail, password) => {
-    console.log(`在 use-auth.js 裡面，登入帳號: ${mail} 密碼: ${password}`);
-    const API = "http://localhost:3007/api/users/login";
-    // 創建表單資料物件模仿 HTML 表單提交的資料格式
-    const formData = new FormData();
-    // 添加 key value pair 資料
-    formData.append("mail", mail);
-    formData.append("password", password);
-    // 這裡的formData是用來傳送表單資料的
-
     try {
+      const API = "http://localhost:3007/api/users/login";
+      // 創建表單資料物件模仿 HTML 表單提交的資料格式
+      const formData = new FormData();
+      // 添加 key value pair 資料
+      formData.append("mail", mail);
+      formData.append("password", password);
+      // 這裡的formData是用來傳送表單資料的
+
       const res = await fetch(API, {
         method: "POST",
         body: formData,
       });
       const result = await res.json();
       // 這裡的result是從API回傳的資料
-      console.log(result);
+      console.log("login result:", result);
       if (result.status === "success") {
         console.log("登入成功");
         alert(result.message);
 
         const token = result.data.token;
-        // 這裡的setUser是用來設定登入後的使用者資料
-        setUser(result.data.user);
+        const basicUser = result.data.user;
+
         // 存 token 到瀏覽器的 localStorage
         localStorage.setItem(appKey, token);
         // 這樣下次進來的時候就可以從localStorage裡面取出token
+
+        // 再去拿完整 profile
+        const profileRes = await fetch(
+          `http://localhost:3007/api/users/${basicUser.account}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        const profile = await profileRes.json();
+
+        // 這裡的setUser是用來設定登入後的使用者資料
+        if (profile.status === "success") {
+          setUser(profile.data); // 完整 user
+        } else {
+          setUser(basicUser); // fallback
+        }
+
+        router.replace("/user");
       } else {
         console.log("登入失敗");
         alert(result.message);
       }
     } catch (error) {
-      console.log(error);
+      console.error("login error:", error);
     }
   };
 
+  // 登出
   const logout = async () => {
     console.log("logout");
     const API = "http://localhost:3007/api/users/logout";
@@ -84,30 +101,29 @@ export function AuthProvider({ children }) {
       }
       // 即使登出失敗，還是要強制清除狀態
     } catch (error) {
-      console.log(`解析token失敗: ${error.message}`);
+      console.error("logout error:", error);
+    } finally {
       setUser(null);
       localStorage.removeItem(appKey);
-      alert(error.message);
+      router.replace(loginRoute);
     }
   };
-
+  // 註冊
   const add = async (account, mail, password) => {
-    console.log(`在 use-auth.js 裡面，註冊帳號: ${account} 密碼: ${password}`);
-    const API = "http://localhost:3007/api/users";
-    const formData = new FormData();
-    formData.append("account", account);
-    formData.append("mail", mail);
-    formData.append("password", password);
-
     try {
-      const res = await fetch(API, {
-        method: "POST",
-        body: formData,
-      });
+      const API = "http://localhost:3007/api/users";
+      const formData = new FormData();
+      formData.append("account", account);
+      formData.append("mail", mail);
+      formData.append("password", password);
+
+      const res = await fetch(API, { method: "POST", body: formData });
       const result = await res.json();
-      console.log(result);
+      console.log("register result:", result);
+
       if (result.status === "success") {
         console.log("註冊成功");
+
         alert(result.message);
         router.replace("/user/login");
       } else {
@@ -115,8 +131,8 @@ export function AuthProvider({ children }) {
         alert(result.message);
       }
     } catch (error) {
-      console.log(`註冊失敗: ${error.message}`);
-      alert(error.message);
+      console.log("註冊失敗");
+      console.error("register error:", error);
     }
   };
 
@@ -140,23 +156,23 @@ export function AuthProvider({ children }) {
   };
 
   // 沒有登入不能夠觀看2
-  // 路由保護
-  useEffect(() => {
-    if (!isLoading && !user && protectedRoutes.includes(pathname)) {
-      router.replace(loginRoute);
-    }
-  }, [isLoading, user, pathname]);
 
-  // Token 驗證
+  // useEffect(() => {
+  //   if (!isLoading && !user && protectedRoutes.includes(pathname)) {
+  //     window.location.href = loginRoute;
+  //   }
+  // }, [isLoading, user, pathname]);
+
+  // 驗證登入狀態 & 同步最新 user 資料
   useEffect(() => {
-    const API = "http://localhost:3007/api/users/status";
-    const token = localStorage.getItem(appKey);
-    if (!token) {
-      setUser(null);
-      setIsLoading(false);
-      return;
-    }
     const checkToken = async () => {
+      const API = "http://localhost:3007/api/users/status";
+      const token = localStorage.getItem(appKey);
+      if (!token) {
+        setUser(null);
+        setIsLoading(false);
+        return;
+      }
       try {
         const res = await fetch(API, {
           method: "POST",
@@ -165,26 +181,51 @@ export function AuthProvider({ children }) {
           },
         });
         const result = await res.json();
+        console.log("status result:", result);
         if (result.status === "success") {
-          const token = result.data.token;
-          setUser(result.data.user);
-          localStorage.setItem(appKey, token);
-          setIsLoading(false);
+          const newToken = result.data.token;
+          const basicUser = result.data.user;
+
+          // 存新的 token
+          localStorage.setItem(appKey, newToken);
+
+          // 再去撈完整 user profile
+          const profileRes = await fetch(
+            `http://localhost:3007/api/users/${basicUser.account}`,
+            { headers: { Authorization: `Bearer ${newToken}` } }
+          );
+          const profile = await profileRes.json();
+
+          if (profile.status === "success") {
+            setUser(profile.data);
+          } else {
+            setUser(basicUser);
+          }
         } else {
-          setIsLoading(false);
+          // ⚠️ 這裡修改：不要立刻登出，保留現有 user
+          console.warn("status 驗證失敗，保留現有登入狀態");
         }
       } catch (error) {
-        console.log(`解析token失敗: ${error.message}`);
-        setUser(null);
-        localStorage.removeItem(appKey);
+        console.error("status check error:", error);
+        // ⚠️ 這裡修改：不要立刻登出，保留現有 user
+      } finally {
+        setIsLoading(false);
       }
     };
     checkToken();
   }, []);
 
+  // 路由保護
+  useEffect(() => {
+    const token = localStorage.getItem(appKey);
+    if (!isLoading && !user && !token && protectedRoutes.includes(pathname)) {
+      router.replace(loginRoute);
+    }
+  }, [isLoading, user, pathname]);
+
   return (
     <AuthContext.Provider
-      value={{ user, login, logout, isLoading, list, users, add }}
+      value={{ user, login, logout, isLoading, list, users, setUser, add }}
     >
       {/* 這裡的第一個大括號表示要寫程式，第二個大括號表示要寫物件 */}
 
@@ -194,4 +235,4 @@ export function AuthProvider({ children }) {
 }
 
 export const useAuth = () => useContext(AuthContext);
-// 有省略大括號，原本應該是{useContext(AuthContext)}
+// 省略大括號，原本應該是{useContext(AuthContext)}

@@ -40,5 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+/public/images/articles/*
 # 商品圖片
 /public/images/products/uploads

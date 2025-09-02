@@ -12,7 +12,7 @@ CREATE TABLE city (
 );
 CREATE TABLE `users` (
   `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
-  `name` VARCHAR(50) NOT NULL,
+  `name` VARCHAR(50),
   `mail` VARCHAR(255) NOT NULL UNIQUE, 
   `password` VARCHAR(255) NOT NULL, 
   `gender_id` INT,
@@ -25,7 +25,7 @@ CREATE TABLE `users` (
   `date` TINYINT,
   `create_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `update_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `img` VARCHAR(50),
+  `img` VARCHAR(255),
   `is_valid` TINYINT NOT NULL DEFAULT 1,
   FOREIGN KEY (gender_id) REFERENCES gender(id),
   FOREIGN KEY (city_id) REFERENCES city(id)

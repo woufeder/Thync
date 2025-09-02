@@ -96,7 +96,12 @@ router.post("/validate", async (req, res) => {
         .json({ valid: false, message: "優惠碼無效或已過期" });
     }
 
-    res.json({ valid: true, coupon: rows[0] });
+    res.json({
+      valid: true,
+      discount: rows[0].value,
+      message: "折扣碼有效",
+      coupon: rows[0],
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
