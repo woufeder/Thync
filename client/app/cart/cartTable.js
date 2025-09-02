@@ -15,7 +15,8 @@ export default function CartTable({ items, onQtyChange, onRemove }) {
         {items.map((item, i) => (
           <tr key={i}>
             <td className="product-info">
-              <img src={item.img} alt={item.title} />
+              {console.log(item.img)}
+              <img src={item.image} alt={item.title} />
               <span>{item.title}</span>
             </td>
             <td>{item.priceNum || 0}</td>
