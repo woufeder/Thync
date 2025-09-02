@@ -7,7 +7,9 @@ import Breadcrumb from "@/app/_components/breadCrumb"
 import Header from "@/app/_components/header";
 import Footer from "@/app/_components/footer";
 import Sidebar from "@/app/_components/products/Sidebar";
+import ProductCard from "@/app/_components/products/ProductCard"
 import Link from "next/link"
+
 
 export default function ProductPage() {
   const router = useRouter()
@@ -166,7 +168,7 @@ export default function ProductPage() {
     ? attributes.filter(attr => String(attr.main_id) === mid)
     : attributes
 
-{isLoading && <div className="container">Loading......</div>}
+  { isLoading && <div className="container">Loading......</div> }
 
   return (
     <>
@@ -194,25 +196,10 @@ export default function ProductPage() {
         />
         <main>
           <Breadcrumb />
-          <div>
-            {products.map((p) => (
-              <Link key={p.id} href={`/products/${p.id}`}>
-                <div className="card">
-                  <img
-                    src={
-                      p.first_image
-                        ? `/images/products/uploads/${p.first_image}`
-                        : "/images/no-image.png"
-                    }
-                    alt={p.name}
-                    className="card-img-top"
-                  />
-                  <div className="card-body">
-                    <p>{p.name}</p>
-                    <p>${p.price}</p>
-                  </div>
-                </div>
-              </Link>
+
+          <div className="product-list">
+            {products.map((p, index) => (
+              <ProductCard key={index + 1} p={p} />
             ))}
           </div>
 
@@ -264,6 +251,8 @@ export default function ProductPage() {
               </ul>
             </nav>
           )}
+
+
         </main>
       </div>
       <Footer />
