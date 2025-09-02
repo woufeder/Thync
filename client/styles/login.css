@@ -41,14 +41,14 @@ body {
 .block1 {
   width: calc(90% - 6rem);
 }
-header {
+.header {
   display: flex;
   flex-direction: column;
 }
 img {
   width: 129px;
 }
-header h1 {
+.header h1 {
   font-size: 3rem;
   align-self: center;
   background: linear-gradient(92deg, #304a6f 0%, #94afca 100%);
@@ -263,11 +263,11 @@ form {
   .block1 {
     width: 100%;
   }
-  header img {
+  .header img {
     align-self: center;
     width: 10rem;
   }
-  header h1 {
+  .header h1 {
     display: none;
   }
   .toggle {

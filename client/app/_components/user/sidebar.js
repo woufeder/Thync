@@ -1,9 +1,12 @@
 import React from "react";
+import Link from "next/link";
 import styles from "@/styles/user-center.css";
+import { usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 
 export default function Sidebar() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const pathname = usePathname();
 
   return (
     <>
@@ -32,42 +35,72 @@ export default function Sidebar() {
             </div>
           </div>
           <nav className="menu">
-            <a href="#">
+            <Link
+              href="/user/edit"
+              className={`menu-link${
+                pathname.startsWith("/user/edit") ? " active" : ""
+              }`}
+            >
               <i className="fa-solid fa-user"></i>會員資料管理
-            </a>
-            <a href="#">
+            </Link>
+            <Link
+              href="/user/訂單路由"
+              className={`menu-link${
+                pathname === "/user/訂單路由" ? " active" : ""
+              }`}
+            >
               <span className="icon">
                 <i className="fa-solid fa-gift"></i>
               </span>
               訂單查詢
-            </a>
-            <a href="#">
+            </Link>
+            <Link
+              href="/user/notify"
+              className={`menu-link${
+                pathname === "/user/notify" ? " active" : ""
+              }`}
+            >
               <span className="icon">
                 <i className="fa-solid fa-bell"></i>
               </span>
               貨到通知
-            </a>
-            <a href="#">
+            </Link>
+            <Link
+              href="/user/優惠券路由"
+              className={`menu-link${
+                pathname === "/user/優惠券路由" ? " active" : ""
+              }`}
+            >
               <span className="icon">
                 <i className="fa-solid fa-ticket"></i>
               </span>
               我的優惠券
-            </a>
-            <a href="#">
+            </Link>
+            <Link
+              href="/user/追蹤商品路由"
+              className={`menu-link${
+                pathname === "/user/追蹤商品路由" ? " active" : ""
+              }`}
+            >
               <span className="icon">
                 <i className="fa-solid fa-heart"></i>
               </span>
               追蹤商品
-            </a>
-            <a href="#">
+            </Link>
+            <Link
+              href="/user/收藏文章路由"
+              className={`menu-link${
+                pathname === "/user/收藏文章路由" ? " active" : ""
+              }`}
+            >
               <span className="icon">
                 <i className="fa-solid fa-bookmark"></i>
               </span>
               已收藏文章
-            </a>
+            </Link>
           </nav>
         </div>
-        <button className="logout">
+        <button className="logout" onClick={logout}>
           <i className="fa-solid fa-right-to-bracket"></i>登出
         </button>
       </div>
