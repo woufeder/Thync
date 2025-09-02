@@ -42,8 +42,6 @@ app.use("/api/cart", cartRouter);
 app.use("/api/coupon", couponRouter);
 app.use("/api/articles", articlesRouter);
 
-
-
 app.listen(3007, ()=>{
   console.log("主機啟動 http://localhost:3007");
 });
