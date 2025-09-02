@@ -11,9 +11,9 @@
 .cart-main {
   position: relative;
   flex: 3;
-  background: #f7f6f2;
+  background: var(--Secondary100);
   border-radius: 6px;
-  box-shadow: 0 4px 4px rgba(39, 74, 120, 0.4);
+  box-shadow: var(--card-shadow);
 }
 
 .cart-main::before {
@@ -24,7 +24,7 @@
   height: 5px;
   width: 100%;
   border-radius: 6px 6px 0 0;
-  background: linear-gradient(90deg, #88a2bf, #375177);
+  background: linear-gradient(90deg, var(--Primary300), var(--Primary800));
   z-index: 1;
 }
 
@@ -35,18 +35,18 @@
 
 .cart-table th,
 .cart-table td {
-  color: #375177;
+  color: var(--Primary800);
   padding: 24px 12px;
   border-bottom: 1px solid #eee;
   text-align: center;
 }
 
 thead {
-  background: #f7f6f2;
+  background: var(--Secondary100);
   box-shadow: 0 4px 4px rgba(39, 74, 120, 0.15);
   padding: 16px 12px;
   text-align: center;
-  color: #375177;
+  color: var(--Primary800);
   font-weight: bold;
   border: none;
 }
@@ -71,14 +71,14 @@ thead {
   height: 40px;
   background-color: #f7f6f2;
   border-style: none;
-  color: #375177;
+  color: var(--Primary800);
   font-size: 15px !important;
   font-weight: 600;
   cursor: pointer;
 }
 
 .btn-remove {
-  background: #e74c3c;
+  background: var(--Danger500);
   color: #fff;
   border: none;
   padding: 10px 25px;
@@ -97,18 +97,18 @@ thead {
 .inputcoupon {
   flex: 1;
   padding: 8px;
-  border: 1px solid #88a2bf;
+  border: 1px solid var(--Primary300);
   border-right: none;
   border-radius: 4px 0 0 4px;
   font-size: 14px;
-  background-color: #f7f6f2;
+  background-color: var(--Secondary100);
 }
 
 .btn-use {
   padding: 8px 16px;
-  border: 1px solid #88a2bf;
+  border: 1px solid var(--Primary300);
   border-radius: 0 4px 4px 0;
-  background: #375177;
+  background: var(--Primary500);
   color: #fff;
   cursor: pointer;
   font-size: 14px;
@@ -117,7 +117,7 @@ thead {
 /* 結帳明細 */
 .cart-summary {
   position: relative;
-  background: #f7f6f2;
+  background: var(--Secondary100);
   border-radius: 6px;
   flex: 1;
   max-width: 350px;
@@ -132,7 +132,7 @@ thead {
   left: 0;
   right: 0;
   height: 5px;
-  background: linear-gradient(90deg, #88a2bf, #375177);
+  background: linear-gradient(90deg, var(--Primary300), var(--Primary800));
   border-radius: 6px 6px 0 0;
   z-index: 1;
 }
@@ -141,9 +141,9 @@ thead {
   margin: 0 0 12px;
   padding: 20px 8px;
   text-align: center;
-  color: #375177;
+  color: var(--Primary800);
   font-weight: 700;
-  background: #f7f6f2;
+  background: var(--Secondary100);
   box-shadow: 0 4px 4px rgba(39, 74, 120, 0.15);
   border-top: none;
   border-left: none;
@@ -165,7 +165,7 @@ thead {
   justify-content: space-between;
   align-items: center;
   padding: 12px 4px;
-  color: #375177;
+  color: var(--Primary800);
 }
 
 .cart-summary li:last-child {
@@ -181,7 +181,7 @@ thead {
 
 .btn-checkout {
   width: 50%;
-  background: #e74c3c;
+  background: var(--Danger500);
   color: #fff;
   border: 0;
   margin: 90px auto 0 auto;
@@ -201,7 +201,7 @@ thead {
 }
 
 .summary-list .label {
-  color: #375177;
+  color: var(--Primary800);
   font-weight: normal;
 }
 
@@ -218,7 +218,7 @@ thead {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #375177;
+  color: var(--Primary800);
   cursor: pointer;
   font-weight: normal;
   padding: 4px 8px 4px 20px;
@@ -266,18 +266,18 @@ thead {
 .cs-option {
   padding: 6px 8px;
   text-align: center;
-  color: #375177;
+  color: var(--Primary800);
   cursor: pointer;
   user-select: none;
   font-weight: normal;
 }
 
 .cs-option:hover {
-  background: #e8f0f7;
+  background: var(--Secondary100);
 }
 
 .cs-option.is-selected {
-  background: #dfe9f3;
+  background: var(--Secondary100);
   font-weight: normal;
 }
 

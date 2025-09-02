@@ -1,4 +1,5 @@
 import "./cart.css";
+
 export default function CartTable({ items, onQtyChange, onRemove }) {
   return (
     <table className="cart-table">
@@ -15,9 +16,8 @@ export default function CartTable({ items, onQtyChange, onRemove }) {
         {items.map((item, i) => (
           <tr key={i}>
             <td className="product-info">
-              {console.log(item.img)}
-              <img src={item.image} alt={item.title} />
-              <span>{item.title}</span>
+              <img src={item.image} />
+              <span>{item.name}</span>
             </td>
             <td>{item.priceNum || 0}</td>
             <td className="qty-control">
