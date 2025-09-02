@@ -2,7 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname,useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import HeaderUser from "./headerUser";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,9 +10,18 @@ import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
 
 export default function Header() {
+  const router = useRouter()
   const pathname = usePathname();
   const [isMobile, setIsMobile] = useState(false);
   const { user, isLoading, logout } = useAuth();
+  const [keyword, setKeyword] = useState("")
+
+  const handleSearch = (e) => {
+    e.preventDefault()
+    if (!keyword.trim()) return
+    router.push(`/products?search=${encodeURIComponent(keyword)}`)
+  }
+
 
   useEffect(() => {
     const handleResize = () => {
@@ -29,7 +38,7 @@ export default function Header() {
 
   return (
     <>
-      <div className="container header">
+      <header >
         {isMobile ? (
           // 手機版結構
           <header>
@@ -158,7 +167,7 @@ export default function Header() {
           </header>
         ) : (
           // 桌機版結構
-          <header>
+          <div className="container header">
             <nav className="navbar ">
               <div className="container-fluid">
                 <a className="navbar-brand" href="/">
@@ -170,12 +179,14 @@ export default function Header() {
                   />
                 </a>
                 <div className="d-flex align-items-center gap-2">
-                  <form className="d-flex" role="search">
+                  <form className="d-flex" role="search" onSubmit={handleSearch}>
                     <input
                       className="form-control me-2"
                       type="text"
-                      placeholder="Search"
+                      placeholder="搜尋商品......"
+                      value={keyword}
                       aria-label="Search"
+                      onChange={(e) => setKeyword(e.target.value)}
                     />
                     <button className="btn" type="submit">
                       <FontAwesomeIcon
@@ -223,9 +234,8 @@ export default function Header() {
                   <li className="nav-item">
                     <Link
                       href="/products/brands"
-                      className={`nav-link${
-                        pathname === "/products/brands" ? " active" : ""
-                      }`}
+                      className={`nav-link${pathname === "/products/brands" ? " active" : ""
+                        }`}
                     >
                       所有品牌
                     </Link>
@@ -238,9 +248,8 @@ export default function Header() {
                   <li className="nav-item">
                     <Link
                       href="/products/sales"
-                      className={`nav-link${
-                        pathname === "/sales" ? " active" : ""
-                      }`}
+                      className={`nav-link${pathname === "/products/sales" ? " active" : ""
+                        }`}
                     >
                       限時出清
                     </Link>
@@ -248,9 +257,8 @@ export default function Header() {
                   <li className="nav-item">
                     <Link
                       href="/articles"
-                      className={`nav-link${
-                        pathname === "/articles" ? " active" : ""
-                      }`}
+                      className={`nav-link${pathname === "/articles" ? " active" : ""
+                        }`}
                     >
                       文章分享
                     </Link>
@@ -258,9 +266,9 @@ export default function Header() {
                 </ul>
               </div>
             </nav>
-          </header>
+          </div>
         )}
-      </div>
+      </header>
     </>
   );
 }

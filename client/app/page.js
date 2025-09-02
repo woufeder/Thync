@@ -118,21 +118,21 @@ export default function Home() {
         </div>
         <div className="p-cards">
           <div className="row">
-            <a className="col keyboard" href="/products/keyboard">
+            <a className="col keyboard" href="/products?mid=1">
               <h1>KEYBOARD</h1>
             </a>
-            <a className="col monitor" href="/products/monitor">
+            <a className="col monitor" href="/products?mid=5">
               <h1>MONITOR</h1>
             </a>
           </div>
           <div className="row">
-            <a className="col mouse" href="/products/mouse">
+            <a className="col mouse" href="/products?mid=2">
               <h1>MOUSE</h1>
             </a>
-            <a className="col audio" href="/products/audio">
+            <a className="col audio" href="/products?mid=3">
               <h1>AUDIO</h1>
             </a>
-            <a className="col case" href="/products/case">
+            <a className="col case" href="/products?mid=4">
               <h1>CASE</h1>
             </a>
           </div>

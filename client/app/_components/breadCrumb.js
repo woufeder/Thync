@@ -50,6 +50,17 @@ export default function Breadcrumb({ product }) {
     items.push({ label: product.product_name, href: `/products/${product.id}` })
   }
 
+  // 出清
+  if (pathname === "/products/sales") {
+    items.push({ label: "限時出清", href: "/products/sales" })
+  }
+
+    // 品牌
+  if (pathname === "/products/brands") {
+    items.push({ label: "所有品牌", href: "/products/brands" })
+  }
+
+
   // 會員頁
   if (pathname.startsWith("/member")) {
     items.push({ label: "會員中心", href: "/member" })
@@ -59,7 +70,7 @@ export default function Breadcrumb({ product }) {
   }
 
   return (
-    <nav aria-label="breadcrumb" className="breadcrumb">
+    <nav aria-label="breadcrumb" className="breadcrumb mt-4">
     <FontAwesomeIcon icon={faHouse} />
       <ol>
         {items.map((item, idx) => (

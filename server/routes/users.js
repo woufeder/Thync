@@ -24,8 +24,7 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     // 生成唯一文件名
-    const uniqueName =
-      Date.now() + "-" + file.originalname + path.extname(file.originalname);
+    const uniqueName = Date.now() + "-" + file.originalname;
     cb(null, uniqueName);
   },
 });

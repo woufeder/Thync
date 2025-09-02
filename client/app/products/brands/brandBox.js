@@ -2,7 +2,7 @@ import { brandData } from "./brandsData";
 
 export default function BrandBox() {
   return (
-    <div className="container">
+    <>
       {Object.entries(brandData).map(([letter, items]) => (
         <div key={letter} className="brand-row">
           <div className="brand-letter">{letter}</div>
@@ -18,7 +18,7 @@ export default function BrandBox() {
           </div>
         </div>
       ))}
-    </div>
+    </>
 
 
   );
