@@ -14,8 +14,8 @@ export default function ProductCard({ p }) {
 
 
       <div className="product-card">
-        <div className="card-img">
-          <Link key={p.id} href={`/products/${p.id}`}>
+        <Link key={p.id} href={`/products/${p.id}`}>
+          <div className="card-img">
             <img
               src={
                 p.first_image
@@ -24,8 +24,9 @@ export default function ProductCard({ p }) {
               }
               alt={p.name}
             />
-          </Link>
-        </div>
+
+          </div>
+        </Link>
         <div className="card-body">
           <p className="card-title">{p.name}</p>
           <div className="card-bottom">
