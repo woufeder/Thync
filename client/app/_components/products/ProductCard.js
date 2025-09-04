@@ -2,7 +2,7 @@
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCartShopping } from '@fortawesome/free-solid-svg-icons'
+import { faCartShopping, faPlus } from '@fortawesome/free-solid-svg-icons'
 
 
 export default function ProductCard({ p }) {
@@ -28,10 +28,13 @@ export default function ProductCard({ p }) {
           </div>
         </Link>
         <div className="card-body">
-          <p className="card-title">{p.name}</p>
+          <a key={p.id} href={`/products/${p.id}`}>
+            <p className="card-title">{p.name}</p>
+          </a>
           <div className="card-bottom">
             <p className="price">${p.price}</p>
             <button className="btn btnCart" onClick={() => router.push(`/cart`)}>
+              <FontAwesomeIcon icon={faPlus} />
               <FontAwesomeIcon icon={faCartShopping} />
             </button>
           </div>

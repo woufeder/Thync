@@ -298,6 +298,12 @@ aside {
   flex: 1 0 0;
   box-shadow: 0 4px 10px 0 rgba(48, 74, 111, 0.25);
 
+  &:hover {
+    outline: 1px solid var(--Primary500);
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
+  }
+
   .card-img {
     /* width: 200px; */
     height: 210px;
@@ -305,10 +311,13 @@ aside {
     position: relative;
 
     &::before {
-      content: "";
-      background-color: var(--Secondary800);
+      content: "點擊查看商品細節";
+      background-color: var(--Primary500);
+      text-align: center;
+      line-height: 210px;
+      color: var(--White);
       width: 100%;
-      height: 220px;
+      height: 210px;
       position: absolute;
       opacity: 0;
       transition: all 0.3s ease;
@@ -322,14 +331,24 @@ aside {
     }
 
     img {
-      width: 100%;
+      width: 220px;
+      height: 210px;
       object-fit: cover;
+
     }
   }
 
   .card-body {
     width: 100%;
     padding: 10px;
+
+    a {
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
 
   }
 
@@ -357,5 +376,64 @@ aside {
     p {
       margin: 0;
     }
+  }
+
+  .price {
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--Primary800);
+  }
+
+  .btnCart {
+    position: relative;
+    display: flex;
+    padding: 8px 10px;
+    justify-content: center;
+    align-items: center;
+    gap: 2px;
+    align-self: stretch;
+    background-color: var(--Secondary800);
+    color: var(--White);
+    border-radius: 20px;
+    overflow: hidden;
+
+    &:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, var(--Secondary100), transparent);
+      transition: left 0.5s;
+    }
+
+    &:hover:before {
+      left: 100%;
+    }
+  }
+
+}
+
+.pagination {
+  justify-content: center;
+  margin-top: 20px;
+
+  .page-link {
+    padding: 8px 12px;
+    border: 1px solid var(--Primary300);
+    background-color: var(--Secondary100);
+    color: var(--Black);
+    text-decoration: none;
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: var(--Primary100);
+    }
+  }
+  .active > .page-link, .page-link.active {
+    background-color: var(--Primary500);
+    border-color: var(--Primary500);
+    color: var(--White);
   }
 }

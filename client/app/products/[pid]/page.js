@@ -1,46 +1,82 @@
 "use client";
-import { useProduct } from "@/hooks/use-product"
-import { use, useEffect } from "react"
-import Breadcrumb from "@/app/_components/breadCrumb"
+import { useProduct } from "@/hooks/use-product";
+import { use, useEffect, useState } from "react";
+import Breadcrumb from "@/app/_components/breadCrumb";
 import Header from "@/app/_components/header";
 import Footer from "@/app/_components/footer";
+import Link from "next/link";
 
-export default function ProductDetailPage({ params }) {
-  const { pid } = use(params); // ← 這裡用 use() unwrap
+export default function ProductDetail({ params }) {
+  const { pid } = use(params);
   const { product, getOne, isLoading } = useProduct();
+  const [hasFetched, setHasFetched] = useState(false);
+  console.log(product)
 
   useEffect(() => {
-    if (pid) getOne(pid);
+    if (pid) {
+      getOne(pid).finally(() => setHasFetched(true));
+    }
   }, [pid]);
 
   if (isLoading) {
-    return (
-      <div className="container">
-        Loading......
-      </div>
-    );
+    return <div className="container">Loading...</div>;
   }
 
-  if (!product) return <p>沒有找到商品</p>;
+  if (hasFetched && product === null) {
+    return <p>沒有找到商品</p>;
+  }
 
-  // 假設後端回傳 product.images 是一個陣列
-  // [{ id: 16, file: "4/1749753181-0.jpg", product_id: 4 }, ...]
+  if (!product) {
+    // 初始 render 阻擋掉，避免「閃沒有商品」
+    return null;
+  }
+
   const images = product.images || [];
   const introImages = product.introImages || [];
-
-  {console.log("Product:", product)}
-
 
   return (
     <>
       <Header />
-      <div className="container">
+      <main className="container">
         <Breadcrumb product={product} />
-        <h4>{product.product_name}</h4>
+        <div className="area1">
+          <div className="product-images">
+            {images.map((img) => (
+              <img
+                key={img.id}
+                src={`/images/products/uploads/${img.file}`}
+                alt={product.product_name}
+                style={{ width: "200px", height: "auto", objectFit: "cover" }}
+              />
+            ))}
+          </div>
+          <div className="product-info">
+            <Link href={`/products?brand_id=${product.brand_id}`}>
+              <p>{product.brand_name}</p>
+            </Link>
+            <h5>{product.product_name}</h5>
+            <p>價格: ${product.price}</p>
+            <p>庫存: {product.stock}</p>
+            <p>商品描述: {product.description}</p>
+          </div>
+        </div>
 
-        {/* 圖片區塊 */}
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <h4>{product.product_name}</h4>
         <div className="d-flex gap-3 flex-wrap mt-3">
-          {images.map(img => (
+          {images.map((img) => (
             <img
               key={img.id}
               src={`/images/products/uploads/${img.file}`}
@@ -48,7 +84,7 @@ export default function ProductDetailPage({ params }) {
               style={{ width: "200px", height: "auto", objectFit: "cover" }}
             />
           ))}
-          {introImages.map(img => (
+          {introImages.map((img) => (
             <img
               key={img.id}
               src={`/images/products/uploads/${img.file}`}
@@ -57,7 +93,7 @@ export default function ProductDetailPage({ params }) {
             />
           ))}
         </div>
-      </div>
+      </main>
       <Footer />
     </>
   );

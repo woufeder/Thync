@@ -221,7 +221,7 @@ export default function Header() {
 
             <nav className="navbar navbar-expand-md ">
               <div className="w-100">
-                <ul className="navbar-nav mb-2 mb-lg-0 w-100 text-center">
+                <ul className="navbar-nav w-100 text-center">
                   <li className="nav-item">
                     <Link
                       href="/products"

@@ -21,6 +21,9 @@ export default function ProductPage() {
   const [priceMin, setPriceMin] = useState("")
   const [priceMax, setPriceMax] = useState("")
   const [brands, setBrands] = useState([])
+  const [sidebarReady, setSidebar] = useState(false);
+
+
 
   const mid = searchParams.get("mid") || ""
   const cid = searchParams.get("cid") || ""
@@ -161,6 +164,13 @@ export default function ProductPage() {
     router.replace("/products")
   }
 
+  useEffect(() => {
+    setSidebar(true); // 這裡可以加載完資源後再 set
+  }, []);
+
+  if (!sidebarReady) return null; // 或顯示 loading
+
+
   // -------------------------------------
 
   const filteredSubs = categories.sub.filter((s) => s.main_id == mid)
@@ -168,7 +178,9 @@ export default function ProductPage() {
     ? attributes.filter(attr => String(attr.main_id) === mid)
     : attributes
 
-  { isLoading && <div className="container">Loading......</div> }
+  if (isLoading) {
+    return <div className="container">Loading......</div>
+  }
 
   return (
     <>

@@ -253,6 +253,7 @@ header {
 
   ol {
     display: flex;
+    flex-wrap: wrap;
     /* gap: 8px; */
     list-style: none;
     padding: 0;
@@ -272,7 +273,7 @@ header {
   }
 
   span {
-    margin: 0 12px;
+    margin: 0 5px;
   }
 }
 
