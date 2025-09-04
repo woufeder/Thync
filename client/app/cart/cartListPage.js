@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useProduct } from "@/hooks/use-product";
 import CartTable from "./cartTable";
 import CartSummary from "./cartSummary";
@@ -14,6 +15,12 @@ export default function CartListPage({
   couponMsg,
   setCouponMsg,
 }) {
+  // 新增：自動從 localStorage 讀取 cart 資料
+  useEffect(() => {
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    if (cart.length) setItems(cart);
+  }, [setItems]);
+
   const { products } = useProduct();
   // 父層傳入 setItems
   // 數量變更處理
@@ -76,7 +83,7 @@ export default function CartListPage({
                 type="text"
                 placeholder="輸入折扣碼"
                 value={couponCode}
-                onChange={e => setCouponCode(e.target.value)}
+                onChange={(e) => setCouponCode(e.target.value)}
               />
               <button className="btn-use" onClick={handleUseCoupon}>
                 使用
@@ -89,7 +96,9 @@ export default function CartListPage({
             items={items}
             discount={discount}
             couponCode={couponCode}
-            onCheckout={() => { window.location.href = "/cart/checkout"; }}
+            onCheckout={() => {
+              window.location.href = "/cart/checkout";
+            }}
           />
         </div>
       </main>

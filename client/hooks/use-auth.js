@@ -105,7 +105,7 @@ export function AuthProvider({ children }) {
     } finally {
       setUser(null);
       localStorage.removeItem(appKey);
-      router.replace(loginRoute);
+      window.location.href = "/user/login";
     }
   };
   // 註冊

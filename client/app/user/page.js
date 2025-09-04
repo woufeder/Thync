@@ -68,7 +68,7 @@ export default function UserEditPage() {
                     <div className="label">會員資料管理</div>
                   </div>
                 </Link>
-                <Link href="#" className="tile">
+                <Link href="/user/order" className="tile">
                   <div className="inner">
                     <i className="fa-solid fa-gift"></i>
                     <div className="label">訂單查詢</div>
@@ -86,13 +86,13 @@ export default function UserEditPage() {
                     <div className="label">我的優惠券</div>
                   </div>
                 </Link>
-                <Link href="#" className="tile">
+                <Link href="/user/wishlist" className="tile">
                   <div className="inner">
                     <i className="fa-solid fa-heart"></i>
                     <div className="label">追蹤商品</div>
                   </div>
                 </Link>
-                <Link href="#" className="tile">
+                <Link href="/user/favorites" className="tile">
                   <div className="inner">
                     <i className="fa-solid fa-bookmark"></i>
                     <div className="label">已收藏文章</div>

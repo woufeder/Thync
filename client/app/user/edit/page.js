@@ -171,8 +171,8 @@ export default function UserPage() {
       // 取得目前帳號
       const account = user?.account;
       if (!account) throw new Error("無法取得帳號");
-      // 執行硬刪除
-      const res = await fetch(`http://localhost:30 07/api/users/${account}`, {
+      // 執行刪除
+      const res = await fetch(`http://localhost:3007/api/users/${account}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -182,7 +182,7 @@ export default function UserPage() {
         alert("帳號已刪除");
         localStorage.removeItem("reactLoginToken");
         setUser(null);
-        window.location.href = "/user/add";
+        window.location.href = "/user/login";
       } else {
         alert(result.message || "刪除失敗");
       }
@@ -227,11 +227,11 @@ export default function UserPage() {
                           }
                           alt="avatar"
                         />
-                        <div
-                          className={`camera-bg ${isEditing ? "editing" : ""}`}
-                        >
-                          <i className="fa-solid fa-camera"></i>
-                        </div>
+                        {isEditing && (
+                          <div className="camera-bg editing">
+                            <i className="fa-solid fa-camera"></i>
+                          </div>
+                        )}
                       </div>
                     </div>
                     <input
@@ -273,7 +273,7 @@ export default function UserPage() {
                         className="form-control"
                         name="name"
                         placeholder="請輸入使用者名稱"
-                        value={formData.name}
+                        value={formData.name ?? ""}
                         onChange={handleInputChange}
                         readOnly={!isEditing}
                       />
@@ -289,7 +289,7 @@ export default function UserPage() {
                       className="form-control"
                       name="phone"
                       placeholder="0912-345678"
-                      value={formData.phone}
+                      value={formData.phone ?? ""}
                       onChange={handleInputChange}
                       readOnly={!isEditing}
                     />
@@ -368,7 +368,7 @@ export default function UserPage() {
                           placeholder="西元年份"
                           min="1900"
                           max="2025"
-                          value={formData.year}
+                          value={formData.year ?? ""}
                           onChange={handleInputChange}
                           readOnly={!isEditing}
                         />
@@ -381,7 +381,7 @@ export default function UserPage() {
                           placeholder="月份"
                           min="1"
                           max="12"
-                          value={formData.month}
+                          value={formData.month ?? ""}
                           onChange={handleInputChange}
                           readOnly={!isEditing}
                         />
@@ -394,7 +394,7 @@ export default function UserPage() {
                           placeholder="日期"
                           min="1"
                           max="31"
-                          value={formData.date}
+                          value={formData.date ?? ""}
                           onChange={handleInputChange}
                           readOnly={!isEditing}
                         />
@@ -410,7 +410,7 @@ export default function UserPage() {
                       <select
                         className="form-select"
                         name="city_id"
-                        value={formData.city_id}
+                        value={formData.city_id ?? ""}
                         onChange={handleInputChange}
                       >
                         <option value="" disabled>
@@ -478,7 +478,7 @@ export default function UserPage() {
                       className="form-control"
                       name="address"
                       placeholder="請輸入地址"
-                      value={formData.address}
+                      value={formData.address ?? ""}
                       onChange={handleInputChange}
                       readOnly={!isEditing}
                     />

@@ -37,16 +37,16 @@ export default function Sidebar() {
           <nav className="menu">
             <Link
               href="/user/edit"
-              className={`menu-link${
+              className={`mb-1 menu-link${
                 pathname.startsWith("/user/edit") ? " active" : ""
               }`}
             >
               <i className="fa-solid fa-user"></i>會員資料管理
             </Link>
             <Link
-              href="/user/訂單路由"
-              className={`menu-link${
-                pathname === "/user/訂單路由" ? " active" : ""
+              href="/user/order"
+              className={`mb-1 menu-link${
+                pathname === "/user/order" ? " active" : ""
               }`}
             >
               <span className="icon">
@@ -56,7 +56,7 @@ export default function Sidebar() {
             </Link>
             <Link
               href="/user/notify"
-              className={`menu-link${
+              className={`mb-1 menu-link${
                 pathname === "/user/notify" ? " active" : ""
               }`}
             >
@@ -67,7 +67,7 @@ export default function Sidebar() {
             </Link>
             <Link
               href="/user/優惠券路由"
-              className={`menu-link${
+              className={`mb-1 menu-link${
                 pathname === "/user/優惠券路由" ? " active" : ""
               }`}
             >
@@ -77,9 +77,9 @@ export default function Sidebar() {
               我的優惠券
             </Link>
             <Link
-              href="/user/追蹤商品路由"
-              className={`menu-link${
-                pathname === "/user/追蹤商品路由" ? " active" : ""
+              href="/user/wishlist"
+              className={`mb-1 menu-link${
+                pathname === "/user/wishlist" ? " active" : ""
               }`}
             >
               <span className="icon">
@@ -88,9 +88,9 @@ export default function Sidebar() {
               追蹤商品
             </Link>
             <Link
-              href="/user/收藏文章路由"
-              className={`menu-link${
-                pathname === "/user/收藏文章路由" ? " active" : ""
+              href="/user/favorites"
+              className={`mb-1 menu-link${
+                pathname === "/user/favorites" ? " active" : ""
               }`}
             >
               <span className="icon">

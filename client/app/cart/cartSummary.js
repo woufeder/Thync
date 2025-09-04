@@ -39,6 +39,8 @@ export default function CartSummary({ items, discount = 0, couponCode = "", onCh
                     className={`cs-option${payType === "信用卡" ? " is-selected" : ""}`}
                     onClick={() => { setPayType("信用卡"); setPayOpen(false); }}
                   >信用卡</li>
+                  
+                  {/* 寫不完就刪掉 */}
                   <li
                     className={`cs-option${payType === "Line Pay" ? " is-selected" : ""}`}
                     onClick={() => { setPayType("Line Pay"); setPayOpen(false); }}

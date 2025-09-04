@@ -7,6 +7,8 @@ import jwt from "jsonwebtoken";
 import mysql from "mysql2/promise";
 import connection from "../connect.js";
 import { fileURLToPath } from "url";
+import { forgotPassword, resetPassword } from "../controllers/auth.js";
+import sendEmail from "../utils/sendEmail.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -170,15 +172,25 @@ router.post("/", upload.none(), async (req, res) => {
 
     // 檢查 mail 有沒有使用過
     const sqlCheck2 = "SELECT * FROM `users` WHERE `mail` = ?;";
-    user = await connection.execute(sqlCheck2, [mail]).then(([result]) => {
-      return result[0];
-    });
+    user = await connection
+      .execute(sqlCheck2, [mail])
+      .then(([result]) => result[0]);
+
     if (user) {
-      const err = new Error("提供信箱已被使用");
-      err.code = 400;
-      err.status = "fail";
-      err.message = "信箱已被使用";
-      throw err;
+      if (Number(user.is_valid) === 1) {
+        const err = new Error("信箱已被使用");
+        err.code = 400;
+        err.status = "fail";
+        err.message = "信箱已被使用";
+        throw err;
+      }
+      if (Number(user.is_valid) === 0) {
+        const err = new Error("已刪除信箱不能再次註冊");
+        err.code = 400;
+        err.status = "fail";
+        err.message = "已刪除信箱不能再次註冊";
+        throw err;
+      }
     }
 
     // 從 randomuser.me 取得預設使用者圖片
@@ -302,7 +314,7 @@ router.delete("/:account", async (req, res) => {
     const account = req.params.account;
     if (!account) throw new Error("請提供使用者帳號");
 
-    const sql = "DELETE FROM users WHERE account = ?;";
+    const sql = "UPDATE users SET is_valid = 0 WHERE account = ?;";
     const [result] = await connection.execute(sql, [account]);
 
     if (result.affectedRows === 0) {
@@ -311,7 +323,7 @@ router.delete("/:account", async (req, res) => {
 
     res.status(200).json({
       status: "success",
-      message: "帳號已成功刪除",
+      message: "帳號已軟刪除 (is_valid=0)",
     });
   } catch (error) {
     res.status(500).json({
@@ -327,7 +339,7 @@ router.post("/login", upload.none(), async (req, res) => {
     const { mail, password } = req.body;
     console.log(mail);
 
-    const sqlCheck1 = "SELECT * FROM `users` WHERE `mail` = ?;";
+    const sqlCheck1 = "SELECT * FROM `users` WHERE `mail` = ? AND is_valid=1;";
     let user = await connection.execute(sqlCheck1, [mail]).then(([result]) => {
       return result[0];
     });
@@ -467,6 +479,34 @@ router.post("/status", checkToken, async (req, res) => {
     res.status(statusCode).json({
       status: statusText,
       message,
+    });
+  }
+});
+
+// 忘記密碼
+router.post("/forgot-password", forgotPassword);
+// 重設密碼
+// :resettoken 動態參數 比照 ${resetToken}
+router.put("/resetPassword/:resettoken", resetPassword);
+
+// 測試郵件
+router.post("/test-email", async (req, res) => {
+  try {
+    await sendEmail({
+      email: req.body.email,
+      subject: "測試郵件",
+      message: "這是一封測試郵件",
+      resetUrl: "http://localhost:3007/test"
+    });
+    
+    res.json({
+      success: true,
+      message: "測試郵件發送成功"
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
     });
   }
 });
