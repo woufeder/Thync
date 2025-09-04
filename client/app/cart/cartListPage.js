@@ -72,11 +72,12 @@ export default function CartListPage({
       <main className="container">
         <div className="cart-container">
           <div className="cart-main">
-            <CartTable
-              items={items}
-              onQtyChange={onQtyChange}
-              onRemove={onRemove}
-            />
+              <CartTable
+                items={items}
+                onQtyChange={onQtyChange}
+                onRemove={onRemove}
+              />
+              <hr className="cart-line" />
             <div className="coupon-box">
               <input
                 className="inputcoupon"

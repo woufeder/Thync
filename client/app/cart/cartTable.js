@@ -19,13 +19,13 @@ export default function CartTable({ items, onQtyChange, onRemove }) {
               <img src={item.image} />
               <span>{item.name}</span>
             </td>
-            <td>{item.priceNum || 0}</td>
+            <td>${item.priceNum || 0}</td>
             <td className="qty-control">
               <button onClick={() => onQtyChange(item, -1)}>-</button>
               <span>{item.qty || 1}</span>
               <button onClick={() => onQtyChange(item, 1)}>+</button>
             </td>
-            <td>{(item.priceNum || 0) * (item.qty || 1)}</td>
+            <td>${(item.priceNum || 0) * (item.qty || 1)}</td>
             <td>
               <button className="btn-remove" onClick={() => onRemove(item)}>
                 刪除
