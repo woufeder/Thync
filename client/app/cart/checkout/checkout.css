@@ -1,40 +1,5 @@
 
-/* ===== 頂部：購物車 + 回上頁 + 流程條 ===== */
-.cart-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0;
-  margin-top: 50px;
-  height: 44px;
-  position: relative;
-  z-index: 1;
-}
-
-.cartIcon {
-  color: #274a78;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.backtomain {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #89a2bf;
-  color: #fff;
-  border: 0;
-  border-radius: 12px;
-  padding: 14px 20px;
-  font-size: 15px;
-  cursor: pointer;
-}
-
-.backtomain i {
-  font-size: 15px;
-}
+/* ===== 頂部：流程條 ===== */
 
 .cart-steps {
   position: relative;
