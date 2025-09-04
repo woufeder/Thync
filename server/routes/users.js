@@ -7,6 +7,8 @@ import jwt from "jsonwebtoken";
 import mysql from "mysql2/promise";
 import connection from "../connect.js";
 import { fileURLToPath } from "url";
+import { forgotPassword, resetPassword } from "../controllers/auth.js";
+import sendEmail from "../utils/sendEmail.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -477,6 +479,34 @@ router.post("/status", checkToken, async (req, res) => {
     res.status(statusCode).json({
       status: statusText,
       message,
+    });
+  }
+});
+
+// 忘記密碼
+router.post("/forgot-password", forgotPassword);
+// 重設密碼
+// :resettoken 動態參數 比照 ${resetToken}
+router.put("/resetPassword/:resettoken", resetPassword);
+
+// 測試郵件
+router.post("/test-email", async (req, res) => {
+  try {
+    await sendEmail({
+      email: req.body.email,
+      subject: "測試郵件",
+      message: "這是一封測試郵件",
+      resetUrl: "http://localhost:3007/test"
+    });
+    
+    res.json({
+      success: true,
+      message: "測試郵件發送成功"
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
     });
   }
 });
