@@ -206,7 +206,7 @@ router.get("/:id", async (req, res) => {
         m.id AS main_id, m.name AS main_name,
         s.id AS sub_id, s.name AS sub_name,
         b.id AS brand_id, b.name AS brand_name,
-        p.price, p.modal, p.intro, p.spec
+        p.price, p.model, p.intro, p.spec
       FROM products p
       JOIN category_main m ON p.category_main_id = m.id
       JOIN category_sub s ON p.category_sub_id = s.id

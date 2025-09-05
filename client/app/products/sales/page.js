@@ -112,7 +112,7 @@ const handleOptionChange = (e) => {
 
 
   if (isLoading) {
-    return <div className="container">Loading......</div>
+    return <div className="loader container"></div>
   }
 
   return (

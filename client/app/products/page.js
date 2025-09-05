@@ -1,5 +1,6 @@
 "use client"
 import React from "react"
+import style from '@/styles/products.css'
 import { useSearchParams, useRouter } from "next/navigation"
 import { useProduct } from "@/hooks/use-product"
 import { useEffect, useState } from "react"
@@ -7,8 +8,8 @@ import Breadcrumb from "@/app/_components/breadCrumb"
 import Header from "@/app/_components/header";
 import Footer from "@/app/_components/footer";
 import Sidebar from "@/app/_components/products/Sidebar";
-import ProductCard from "@/app/_components/products/ProductCard"
-import Link from "next/link"
+import ProductCard from "@/app/_components/products/ProductCard";
+import SkeletonCard from "@/app/_components/products/SkeletonCard";
 
 
 export default function ProductPage() {
@@ -178,9 +179,7 @@ export default function ProductPage() {
     ? attributes.filter(attr => String(attr.main_id) === mid)
     : attributes
 
-  if (isLoading) {
-    return <div className="container">Loading......</div>
-  }
+
 
   return (
     <>
@@ -209,10 +208,12 @@ export default function ProductPage() {
         <main>
           <Breadcrumb />
 
+
           <div className="product-list">
-            {products.map((p, index) => (
-              <ProductCard key={index + 1} p={p} />
-            ))}
+            {isLoading
+              ? Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
+              : products.map((p, i) => <ProductCard key={i} p={p} />)
+            }
           </div>
 
           {/* 分頁 */}
