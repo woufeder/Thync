@@ -44,7 +44,7 @@ export default function ProductDetail({ params }) {
   const introImages = product.introImages || [];
 
   function handleAddToCart(product) {
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+  const cart = JSON.parse(localStorage.getItem("cartItems") || "[]");
     const exist = cart.find(i => i.id === product.id);
     let newCart;
     if (exist) {
@@ -54,8 +54,10 @@ export default function ProductDetail({ params }) {
     } else {
       newCart = [...cart, { ...product, qty }];
     }
-    localStorage.setItem("cart", JSON.stringify(newCart));
-    // 可加提示：已加入購物車
+    
+  localStorage.setItem("cartItems", JSON.stringify(newCart));
+  console.log("getItem", localStorage.getItem("cartItems"));
+    alert("已加入購物車");
   }
 
   return (
