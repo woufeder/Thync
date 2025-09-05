@@ -39,7 +39,7 @@
 }
 
 .cart-table td {
-  padding: 65px 10px;
+  padding: 50px 10px;
 }
 
 thead {
@@ -52,16 +52,12 @@ thead {
   border: none;
 }
 
-/* .product-info {
-  font-weight: 600;
-  padding: 20px 0;
-  min-height: 130px;
+.product-info {
   display: flex;
   align-items: center;
-  gap: 12px;
-  text-align: center;
-  border-bottom: 3px solid var(--Primary100);
-} */
+  gap: 35px; 
+  padding-left: 10% !important;
+}
 
 .product-info img {
   width: 150px;
