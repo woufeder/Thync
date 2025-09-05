@@ -40,11 +40,11 @@ export default function CartSummary({ items, discount = 0, couponCode = "", onCh
                   onClick={() => { setPayType("信用卡"); setPayOpen(false); }}
                 >信用卡</li>
 
-                {/* 寫不完就刪掉 */}
+                {/* 寫不完就刪掉
                 <li
                   className={`cs-option${payType === "Line Pay" ? " is-selected" : ""}`}
                   onClick={() => { setPayType("Line Pay"); setPayOpen(false); }}
-                >Line Pay</li>
+                >Line Pay</li> */}
               </ul>
             </div>
           </li>
