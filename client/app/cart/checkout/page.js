@@ -220,7 +220,7 @@ export default function CheckoutPage() {
                     onChange={handleChange}
                   />
                 </div>
-                <div className="row wrap">
+                <div className="radio-group">
                   <span className="bill">發票類型</span>
                   <div className="radio-group">
                     <label className="radio">
@@ -263,14 +263,14 @@ export default function CheckoutPage() {
             {/* 底部操作 */}
             <div className="actions">
               <button
-                className="checkout-btn checkout-btn-secondary"
+                className="checkout-btn-step checkout-btn-secondary"
                 type="button"
                 onClick={() => (window.location.href = "/cart")}
               >
                 回到購物車
               </button>
               <button
-                className="checkout-btn checkout-btn-primary"
+                className="checkout-btn-step checkout-btn-primary"
                 type="button"
                 onClick={handleConfirm}
               >
