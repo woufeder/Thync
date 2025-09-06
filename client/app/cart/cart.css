@@ -1,5 +1,3 @@
-
-
 .cart-container {
   display: flex;
   gap: 16px;
@@ -36,9 +34,12 @@
 .cart-table th,
 .cart-table td {
   color: var(--Primary800);
-  padding: 24px 12px;
-  border-bottom: 1px solid #eee;
+  padding: 24px 10px;
   text-align: center;
+}
+
+.cart-table td {
+  padding: 50px 10px;
 }
 
 thead {
@@ -52,13 +53,10 @@ thead {
 }
 
 .product-info {
-  font-weight: 600;
-  padding: 20px 0;
-  min-height: 130px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  text-align: center;
+  gap: 35px; 
+  padding-left: 10% !important;
 }
 
 .product-info img {
@@ -86,17 +84,25 @@ thead {
   cursor: pointer;
 }
 
+.cart-line {
+  border: none;
+  height: 3px;
+  background: var(--Primary500);
+  margin: 15px 20px;
+  border-radius: 0;
+}
+
 .coupon-box {
-  padding: 16px 12px;
+  padding: 40px 12px;
   display: flex;
   justify-content: flex-end;
   max-width: 300px;
-  margin-left: auto;
+  margin-left: 65%;
 }
 
 .inputcoupon {
   flex: 1;
-  padding: 8px;
+  padding: 12px;
   border: 1px solid var(--Primary300);
   border-right: none;
   border-radius: 4px 0 0 4px;
@@ -106,9 +112,9 @@ thead {
 
 .btn-use {
   padding: 8px 16px;
-  border: 1px solid var(--Primary300);
+  border: 1px solid var(--Primary800);
   border-radius: 0 4px 4px 0;
-  background: var(--Primary500);
+  background: var(--Primary800);
   color: #fff;
   cursor: pointer;
   font-size: 14px;
@@ -139,7 +145,7 @@ thead {
 
 .cart-summary h3 {
   margin: 0 0 12px;
-  padding: 20px 8px;
+  padding: 26.5px 8px;
   text-align: center;
   color: var(--Primary800);
   font-weight: 700;
@@ -148,10 +154,11 @@ thead {
   border-top: none;
   border-left: none;
   border-right: none;
+  font-size: 16px;
 }
 
 .summarycontainer {
-  padding: 20px 18px;
+  padding: 30px 18px;
 }
 
 .cart-summary ul {
@@ -164,7 +171,7 @@ thead {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 4px;
+  padding: 19px 4px;
   color: var(--Primary800);
 }
 
@@ -172,11 +179,28 @@ thead {
   border-bottom: none;
 }
 
+.cart-summary .total {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.cart-summary .total .label {
+  color: var(--Primary800);
+  padding-top: 4px;
+}
+
 .cart-summary .total .right {
+  padding-top: 4px;
   display: flex;
   flex-direction: column;
-  text-align: right;
   gap: 4px;
+  text-align: right;
+}
+
+.cart-summary .total .row {
+  /* 每一行右側內容 */
+  text-align: right;
 }
 
 .btn-checkout {
@@ -184,7 +208,7 @@ thead {
   background: var(--Danger500);
   color: #fff;
   border: 0;
-  margin: 90px auto 0 auto;
+  margin: 45px auto 10px auto;
   padding: 12px 0;
   font-size: 16px;
   border-radius: 6px;

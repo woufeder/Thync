@@ -1,40 +1,62 @@
+/* 讓取貨門市與依地圖選擇之間有空格 */
+.panel-body label > .checkout-btn {
+  margin-left: 16px;
+}
+/* 單獨調整姓名與手機號碼欄位寬度 */
+.input-name {
+  width: 22%;
+}
+.input-phone {
+  width: 35%;
+}
 
-/* ===== 頂部：購物車 + 回上頁 + 流程條 ===== */
-.cart-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0;
-  margin-top: 50px;
-  height: 44px;
+
+/* 自訂 radio 樣式 */
+.radio {
   position: relative;
-  z-index: 1;
-}
-
-.cartIcon {
-  color: #274a78;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.backtomain {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #89a2bf;
-  color: #fff;
-  border: 0;
-  border-radius: 12px;
-  padding: 14px 20px;
-  font-size: 15px;
+  padding-left: 28px;
   cursor: pointer;
 }
-
-.backtomain i {
-  font-size: 15px;
+.radio input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
 }
+.radio span {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 20px;
+  width: 20px;
+  background: var(--Secondary100);
+  border: 1.8px solid var(--Primary800);
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+.radio input[type="radio"]:checked + span::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--Primary800);
+}
+.radio input[type="radio"]:focus + span {
+  outline: 2px solid var(--Secondary100);
+}
+/* 橫向排列 radio 選項 */
+.radio-group {
+  display: flex;
+  gap: 32px;
+}
+
+/* ===== 頂部：流程條 ===== */
 
 .cart-steps {
   position: relative;
@@ -143,7 +165,7 @@
   border: 1px solid #e5ebf2;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(39, 74, 120, 0.12);
-  margin-bottom: 16px;
+  margin-bottom: 25px;
 }
 
 .panel::before {
@@ -160,14 +182,14 @@
   margin: 0;
   padding: 25px 23px;
   color: #274a78;
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 700;
   border-bottom: 1px solid #eef2f6;
   box-shadow: 0 4px 10px rgba(39, 74, 120, 0.12);
 }
 
 .panel-body {
-  padding: 16px;
+  padding: 25px;
 }
 
 .row {
@@ -175,10 +197,6 @@
   align-items: center;
   gap: 12px;
   margin-bottom: 12px;
-}
-
-.row.wrap {
-  flex-wrap: wrap;
 }
 
 .form-row {
@@ -191,11 +209,10 @@
 .form-row input,
 .form-row select,
 .form-row button {
-  border-radius: 6px;
+  border-radius: 18px;
   background-color: #f7f6f2;
   border: 1px solid #cfd7df;
-  flex: 1;
-  min-width: 180px;
+  min-width: 120px;
   padding: 15px 8px;
 }
 
@@ -209,32 +226,56 @@ input::placeholder {
   align-items: center;
   gap: 6px;
   color: #506786;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .panel-body label {
   color: #506786;
 }
 
+
+.store-info-text {
+  font-size: 16px;
+  color: #506786;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
 .bill {
   font-size: 16px;
   color: #506786;
-  min-width: 60px;
+  min-width: 45px;
+  flex-shrink: 0;
+}
+/* 讓 .row 內的 radio-group 彈性展開，與標題有大間距 */
+.row .radio-group {
+  flex: 1;
+  display: flex;
+  gap: 32px;
+  align-items: center;
 }
 
 .email-input {
-  width: 250px;
-  max-width: 70%;
+  width: 50%;
+  max-width: 100%;
 }
 
 .checkout-btn {
   border: 0;
   border-radius: 8px;
-  height: 45px;
-  width: 16%;
-  padding: 0 16px;
+  height: 40px;
+  width: 9%;
+  padding: 0 10px;
   cursor: pointer;
-  margin-right: 15px;
+}
+.checkout-btn-step {
+  border: 0;
+  border-radius: 8px;
+  height: 62px;
+  width: 17%;
+  padding: 0 10px;
+  cursor: pointer;
 }
 
 .checkout-btn-light {
@@ -255,7 +296,7 @@ input::placeholder {
 .actions {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
+  gap: 50px;
   margin: 32px 32px;
 }
 
@@ -439,10 +480,6 @@ input::placeholder {
     align-items: flex-start;
   }
 
-  .email-input {
-    width: 100%;
-    max-width: 100%;
-  }
 
   /* 門市資訊換行顯示 */
   .store-info {
