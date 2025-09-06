@@ -10,7 +10,7 @@ export default function CartSummary({ items, discount = 0, couponCode = "", onCh
   // 計算總計、運費、件數
   const safeItems = Array.isArray(items) ? items : [];
   const count = safeItems.reduce((sum, item) => sum + (item.qty || 1), 0);
-  const subtotal = safeItems.reduce((sum, item) => sum + ((item.priceNum || 0) * (item.qty || 1)), 0);
+  const subtotal = safeItems.reduce((sum, item) => sum + ((item.price || 0) * (item.qty || 1)), 0);
   // 運費規則
   const shipping = shippingType === "宅配到府" ? 80 : 60;
   const total = subtotal + shipping - discount;

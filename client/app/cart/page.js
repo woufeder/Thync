@@ -61,9 +61,9 @@ export default function CartPage() {
         {/* 推薦商品區塊 */}
         <RecommendList recommend={recommend} />
       </main>
-      <footer>
+
         <Footer />
-      </footer>
+
     </>
   );
 }
