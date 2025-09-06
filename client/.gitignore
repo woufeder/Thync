@@ -39,7 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
 # users 圖片
 /public/images/users/user-photo/*
 # article 圖片

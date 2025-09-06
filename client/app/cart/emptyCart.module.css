@@ -1,0 +1,40 @@
+.cartEmpty {
+  position: relative;
+  padding: 200px 10px 220px;
+  text-align: center;
+  margin: 10px 100px;
+}
+
+.cartEmpty::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  border-radius: 8px 8px 0 0;
+  background: linear-gradient(90deg, var(--Primary300), var(--Primary800));
+}
+
+.cartEmptyTitle {
+  font-size: 20px;
+  color: #375177;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.cartEmptyDesc {
+  color: #888;
+  font-size: 15px;
+  margin-bottom: 24px;
+}
+
+.cartEmptyBtn {
+  background: #95AFCB;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 13px 60px;
+  font-size: 16px;
+  cursor: pointer;
+}

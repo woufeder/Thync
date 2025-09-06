@@ -4,10 +4,24 @@ const router = express.Router();
 // 模擬購物車資料：以 userId 當 key
 const carts = {};
 
+// 小工具函式
+function toUid(id) {
+  return String(id); // user_id 一律轉字串，避免物件 key 不一致
+}
+
+function toPid(id) {
+  return Number(id); // product_id 一律轉數字
+}
+
+function toNumber(value, defaultValue = 0) {
+  const n = Number(value);
+  return isNaN(n) ? defaultValue : n;
+}
+
 // 取得某個使用者的購物車
 router.get("/:userId", (req, res) => {
-  const userId = req.params.userId;
-  const cart = carts[userId] || [];
+  const uid = toUid(req.params.userId);
+  const cart = carts[uid] || [];
   res.json(cart);
 });
 
@@ -15,46 +29,57 @@ router.get("/:userId", (req, res) => {
 router.post("/", (req, res) => {
   const { user_id, product_id, name, image, quantity, price } = req.body;
 
-  if (!carts[user_id]) {
-    carts[user_id] = [];
-  }
+  const uid = toUid(user_id);
+  const pid = toPid(product_id);
+  const qty = toNumber(quantity, 1);
+  const prc = toNumber(price);
 
-  if (quantity <= 0) {
+  if (qty <= 0) {
     return res.status(400).json({ message: "數量必須大於 0" });
   }
 
-  // 看購物車是否已有同商品
-  const existingItem = carts[user_id].find(
-    (item) => item.product_id === product_id
-  );
-
-  if (existingItem) {
-    existingItem.quantity += quantity;
-  } else {
-    carts[user_id].push({ product_id, name, image, quantity, price });
+  if (!carts[uid]) {
+    carts[uid] = [];
   }
 
-  res.json({ message: "已加入購物車", cart: carts[user_id] });
+  const existingItem = carts[uid].find(item => item.product_id === pid);
+
+  if (existingItem) {
+    existingItem.quantity += qty;
+  } else {
+    carts[uid].push({
+      product_id: pid,
+      name,
+      image,
+      quantity: qty,
+      price: prc
+    });
+  }
+
+  res.json({ message: "已加入購物車", cart: carts[uid] });
 });
 
 // 更新購物車項目數量
 router.put("/", (req, res) => {
   const { user_id, product_id, quantity } = req.body;
 
-  if (quantity <= 0) {
+  const uid = toUid(user_id);
+  const pid = toPid(product_id);
+  const qty = toNumber(quantity);
+
+  if (qty <= 0) {
     return res.status(400).json({ message: "數量必須大於 0" });
   }
 
-  if (!carts[user_id]) {
+  if (!carts[uid]) {
     return res.status(404).json({ message: "購物車不存在" });
   }
 
-  const pid = Number(product_id);
-  const existingItem = carts[user_id].find((item) => item.product_id === pid);
+  const existingItem = carts[uid].find(item => item.product_id === pid);
 
   if (existingItem) {
-    existingItem.quantity = quantity; // 直接覆蓋成新數量
-    res.json({ message: "已更新數量", cart: carts[user_id] });
+    existingItem.quantity = qty;
+    res.json({ message: "已更新數量", cart: carts[uid] });
   } else {
     res.status(404).json({ message: "商品不存在於購物車" });
   }
@@ -62,22 +87,27 @@ router.put("/", (req, res) => {
 
 // 移除購物車項目
 router.delete("/:userId/:productId", (req, res) => {
-  const { userId, productId } = req.params;
-  if (!carts[userId]) {
+  const uid = toUid(req.params.userId);
+  const pid = toPid(req.params.productId);
+
+  if (!carts[uid]) {
     return res.status(404).json({ message: "購物車不存在" });
   }
 
-  carts[userId] = carts[userId].filter(
-    (item) => item.product_id !== parseInt(productId)
-  );
+  carts[uid] = carts[uid].filter(item => item.product_id !== pid);
 
-  res.json({ message: "已刪除", cart: carts[userId] });
+  res.json({ message: "已刪除", cart: carts[uid] });
 });
 
 // 清空購物車
 router.delete("/:userId", (req, res) => {
-  const { userId } = req.params;
-  carts[userId] = [];
+  const uid = toUid(req.params.userId);
+
+  if (!carts[uid]) {
+    return res.status(404).json({ message: "購物車不存在" });
+  }
+
+  carts[uid] = [];
   res.json({ message: "購物車已清空" });
 });
 

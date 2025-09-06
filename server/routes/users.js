@@ -1,13 +1,50 @@
 import express from "express";
 import multer from "multer";
+import path from "path";
+import fs from "fs";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import mysql from "mysql2/promise";
 import connection from "../connect.js";
+import { fileURLToPath } from "url";
+import { forgotPassword, resetPassword } from "../controllers/auth.js";
+import sendEmail from "../utils/sendEmail.js";
 
-const upload = multer();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const secretKey = process.env.JWT_SECRET_KEY;
 const router = express.Router();
+// 上傳圖片邏輯
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadPath = path.join(
+      __dirname,
+      "../../client/public/images/users/user-photo/"
+    );
+    cb(null, uploadPath);
+  },
+  filename: function (req, file, cb) {
+    // 生成唯一文件名
+    const uniqueName = Date.now() + "-" + file.originalname;
+    cb(null, uniqueName);
+  },
+});
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB 限制
+  },
+  fileFilter: function (req, file, cb) {
+    // 只允許圖片文件
+    if (file.mimetype.startsWith("image/")) {
+      cb(null, true);
+    } else {
+      cb(new Error("只允許上傳圖片文件"));
+    }
+  },
+});
 
 // route(s) 路由規則(們)
 // routers (路由物件器)
@@ -48,23 +85,23 @@ router.get("/search", (req, res) => {
 });
 
 // 獲取特定 ID 使用者
-router.get("/:id", async (req, res) => {
+router.get("/:account", async (req, res) => {
   // 路由參數
   try {
     // 動態路徑會被整理到 req 中的 params 裡
-    const mail = req.params.id;
+    const account = req.params.account;
     // 業務邏輯錯誤需手動拋出
-    if (!mail) {
+    if (!account) {
       const err = new Error("請提供使用者 ID");
       err.code = 400;
       err.status = "fail";
       throw err;
     }
 
-    const sqlCheck1 = "SELECT * FROM `users` WHERE `mail` = ?;";
+    const sqlCheck1 = "SELECT * FROM `users` WHERE `account` = ?;";
     let user = await connection
-      // [mail]代表？
-      .execute(sqlCheck1, [mail])
+      // [account]代表？
+      .execute(sqlCheck1, [account])
       // [result] 直接取得第一個元素
       .then(([result]) => {
         // 取得第一筆資料的物件
@@ -106,10 +143,10 @@ router.get("/:id", async (req, res) => {
 router.post("/", upload.none(), async (req, res) => {
   try {
     // 取得表單中的欄位內容
-    const { name, mail, password } = req.body;
+    const { account, mail, password } = req.body;
 
     // 檢查必填
-    if (!name || !mail || !password) {
+    if (!account || !mail || !password) {
       // 設定 Error 物件
       const err = new Error("請提供完整使用者資訊"); // Error 物件只能在小括號中自訂錯誤訊息
       err.code = 400; // 利用物件的自訂屬性把 HTTP 狀態碼帶到 catch
@@ -118,17 +155,42 @@ router.post("/", upload.none(), async (req, res) => {
       throw err;
     }
 
-    // 檢查 mail 有沒有使用過
-    const sqlCheck1 = "SELECT * FROM `users` WHERE `mail` = ?;";
-    let user = await connection.execute(sqlCheck1, [mail]).then(([result]) => {
-      return result[0];
-    });
+    // 檢查 account 有沒有使用過
+    const sqlCheck1 = "SELECT * FROM `users` WHERE `account` = ?;";
+    let user = await connection
+      .execute(sqlCheck1, [account])
+      .then(([result]) => {
+        return result[0];
+      });
     if (user) {
-      const err = new Error("提供的註冊內容已被使用1");
+      const err = new Error("提供的帳號已被使用");
       err.code = 400;
       err.status = "fail";
-      err.message = "信箱已被使用";
+      err.message = "帳號已被使用";
       throw err;
+    }
+
+    // 檢查 mail 有沒有使用過
+    const sqlCheck2 = "SELECT * FROM `users` WHERE `mail` = ?;";
+    user = await connection
+      .execute(sqlCheck2, [mail])
+      .then(([result]) => result[0]);
+
+    if (user) {
+      if (Number(user.is_valid) === 1) {
+        const err = new Error("信箱已被使用");
+        err.code = 400;
+        err.status = "fail";
+        err.message = "信箱已被使用";
+        throw err;
+      }
+      if (Number(user.is_valid) === 0) {
+        const err = new Error("已刪除信箱不能再次註冊");
+        err.code = 400;
+        err.status = "fail";
+        err.message = "已刪除信箱不能再次註冊";
+        throw err;
+      }
     }
 
     // 從 randomuser.me 取得預設使用者圖片
@@ -139,14 +201,14 @@ router.post("/", upload.none(), async (req, res) => {
 
     // 建立 SQL 語法
     const sql =
-      "INSERT INTO `users` (name, mail, password, img) VALUES (?, ?, ?, ?);";
-    await connection.execute(sql, [name, mail, hashedPassword, img]);
+      "INSERT INTO `users` (account, mail, password, img) VALUES (?, ?, ?, ?);";
+    await connection.execute(sql, [account, mail, hashedPassword, img]);
 
     res.status(201).json({
       status: "success",
       // 不要回傳敏感資料
       data: {},
-      message: "新增一個使用者 成功",
+      message: "註冊成功",
     });
   } catch (error) {
     console.log(error);
@@ -161,23 +223,114 @@ router.post("/", upload.none(), async (req, res) => {
 });
 
 // 更新(特定 ID 的)使用者
-router.put("/:id", (req, res) => {
-  const id = req.params.id;
-  res.status(200).json({
-    status: "success",
-    data: { id },
-    message: "更新(特定 ID 的)使用者 成功",
-  });
+router.put("/:account", upload.single("img"), async (req, res) => {
+  try {
+    const account = req.params.account;
+    if (!account) throw new Error("請提供使用者帳號");
+
+    // 取得要更新的欄位
+    let { name, phone, gender_id, year, month, date, city_id, address } =
+      req.body;
+
+    // 修正空值型別
+    if (city_id === "" || city_id === "null" || city_id === undefined)
+      city_id = null;
+    if (gender_id === "" || gender_id === "null" || gender_id === undefined)
+      gender_id = null;
+    if (year === "" || year === "null" || year === undefined) year = null;
+    if (month === "" || month === "null" || month === undefined) month = null;
+    if (date === "" || date === "null" || date === undefined) date = null;
+
+    // 圖片處理
+    let img = null;
+    if (req.file) {
+      img = req.file.filename; // 這裡現在會有正確的文件名
+      console.log("上傳的圖片文件名:", img);
+    }
+
+    // 執行更新
+    const sql = `
+      UPDATE users SET
+        name = ?,
+        phone = ?,
+        gender_id = ?,
+        year = ?,
+        month = ?,
+        date = ?,
+        city_id = ?,
+        address = ?${img ? ", img = ?" : ""}
+      WHERE account = ?;
+    `;
+    const params = [
+      name,
+      phone,
+      gender_id,
+      year,
+      month,
+      date,
+      city_id,
+      address,
+    ];
+    if (img) params.push(img);
+    params.push(account);
+
+    await connection.execute(sql, params);
+
+    // 取得更新後的完整用戶資料
+    const sqlGetUser = "SELECT * FROM `users` WHERE `account` = ?;";
+    const updatedUser = await connection
+      .execute(sqlGetUser, [account])
+      .then(([result]) => result[0]);
+
+    if (!updatedUser) {
+      throw new Error("無法取得更新後的使用者資料");
+    }
+
+    // 排除敏感資料
+    const { id, password, ...userData } = updatedUser;
+
+    // 回傳前端期待的格式
+    res.status(200).json({
+      status: "success",
+      data: {
+        user: userData,
+      },
+      message: "更新成功",
+    });
+  } catch (error) {
+    console.error("更新錯誤:", error);
+    res.status(500).json({
+      status: "error",
+      message: error.message || "更新失敗",
+    });
+  }
+  console.log("req.body:", req.body);
+  console.log("req.file:", req.file);
 });
 
-// 刪除(特定 ID 的)使用者
-router.delete("/:id", (req, res) => {
-  const id = req.params.id;
-  res.status(200).json({
-    status: "success",
-    data: { id },
-    message: "刪除(特定 ID 的)使用者 成功",
-  });
+// 刪除(特定帳號的)使用者
+router.delete("/:account", async (req, res) => {
+  try {
+    const account = req.params.account;
+    if (!account) throw new Error("請提供使用者帳號");
+
+    const sql = "UPDATE users SET is_valid = 0 WHERE account = ?;";
+    const [result] = await connection.execute(sql, [account]);
+
+    if (result.affectedRows === 0) {
+      throw new Error("找不到該帳號，刪除失敗");
+    }
+
+    res.status(200).json({
+      status: "success",
+      message: "帳號已軟刪除 (is_valid=0)",
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: error.message || "刪除失敗",
+    });
+  }
 });
 
 // 使用者登入
@@ -186,7 +339,7 @@ router.post("/login", upload.none(), async (req, res) => {
     const { mail, password } = req.body;
     console.log(mail);
 
-    const sqlCheck1 = "SELECT * FROM `users` WHERE `mail` = ?;";
+    const sqlCheck1 = "SELECT * FROM `users` WHERE `mail` = ? AND is_valid=1;";
     let user = await connection.execute(sqlCheck1, [mail]).then(([result]) => {
       return result[0];
     });
@@ -219,6 +372,7 @@ router.post("/login", upload.none(), async (req, res) => {
     );
 
     const newUser = {
+      account: user.account,
       mail: user.mail,
       img: user.img,
     };
@@ -307,6 +461,7 @@ router.post("/status", checkToken, async (req, res) => {
     );
 
     const newUser = {
+      account: user.account,
       mail: user.mail,
       img: user.img,
     };
@@ -324,6 +479,34 @@ router.post("/status", checkToken, async (req, res) => {
     res.status(statusCode).json({
       status: statusText,
       message,
+    });
+  }
+});
+
+// 忘記密碼
+router.post("/forgot-password", forgotPassword);
+// 重設密碼
+// :resettoken 動態參數 比照 ${resetToken}
+router.put("/resetPassword/:resettoken", resetPassword);
+
+// 測試郵件
+router.post("/test-email", async (req, res) => {
+  try {
+    await sendEmail({
+      email: req.body.email,
+      subject: "測試郵件",
+      message: "這是一封測試郵件",
+      resetUrl: "http://localhost:3007/test"
+    });
+    
+    res.json({
+      success: true,
+      message: "測試郵件發送成功"
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
     });
   }
 });

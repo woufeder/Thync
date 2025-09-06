@@ -7,6 +7,7 @@ import usersRouter from "./routes/users.js";
 import productsRouter from "./routes/products.js";
 import cartRouter from "./routes/cart.js";
 import couponRouter from "./routes/coupon.js";
+import articlesRouter from "./routes/articles.js";
 
 // 設定區
 const upload = multer();
@@ -39,9 +40,9 @@ app.use("/api/users", usersRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/coupon", couponRouter);
+app.use("/api/articles", articlesRouter);
 
-// 伺服器啟動
-app.listen(3007, () => {
+app.listen(3007, ()=>{
   console.log("主機啟動 http://localhost:3007");
 });
 
