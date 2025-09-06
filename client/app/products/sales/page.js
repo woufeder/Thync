@@ -1,35 +1,29 @@
 "use client"
-import { useSearchParams, useRouter } from "next/navigation"
+import React, { useEffect, useState } from "react"
+import style from '@/styles/products.css'
+import { useRouter } from "next/navigation"
 import { useProduct } from "@/hooks/use-product"
-import { useEffect, useState } from "react"
 import Breadcrumb from "@/app/_components/breadCrumb"
 import Header from "@/app/_components/header"
 import Footer from "@/app/_components/footer"
-import Sidebar from "@/app/_components/products/Sidebar"
-import Link from "next/link"
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons"
+
+import ProductCard from "@/app/_components/products/ProductCard"
+import SkeletonCard from "@/app/_components/products/SkeletonCard"
 
 export default function SalePage() {
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const { products, list, isLoading } = useProduct()
+  const { products, list, isLoading, pagination } = useProduct()
 
-  // 品牌
+  // 狀態
   const [categories, setCategories] = useState({ brand: [] })
   const [brands, setBrands] = useState([])
-
-  // 屬性
   const [attributes, setAttributes] = useState([])
   const [options, setOptions] = useState([])
-
-  // 預設抓品牌
-  useEffect(() => {
-    const brandParam = searchParams.get("brand_id")
-    if (brandParam) {
-      setBrands(brandParam.split(","))   // "1,2,3" → ["1","2","3"]
-    } else {
-      setBrands([])
-    }
-  }, [searchParams])
+  const [priceMin, setPriceMin] = useState(0)
+  const [priceMax, setPriceMax] = useState(600)
+  const [brandExpanded, setBrandExpanded] = useState(false)
 
   // 抓品牌清單
   useEffect(() => {
@@ -59,56 +53,49 @@ export default function SalePage() {
     fetchAttributes()
   }, [])
 
-  // 首次進頁 → 固定跑 0–500
+  // 初始化 + 監聽篩選條件
   useEffect(() => {
-    list("?price_min=0&price_max=500")
-  }, [])
+    let query = `?price_min=${priceMin}&price_max=${priceMax}`
+    if (brands.length > 0) query += `&brand_id=${brands.join(",")}`
+    if (options.length > 0) query += `&options=${options.join(",")}`
+    list(query)
+  }, [brands, options, priceMin, priceMax])
+
+  // 分頁
+  const goToPage = (p) => {
+    let query = `?price_min=${priceMin}&price_max=${priceMax}`
+    if (brands.length > 0) query += `&brand_id=${brands.join(",")}`
+    if (options.length > 0) query += `&options=${options.join(",")}`
+    query += `&page=${p}&per_page=16`
+    router.push(`/products/sales${query}`)
+    list(query)
+  }
 
   // 品牌勾選
-const handleBrandChange = (e) => {
-  const value = e.target.value
-  let newBrands = []
+  const handleBrandChange = (e) => {
+    const value = e.target.value
+    if (e.target.checked) {
+      setBrands([...brands, value])
+    } else {
+      setBrands(brands.filter(id => id !== value))
+    }
+  }
 
-  if (e.target.checked) {
-    newBrands = [...brands, value]
-  } else {
-    newBrands = brands.filter(id => id !== value)
-  }
-  setBrands(newBrands)
+  // 屬性勾選
+  const handleOptionChange = (attrId, value) => {
+    let newOptions = [...options]
 
-  // 不更新 URL，直接打 API
-  let query = `?price_min=0&price_max=500`
-  if (newBrands.length > 0) {
-    query += `&brand_id=${newBrands.join(",")}`
-  }
-  if (options.length > 0) {
-    query += `&options=${options.join(",")}`
-  }
-  list(query)
-}
+    // 先把同屬性的舊選項移掉
+    const attrOptionIds = attributes
+      .find(a => a.id === attrId)?.options.map(opt => String(opt.id)) || []
+    newOptions = newOptions.filter(id => !attrOptionIds.includes(id))
 
-// 屬性勾選
-const handleOptionChange = (e) => {
-  const value = e.target.value
-  let newOptions = []
+    // 如果有新值就加進去
+    if (value) newOptions.push(value)
 
-  if (e.target.checked) {
-    newOptions = [...options, value]
-  } else {
-    newOptions = options.filter(id => id !== value)
+    setOptions(newOptions)
   }
-  setOptions(newOptions)
 
-  // 不更新 URL，直接打 API
-  let query = `?price_min=0&price_max=500`
-  if (brands.length > 0) {
-    query += `&brand_id=${brands.join(",")}`
-  }
-  if (newOptions.length > 0) {
-    query += `&options=${newOptions.join(",")}`
-  }
-  list(query)
-}
 
 
   if (isLoading) {
@@ -118,63 +105,130 @@ const handleOptionChange = (e) => {
   return (
     <>
       <Header />
-      <div className="container">
-        <Breadcrumb />
-
-        <div className="sidebar">
+      <div className="container p-page">
+        <aside>
           {/* 品牌 */}
-          <div>
-            <strong>品牌</strong>
-            {categories.brand.map((c) => (
-              <label key={c.id}>
+          <div className="brand-area">
+            <h6>品牌</h6>
+            {categories.brand.slice(0, 6).map((c) => (
+              <div key={c.id} className="form-check">
                 <input
+                  className="form-check-input"
                   type="checkbox"
+                  id={`brand-${c.id}`}
                   value={c.id}
                   checked={brands.includes(String(c.id))}
                   onChange={handleBrandChange}
                 />
-                {c.name}
-              </label>
+                <label className="form-check-label" htmlFor={`brand-${c.id}`}>
+                  {c.name}
+                </label>
+              </div>
             ))}
+
+            {/* 收合區域 */}
+            <div className="collapse" id="moreBrands">
+              {categories.brand.slice(6).map((c) => (
+                <div key={c.id} className="form-check">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    id={`brand-${c.id}`}
+                    value={c.id}
+                    checked={brands.includes(String(c.id))}
+                    onChange={handleBrandChange}
+                  />
+                  <label className="form-check-label" htmlFor={`brand-${c.id}`}>
+                    {c.name}
+                  </label>
+                </div>
+              ))}
+            </div>
+
+            {/* 切換按鈕 */}
+            {categories.brand.length > 6 && (
+              <button
+                className="btn brand-toggle mt-2"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#moreBrands"
+                onClick={() => setBrandExpanded(!brandExpanded)}
+              >
+                {brandExpanded ? (
+                  <>
+                    收合 <FontAwesomeIcon icon={faMinus} />
+                  </>
+                ) : (
+                  <>
+                    更多 <FontAwesomeIcon icon={faPlus} />
+                  </>
+                )}
+              </button>
+            )}
           </div>
 
           {/* 屬性 */}
-          <div>
+          <div className="attr-area">
+            <h6>規格</h6>
             {attributes.map(attr => (
-              <div key={attr.id}>
+              <div className="select-group" key={attr.id}>
                 <strong>{attr.name}</strong>
-                {attr.options.map(opt => (
-                  <label key={opt.id}>
-                    <input
-                      type="checkbox"
-                      value={opt.id}
-                      checked={options.includes(String(opt.id))}
-                      onChange={handleOptionChange}
-                    />
-                    {opt.value}
-                  </label>
-                ))}
+                <select
+                  className="form-select"
+                  value={options.find(id => attr.options.some(opt => String(opt.id) === id)) || ""}
+                  onChange={(e) => handleOptionChange(attr.id, e.target.value)}
+                >
+                  <option value="">請選擇</option>
+                  {attr.options.map(opt => (
+                    <option key={opt.id} value={opt.id}>
+                      {opt.value}
+                    </option>
+                  ))}
+                </select>
               </div>
             ))}
           </div>
-        </div>
+        </aside>
 
+        <main>
+          <Breadcrumb />
+          <div className="product-list">
+            {isLoading
+              ? Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
+              : products.length === 0
+                ? <p>此條件沒有商品，請重新篩選 🔍</p>
+                : products.map((p) => <ProductCard key={p.id} p={p} />)}
+          </div>
 
-        <div>
-          {products.length === 0 ? (
-            <p>這個價格區間沒有商品，請重新篩選 🔍</p>
-          ) : (
-            <ul>
-              {products.map((p) => (
-                <Link key={p.id} href={`/products/${p.id}`}>
-                  <li>
-                    {p.name} - ${p.price}
-                  </li>
-                </Link>
-              ))}
-            </ul>
+          {/* 分頁 */}
+          {pagination && (
+            <nav aria-label="Page navigation">
+              <ul className="pagination">
+                <li className={`page-item ${pagination.page === 1 ? "disabled" : ""}`}>
+                  <button className="page-link" onClick={() => goToPage(pagination.page - 1)}>
+                    &laquo;
+                  </button>
+                </li>
+                {Array.from({ length: pagination.totalPages }, (_, i) => i + 1)
+                  .filter(num =>
+                    num === 1 ||
+                    num === pagination.totalPages ||
+                    (num >= pagination.page - 2 && num <= pagination.page + 2)
+                  )
+                  .map(num => (
+                    <li key={num} className={`page-item ${num === pagination.page ? "active" : ""}`}>
+                      <button className="page-link" onClick={() => goToPage(num)}>{num}</button>
+                    </li>
+                  ))}
+                <li className={`page-item ${pagination.page === pagination.totalPages ? "disabled" : ""}`}>
+                  <button className="page-link" onClick={() => goToPage(pagination.page + 1)}>
+                    &raquo;
+                  </button>
+                </li>
+              </ul>
+            </nav>
           )}
-        </div>
+        </main>
       </div>
       <Footer />
     </>
