@@ -3,10 +3,7 @@ import Link from "next/link"
 import { usePathname, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faHouse } from '@fortawesome/free-solid-svg-icons'
-import { faAngleRight } from '@fortawesome/free-solid-svg-icons'
-
-
+import { faHouse, faAngleRight } from '@fortawesome/free-solid-svg-icons'
 
 export default function Breadcrumb({ product }) {
   const pathname = usePathname()
@@ -34,7 +31,7 @@ export default function Breadcrumb({ product }) {
   const mainName = categories.main.find(m => m.id === Number(mid))?.name
   const subName = categories.sub.find(s => s.id === Number(cid))?.name
 
-  let items = [{ label: "首頁", href: "/" }]
+  let items = [{ label: <><FontAwesomeIcon icon={faHouse} style={{ marginRight: 4 }} />首頁</>, href: "/" }]
 
   // 商品頁
   if (pathname === "/products") {
@@ -55,7 +52,7 @@ export default function Breadcrumb({ product }) {
     items.push({ label: "限時出清", href: "/products/sales" })
   }
 
-    // 品牌
+  // 品牌
   if (pathname === "/products/brands") {
     items.push({ label: "所有品牌", href: "/products/brands" })
   }
@@ -69,16 +66,24 @@ export default function Breadcrumb({ product }) {
     if (pathname.includes("password")) items.push({ label: "修改密碼" })
   }
 
+  const [iconReady, setIconReady] = useState(false);
+
+  useEffect(() => {
+    setIconReady(true); // 這裡可以加載完資源後再 set
+  }, []);
+
+  if (!iconReady) return null; // 或顯示 loading
+
+
   return (
     <nav aria-label="breadcrumb" className="breadcrumb mt-4">
-    <FontAwesomeIcon icon={faHouse} />
       <ol>
         {items.map((item, idx) => (
           <li key={idx}>
             {item.href ? <Link href={item.href}>{item.label}</Link> : <span>{item.label}</span>}
             {idx < items.length - 1 && <span>
-             <FontAwesomeIcon icon={faAngleRight} />
-             </span>}
+              <FontAwesomeIcon icon={faAngleRight} />
+            </span>}
           </li>
         ))}
       </ol>

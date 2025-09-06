@@ -13,8 +13,7 @@ const router = express.Router();
 // 獲取所有商品
 router.get("/", async (req, res) => {
   try {
-    const { mid, cid, brand_id, search, sort, order, page = 1, per_page = 1300, options } = req.query;
-
+    const { mid, cid, brand_id, search, sort, order, page = 1, per_page = 16, options } = req.query;
 
     let sql = `
       SELECT 
@@ -45,18 +44,16 @@ router.get("/", async (req, res) => {
       params.push(cid);
     }
     if (brand_id) {
-      const ids = brand_id.split(",") // "1,2,3" → ["1","2","3"]
-      sql += ` AND products.brand_id IN (${ids.map(() => "?").join(",")})`
-      params.push(...ids)
+      const ids = brand_id.split(",");
+      sql += ` AND products.brand_id IN (${ids.map(() => "?").join(",")})`;
+      params.push(...ids);
     }
     if (search) {
       sql += " AND products.name LIKE ?";
       params.push(`%${search}%`);
     }
-
-    // 🆕 屬性多對多篩選 (options=1,2,3)
     if (options) {
-      const optionIds = options.split(","); // "1,2,3" → ["1","2","3"]
+      const optionIds = options.split(",");
       sql += `
         AND products.id IN (
           SELECT product_id
@@ -69,14 +66,12 @@ router.get("/", async (req, res) => {
       params.push(...optionIds);
     }
 
-    // 預設值：沒帶參數就用 0 ~ 超大值
-    const priceMin = req.query.price_min ? Number(req.query.price_min) : 0
-    const priceMax = req.query.price_max ? Number(req.query.price_max) : 9999999
+    const priceMin = req.query.price_min ? Number(req.query.price_min) : 0;
+    const priceMax = req.query.price_max ? Number(req.query.price_max) : 9999999;
 
-    sql += " AND products.price BETWEEN ? AND ?"
-    params.push(priceMin, priceMax)
+    sql += " AND products.price BETWEEN ? AND ?";
+    params.push(priceMin, priceMax);
 
-    // 排序（只允許 price，避免 SQL injection）
     if (sort && ["price"].includes(sort)) {
       sql += ` ORDER BY products.${sort} ${order === "desc" ? "DESC" : "ASC"}`;
     }
@@ -86,12 +81,67 @@ router.get("/", async (req, res) => {
     params.push(Number(per_page));
     params.push((Number(page) - 1) * Number(per_page));
 
+    // 🆕 查總數，和上面一樣的條件
+    let countSql = `
+      SELECT COUNT(*) AS total
+      FROM products
+      JOIN category_main ON products.category_main_id = category_main.id
+      JOIN category_sub ON products.category_sub_id = category_sub.id
+      JOIN brands ON products.brand_id = brands.id
+      WHERE products.is_valid = 1
+    `;
+    let countParams = [];
+
+    if (mid) {
+      countSql += " AND products.category_main_id = ?";
+      countParams.push(mid);
+    }
+    if (cid) {
+      countSql += " AND products.category_sub_id = ?";
+      countParams.push(cid);
+    }
+    if (brand_id) {
+      const ids = brand_id.split(",");
+      countSql += ` AND products.brand_id IN (${ids.map(() => "?").join(",")})`;
+      countParams.push(...ids);
+    }
+    if (search) {
+      countSql += " AND products.name LIKE ?";
+      countParams.push(`%${search}%`);
+    }
+    if (options) {
+      const optionIds = options.split(",");
+      countSql += `
+        AND products.id IN (
+          SELECT product_id
+          FROM products_attribute_values
+          WHERE option_id IN (${optionIds.map(() => "?").join(",")})
+          GROUP BY product_id
+          HAVING COUNT(DISTINCT option_id) = ${optionIds.length}
+        )
+      `;
+      countParams.push(...optionIds);
+    }
+
+    countSql += " AND products.price BETWEEN ? AND ?";
+    countParams.push(priceMin, priceMax);
+
+    let [countRows] = await connection.execute(countSql, countParams);
+    const total = countRows[0].total;
+    const totalPages = Math.ceil(total / per_page);
+
     let [products] = await connection.execute(sql, params);
 
     res.status(200).json({
       status: "success",
       data: products,
-      message: "已 獲取所有商品"
+      pagination: {
+        page: Number(page),
+        per_page: Number(per_page),
+        total,
+        totalPages
+      },
+      message: "已獲取所有商品"
     });
   } catch (error) {
     console.log(error);
@@ -104,6 +154,7 @@ router.get("/", async (req, res) => {
     });
   }
 });
+
 
 // 商品選項的 API
 router.get("/categories", async (req, res) => {
@@ -155,7 +206,7 @@ router.get("/:id", async (req, res) => {
         m.id AS main_id, m.name AS main_name,
         s.id AS sub_id, s.name AS sub_name,
         b.id AS brand_id, b.name AS brand_name,
-        p.price, p.modal, p.intro, p.spec
+        p.price, p.model, p.intro, p.spec
       FROM products p
       JOIN category_main m ON p.category_main_id = m.id
       JOIN category_sub s ON p.category_sub_id = s.id

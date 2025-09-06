@@ -1,40 +1,40 @@
 "use client"
+import React from "react"
+import style from '@/styles/products.css'
 import { useSearchParams, useRouter } from "next/navigation"
-
 import { useProduct } from "@/hooks/use-product"
 import { useEffect, useState } from "react"
 import Breadcrumb from "@/app/_components/breadCrumb"
 import Header from "@/app/_components/header";
 import Footer from "@/app/_components/footer";
 import Sidebar from "@/app/_components/products/Sidebar";
-import Link from "next/link"
+import ProductCard from "@/app/_components/products/ProductCard";
+import SkeletonCard from "@/app/_components/products/SkeletonCard";
+
 
 export default function ProductPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { products, list, isLoading } = useProduct()
+  const { products, list, isLoading, pagination } = useProduct()
   const [categories, setCategories] = useState({ main: [], sub: [], brand: [] })
-  // 屬性（包含 options）
   const [attributes, setAttributes] = useState([])
-  // 使用者勾選的 options id
   const [options, setOptions] = useState([])
-  // 價格範圍
   const [priceMin, setPriceMin] = useState("")
   const [priceMax, setPriceMax] = useState("")
+  const [brands, setBrands] = useState([])
+  const [sidebarReady, setSidebar] = useState(false);
 
-  // 從 URL 讀取條件
+
+
   const mid = searchParams.get("mid") || ""
   const cid = searchParams.get("cid") || ""
-  const [brands, setBrands] = useState([])
+  const page = Number(searchParams.get("page")) || 1
+  const per_page = 16
 
-
+  // 品牌多選處理
   useEffect(() => {
     const brandParam = searchParams.get("brand_id")
-    if (brandParam) {
-      setBrands(brandParam.split(","))   // "1,2,3" → ["1","2","3"]
-    } else {
-      setBrands([])
-    }
+    setBrands(brandParam ? brandParam.split(",") : [])
   }, [searchParams])
 
   // 抓分類清單
@@ -53,7 +53,7 @@ export default function ProductPage() {
     fetchCategories()
   }, [])
 
-  // 抓取產品屬性
+  // 抓屬性清單
   useEffect(() => {
     async function fetchAttributes() {
       const res = await fetch("http://localhost:3007/api/products/attributes")
@@ -69,13 +69,20 @@ export default function ProductPage() {
     fetchAttributes()
   }, [])
 
-
-  // URL 變動時，自動打 API
+  // URL 變動 → 抓產品列表
   useEffect(() => {
     list("?" + searchParams.toString())
   }, [searchParams])
 
-  // 母分類改變時 → 更新 URL (並清掉子分類)
+  // 換頁
+  const goToPage = (p) => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set("page", p)
+    params.set("per_page", per_page)
+    router.push(`/products?${params.toString()}`)
+  }
+
+  // 篩選處理 -------------------------------------
   const MainChange = (e) => {
     const params = new URLSearchParams(searchParams.toString())
     const value = e.target.value
@@ -86,10 +93,10 @@ export default function ProductPage() {
       params.delete("mid")
       params.delete("cid")
     }
+    params.delete("page")   // ⭐ 重設分頁
     router.push(`/products?${params.toString()}`)
   }
 
-  // 子分類
   const SubChange = (e) => {
     const params = new URLSearchParams(searchParams.toString())
     const value = e.target.value
@@ -98,68 +105,39 @@ export default function ProductPage() {
     } else {
       params.delete("cid")
     }
+    params.delete("page")   // ⭐ 重設分頁
     router.push(`/products?${params.toString()}`)
   }
 
-  // 品牌
   const BrandChange = (e) => {
     const value = e.target.value
     let newBrands = []
-
     if (e.target.checked) {
       newBrands = [...brands, value]
     } else {
       newBrands = brands.filter(id => id !== value)
     }
-
     setBrands(newBrands)
-
-    // 更新 URL
     const params = new URLSearchParams(searchParams.toString())
     if (newBrands.length > 0) {
       params.set("brand_id", newBrands.join(","))
     } else {
       params.delete("brand_id")
     }
+    params.delete("page")   // ⭐ 重設分頁
     router.push(`/products?${params.toString()}`)
   }
 
-  // 價格篩選
   const PriceChange = () => {
     const params = new URLSearchParams(searchParams.toString())
-
-    if (priceMin) {
-      params.set("price_min", priceMin)
-    } else {
-      params.delete("price_min")
-    }
-
-    if (priceMax) {
-      params.set("price_max", priceMax)
-    } else {
-      params.delete("price_max")
-    }
-
+    if (priceMin) params.set("price_min", priceMin)
+    else params.delete("price_min")
+    if (priceMax) params.set("price_max", priceMax)
+    else params.delete("price_max")
+    params.delete("page")   // ⭐ 重設分頁
     router.push(`/products?${params.toString()}`)
   }
 
-
-  const filteredSubs = categories.sub.filter((s) => s.main_id == mid)
-
-  if (isLoading) {
-
-    return (
-      <div className="container">
-        Loading......
-      </div>
-    );
-  }
-
-  const filteredAttrs = mid
-    ? attributes.filter(attr => String(attr.main_id) === mid)
-    : attributes
-
-  // 屬性選項勾選 (多選 AND)
   const OptionChange = (e) => {
     const value = e.target.value
     let newOptions = []
@@ -169,25 +147,39 @@ export default function ProductPage() {
       newOptions = options.filter(id => id !== value)
     }
     setOptions(newOptions)
-
     const params = new URLSearchParams(searchParams.toString())
     if (newOptions.length > 0) {
       params.set("options", newOptions.join(","))
     } else {
       params.delete("options")
     }
+    params.delete("page")   // ⭐ 重設分頁
     router.push(`/products?${params.toString()}`)
   }
 
-  // 清空屬性和價格
   const ClearFilters = () => {
     setOptions([])
     setPriceMin("")
     setPriceMax("")
-    setBrands([])   // 如果也要清掉品牌記得加這行
-
+    setBrands([])
     router.replace("/products")
   }
+
+  useEffect(() => {
+    setSidebar(true); // 這裡可以加載完資源後再 set
+  }, []);
+
+  if (!sidebarReady) return null; // 或顯示 loading
+
+
+  // -------------------------------------
+
+  const filteredSubs = categories.sub.filter((s) => s.main_id == mid)
+  const filteredAttrs = mid
+    ? attributes.filter(attr => String(attr.main_id) === mid)
+    : attributes
+
+
 
   return (
     <>
@@ -215,30 +207,67 @@ export default function ProductPage() {
         />
         <main>
           <Breadcrumb />
-          <div>
-            {products.map((p) => (
-              <Link key={p.id} href={`/products/${p.id}`}>
-                <div className="card">
-                  <img
-                    src={
-                      p.first_image
-                        ? `/images/products/uploads/${p.first_image}`
-                        : "/images/no-image.png"
-                    }
-                    alt={p.name}
-                    className="card-img-top"
-                  />
-                  <div className="card-body">
-                    <p>{p.name}</p>
-                    <p>${p.price}</p>
-                  </div>
-                </div>
-              </Link>
-            ))}
+
+
+          <div className="product-list">
+            {isLoading
+              ? Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
+              : products.map((p, i) => <ProductCard key={i} p={p} />)
+            }
           </div>
+
+          {/* 分頁 */}
+          {pagination && (
+            <nav aria-label="Page navigation">
+              <ul className="pagination">
+                <li className={`page-item ${pagination.page === 1 ? "disabled" : ""}`}>
+                  <button
+                    className="page-link"
+                    onClick={() => goToPage(pagination.page - 1)}
+                  >
+                    &laquo;
+                  </button>
+                </li>
+                {Array.from({ length: pagination.totalPages }, (_, i) => i + 1)
+                  .filter(num =>
+                    num === 1 ||
+                    num === pagination.totalPages ||
+                    (num >= pagination.page - 2 && num <= pagination.page + 2)
+                  )
+                  .map((num, idx, arr) => {
+                    if (idx > 0 && num - arr[idx - 1] > 1) {
+                      return (
+                        <React.Fragment key={num}>
+                          <li className="page-item disabled">
+                            <span className="page-link">...</span>
+                          </li>
+                          <li className={`page-item ${num === pagination.page ? "active" : ""}`}>
+                            <button className="page-link" onClick={() => goToPage(num)}>{num}</button>
+                          </li>
+                        </React.Fragment>
+                      )
+                    }
+                    return (
+                      <li key={num} className={`page-item ${num === pagination.page ? "active" : ""}`}>
+                        <button className="page-link" onClick={() => goToPage(num)}>{num}</button>
+                      </li>
+                    )
+                  })}
+                <li className={`page-item ${pagination.page === pagination.totalPages ? "disabled" : ""}`}>
+                  <button
+                    className="page-link"
+                    onClick={() => goToPage(pagination.page + 1)}
+                  >
+                    &raquo;
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          )}
+
+
         </main>
       </div>
-
       <Footer />
     </>
   )

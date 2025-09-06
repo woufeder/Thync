@@ -2,12 +2,11 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { usePathname,useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import HeaderUser from "./headerUser";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
-import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
+import { faMagnifyingGlass, faCartShopping } from "@fortawesome/free-solid-svg-icons";
 
 export default function Header() {
   const router = useRouter()
@@ -222,7 +221,7 @@ export default function Header() {
 
             <nav className="navbar navbar-expand-md ">
               <div className="w-100">
-                <ul className="navbar-nav mb-2 mb-lg-0 w-100 text-center">
+                <ul className="navbar-nav w-100 text-center">
                   <li className="nav-item">
                     <Link
                       href="/products"

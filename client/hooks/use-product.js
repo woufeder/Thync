@@ -8,30 +8,29 @@ ProductContext.displayName = "ProductContext"
 export function ProductProvider({ children }) {
   const [products, setProducts] = useState([])
   const [product, setProduct] = useState(null)   // ← 新增：單一商品
-  const [isLoading, setIsLoading] = useState(true)
+  const [pagination, setPagination] = useState(null)
+  // isLoading 初始值建議設 false
+  const [isLoading, setIsLoading] = useState(false)
 
   // 取得商品列表
   const list = async (query = "") => {
     const API = `http://localhost:3007/api/products${query}`
     try {
+      setIsLoading(true)  // ⭐ 開始 loading
       const res = await fetch(API)
       const result = await res.json()
       if (result.status === "success") {
         setProducts(result.data)
+        setPagination(result.pagination || null)
       }
-      setIsLoading(false)
     } catch (error) {
       setProducts([])
-      setIsLoading(false)
+      setPagination(null)
       alert(error.message)
+    } finally {
+      setIsLoading(false) // ⭐ 保證最後關閉
     }
   }
-
-  // 預設自動載入全部商品
-  useEffect(() => {
-    list()
-  }, [])
-
 
   // 抓單一商品
   const getOne = async (id) => {
@@ -54,7 +53,7 @@ export function ProductProvider({ children }) {
   }
 
   return (
-    <ProductContext.Provider value={{ products, list, isLoading, product, getOne }}>
+    <ProductContext.Provider value={{ products, list, isLoading, product, getOne,pagination }}>
       {children}
     </ProductContext.Provider>
   )

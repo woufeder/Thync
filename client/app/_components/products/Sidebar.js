@@ -7,8 +7,6 @@ import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons"
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 
-
-
 export default function Sidebar({
   categories,
   filteredSubs,
