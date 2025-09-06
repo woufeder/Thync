@@ -71,21 +71,23 @@ export default function CartSummary({ items, discount = 0, couponCode = "", onCh
               </ul>
             </div>
           </li>
-
           <li>
-            運費 <span>${shipping}</span>
+            商品總額 <span>${subtotal}</span>
+          </li>
+          <li>
+            運費總額 <span>${shipping}</span>
           </li>
           <li className="total">
-            <span className="label">總計</span>
+            <span className="label">統計</span>
             <div className="right">
               <span>共 {count} 件</span>
               <div className="row">
                 <span>折扣 -${discount}</span>
               </div>
-              <div className="row">
-                <span>總共 ${total}</span>
-              </div>
             </div>
+          </li>
+          <li>
+            總付款額 <span className="fs-4 fw-bold ms-auto">${total}</span>
           </li>
         </ul>
         <button className="btn-checkout" onClick={onCheckout}>結帳 ({count})</button>

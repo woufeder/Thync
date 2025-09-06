@@ -15,11 +15,7 @@ export default function CartPage() {
   const [discount, setDiscount] = useState(0);
   // TODO: 取得登入會員 id，暫用假資料
   const userId = 1;
-  const recommend = Array(6).fill({
-    img: "https://picsum.photos/id/1058/600/400",
-    title: "A4tech 雙飛燕 Bloody S98",
-    price: "$2390",
-  });
+
 
   useEffect(() => {
     // 從 localStorage 取得購物車資料
@@ -50,7 +46,6 @@ export default function CartPage() {
           <CartListPage
             items={items}
             setItems={setItems}
-            recommend={recommend}
             couponCode={couponCode}
             setCouponCode={setCouponCode}
             discount={discount}
@@ -59,10 +54,10 @@ export default function CartPage() {
           />
         )}
         {/* 推薦商品區塊 */}
-        <RecommendList recommend={recommend} />
+        <RecommendList />
       </main>
 
-        <Footer />
+      <Footer />
 
     </>
   );
