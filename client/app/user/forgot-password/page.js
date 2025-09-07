@@ -5,13 +5,14 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Script from "next/script";
-import styles from "@/styles/forget-password.css";
+import styles from "@/styles/forgot-password.css";
 
-export default function UserLoginPage() {
+export default function ForgotPasswordPage() {
   const [mail, setMail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const { login, user, logout, isLoading } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState(""); // 'success' or 'error'
+  const { user, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const [lottieLoaded, setLottieLoaded] = useState(false);
   const animationRef = useRef(null);
@@ -22,8 +23,50 @@ export default function UserLoginPage() {
     }
   }, [lottieLoaded]);
 
-  const handleSendCode = (e) => {
-    router.push(`/user/verification-code?mail=${encodeURIComponent(mail)}`);
+  const handleSendCode = async (e) => {
+    e.preventDefault();
+
+    if (!mail) {
+      setMessage("請輸入信箱");
+      setMessageType("error");
+      return;
+    }
+
+    setIsLoading(true);
+    setMessage("");
+
+    try {
+      const response = await fetch("http://localhost:3007/api/users/forgot-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ mail }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMessage("驗證碼已發送至您的信箱，請查收");
+        setMessageType("success");
+
+        // 3秒後跳轉到驗證碼頁面
+        setTimeout(() => {
+          router.push(
+            `/user/verification-code?mail=${encodeURIComponent(mail)}`
+          );
+        }, 3000);
+      } else {
+        setMessage(data.message || "發送失敗，請稍後再試");
+        setMessageType("error");
+      }
+    } catch (error) {
+      console.error("發送驗證碼錯誤:", error);
+      setMessage("網路錯誤，請稍後再試");
+      setMessageType("error");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Lottie 動畫初始化
@@ -134,7 +177,7 @@ export default function UserLoginPage() {
     };
   }, []);
 
-  if (isLoading) {
+  if (authLoading) {
     return <div className="loader"></div>;
   }
 
@@ -166,14 +209,7 @@ export default function UserLoginPage() {
               </div>
             </div>
             <main>
-              <form
-                id="login-form"
-                autoComplete="on"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleSendCode();
-                }}
-              >
+              <form id="login-form" autoComplete="on" onSubmit={handleSendCode}>
                 {/* 信箱 */}
                 <div className="field">
                   <label htmlFor="mail" className="label">
@@ -188,13 +224,20 @@ export default function UserLoginPage() {
                     value={mail}
                     onChange={(e) => setMail(e.target.value)}
                     required
+                    disabled={isLoading}
                   />
                 </div>
+
+                {/* 訊息顯示 */}
+
+                {message && (
+                  <div className={`message ${messageType}`}>{message}</div>
+                )}
 
                 {/* 按鈕 */}
                 <button className="btn-primary" type="submit">
                   <i className="fa-solid fa-envelope"></i>
-                  &nbsp;&nbsp;寄送驗證碼
+                  &nbsp;&nbsp;發送驗證碼
                 </button>
 
                 <div className="divider">或</div>

@@ -6,9 +6,9 @@ import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Script from "next/script";
-import styles from "@/styles/forget-password.css";
+import styles from "@/styles/forgot-password.css";
 
-export default function UserLoginPage() {
+export default function VerificationPage() {
   const searchParams = useSearchParams();
   const mailFromQuery = searchParams.get("mail") || "";
   const [mail, setMail] = useState(mailFromQuery);
@@ -16,7 +16,10 @@ export default function UserLoginPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const { login, user, logout, isLoading } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("");
+  const { user, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const [lottieLoaded, setLottieLoaded] = useState(false);
   const animationRef = useRef(null);
@@ -135,7 +138,143 @@ export default function UserLoginPage() {
     };
   }, []);
 
-  if (isLoading) {
+  // 重新發送驗證碼
+
+  const handleResendCode = async (e) => {
+    e.preventDefault();
+
+    if (!mail) {
+      setMessage("請輸入信箱地址");
+
+      setMessageType("error");
+
+      return;
+    }
+
+    setIsLoading(true);
+
+    setMessage("");
+
+    try {
+      const response = await fetch(
+        "http://localhost:3007/api/users/forgot-password",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify({ mail }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMessage("新驗證碼已發送至您的信箱");
+
+        setMessageType("success");
+
+        setVerificationCode(""); // 清空舊的驗證碼
+      } else {
+        setMessage(data.message || "重新發送失敗");
+
+        setMessageType("error");
+      }
+    } catch (error) {
+      console.error("重新發送驗證碼錯誤:", error);
+
+      setMessage("網路錯誤，請稍後再試");
+
+      setMessageType("error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 重設密碼
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+
+    if (!mail || !verificationCode || !password) {
+      setMessage("請填寫所有欄位");
+
+      setMessageType("error");
+
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setMessage("密碼確認不一致");
+
+      setMessageType("error");
+
+      return;
+    }
+
+    if (password.length < 6) {
+      setMessage("密碼至少需要6個字符");
+
+      setMessageType("error");
+
+      return;
+    }
+
+    setIsLoading(true);
+
+    setMessage("");
+
+    try {
+      const response = await fetch(
+        "http://localhost:3007/api/users/verification-code",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify({
+            mail,
+
+            verificationCode,
+
+            password,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMessage("密碼重設成功！正在跳轉到登入頁面...");
+
+        setMessageType("success");
+
+        // 3秒後跳轉到登入頁面
+
+        setTimeout(() => {
+          router.push("/user/login");
+        }, 3000);
+      } else {
+        setMessage(data.message || "密碼重設失敗");
+
+        setMessageType("error");
+      }
+    } catch (error) {
+      console.error("重設密碼錯誤:", error);
+
+      setMessage("網路錯誤，請稍後再試");
+
+      setMessageType("error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (authLoading) {
     return <div className="loader"></div>;
   }
 
@@ -167,13 +306,7 @@ export default function UserLoginPage() {
               </div>
             </div>
             <main>
-              <form
-                id="login-form"
-                autoComplete="on"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                }}
-              >
+              <form id="login-form" autoComplete="on">
                 {/* 信箱 */}
                 <div className="field">
                   <label htmlFor="mail" className="label">
@@ -188,6 +321,7 @@ export default function UserLoginPage() {
                     value={mail}
                     onChange={(e) => setMail(e.target.value)}
                     required
+                    disabled={isLoading}
                   />
                 </div>
 
@@ -198,12 +332,15 @@ export default function UserLoginPage() {
                   </label>
                   <input
                     id="verification-code"
-                    name="verification-code"
+                    name="verificationCode"
                     type="text"
+                    placeholder="請輸入6位數驗證碼"
                     className="input"
                     value={verificationCode}
                     onChange={(e) => setVerificationCode(e.target.value)}
+                    maxLength="6"
                     required
+                    disabled={isLoading}
                   />
                 </div>
 
@@ -218,34 +355,11 @@ export default function UserLoginPage() {
                       name="password"
                       type={showPassword ? "text" : "password"}
                       className="input"
+                      placeholder="請輸入新密碼"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
-                    />
-                    <i
-                      className={
-                        showPassword
-                          ? "fa-solid fa-eye"
-                          : "fa-solid fa-eye-slash"
-                      }
-                      onClick={() => setShowPassword((prev) => !prev)}
-                    ></i>
-                  </div>
-                </div>
-                {/* 確認密碼 */}
-                <div className="field">
-                  <label htmlFor="confirm-password" className="label">
-                    確認密碼
-                  </label>
-                  <div className="password-block">
-                    <input
-                      id="confirm-password"
-                      name="confirm-password"
-                      type={showPassword ? "text" : "password"}
-                      className="input"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      required
+                      disabled={isLoading}
                     />
                     <i
                       className={
@@ -258,14 +372,76 @@ export default function UserLoginPage() {
                   </div>
                 </div>
 
+                {/* 確認密碼 */}
+                <div className="field">
+                  <label htmlFor="confirm-password" className="label">
+                    確認密碼
+                  </label>
+                  <div className="password-block">
+                    <input
+                      id="confirm-password"
+                      name="confirm-password"
+                      type={showPassword ? "text" : "password"}
+                      className="input"
+                      placeholder="請再次輸入新密碼"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                      disabled={isLoading}
+                    />
+                    <i
+                      className={
+                        showPassword
+                          ? "fa-solid fa-eye"
+                          : "fa-solid fa-eye-slash"
+                      }
+                      onClick={() => setShowPassword((prev) => !prev)}
+                    ></i>
+                  </div>
+                </div>
+
+                {/* 訊息顯示 */}
+                {message && (
+                  <div className={`message ${messageType}`}>{message}</div>
+                )}
+
                 {/* 按鈕 */}
-                <button className="btn-primary" type="submit">
-                  <i className="fa-solid fa-envelope"></i>
-                  &nbsp;&nbsp;重新寄送驗證碼
+                <button
+                  className="btn-primary"
+                  type="button"
+                  onClick={handleResendCode}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <>
+                      <i className="fa-solid fa-spinner fa-spin"></i>
+                      &nbsp;&nbsp;發送中...
+                    </>
+                  ) : (
+                    <>
+                      <i className="fa-solid fa-envelope"></i>
+                      &nbsp;&nbsp;重新發送驗證碼
+                    </>
+                  )}
                 </button>
-                <button className="btn-primary reset-pass" type="submit">
-                  <i className="fa-solid fa-key"></i>
-                  &nbsp;&nbsp;重設密碼
+
+                <button
+                  className="btn-primary reset-pass"
+                  type="button"
+                  onClick={handleResetPassword}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <>
+                      <i className="fa-solid fa-spinner fa-spin"></i>
+                      &nbsp;&nbsp;處理中...
+                    </>
+                  ) : (
+                    <>
+                      <i className="fa-solid fa-key"></i>
+                      &nbsp;&nbsp;重設密碼
+                    </>
+                  )}
                 </button>
 
                 <div className="divider">或</div>

@@ -224,7 +224,7 @@ export default function UserLoginPage() {
                   </div>
                 </div>
 
-                <a href="#" className="link forget">
+                <a href="/user/forgot-password" className="link forget">
                   忘記密碼
                 </a>
 

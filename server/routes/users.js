@@ -483,30 +483,151 @@ router.post("/status", checkToken, async (req, res) => {
   }
 });
 
-// 忘記密碼
-router.post("/forgot-password", forgotPassword);
-// 重設密碼
-// :resettoken 動態參數 比照 ${resetToken}
-router.put("/resetPassword/:resettoken", resetPassword);
-
-// 測試郵件
-router.post("/test-email", async (req, res) => {
+// 忘記密碼 - 發送驗證碼
+router.post("/forgot-password", async (req, res) => {
   try {
-    await sendEmail({
-      email: req.body.email,
-      subject: "測試郵件",
-      message: "這是一封測試郵件",
-      resetUrl: "http://localhost:3007/test"
-    });
-    
-    res.json({
-      success: true,
-      message: "測試郵件發送成功"
-    });
+    const { mail } = req.body;
+
+    if (!mail) {
+      return res.status(400).json({
+        success: false,
+        message: "請提供信箱",
+      });
+    }
+
+    // 檢查用戶是否存在
+    const sqlCheck = "SELECT * FROM `users` WHERE `mail` = ? AND is_valid = 1;";
+    const user = await connection
+      .execute(sqlCheck, [mail])
+      .then(([result]) => result[0]);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "該信箱用戶不存在",
+      });
+    }
+
+    // 生成6位數驗證碼
+    const verificationCode = Math.floor(
+      100000 + Math.random() * 900000
+    ).toString();
+
+    // 設定驗證碼過期時間（10分鐘）
+    const codeExpire = new Date(Date.now() + 10 * 60 * 1000);
+
+    // 將驗證碼和過期時間存入資料庫
+    const sqlUpdate = `
+      UPDATE users 
+      SET verification_code = ?, code_expire = ? 
+      WHERE mail = ?
+    `;
+    await connection.execute(sqlUpdate, [verificationCode, codeExpire, mail]);
+
+    try {
+      // 發送驗證碼郵件
+      await sendEmail({
+        email: mail,
+        subject: "密碼重設驗證碼",
+        message: `您的驗證碼是：${verificationCode}`,
+        html: `
+          <div style="max-width: 600px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif;">
+            <h2 style="color: #333; text-align: center;">密碼重設驗證碼</h2>
+            <p>您好，</p>
+            <p>我們收到您重設密碼的請求。請使用以下驗證碼來重設您的密碼：</p>
+            <div style="text-align: center; margin: 30px 0;">
+              <div style="background-color: #f8f9fa; border: 2px dashed #007bff; 
+                          padding: 20px; border-radius: 10px; display: inline-block;">
+                <h1 style="color: #007bff; margin: 0; font-size: 32px; letter-spacing: 5px;">
+                  ${verificationCode}
+                </h1>
+              </div>
+            </div>
+            <p style="color: #666; font-size: 14px; text-align: center;">
+              此驗證碼將在 <strong>10 分鐘</strong> 後過期。
+            </p>
+            <p style="color: #999; font-size: 12px; text-align: center;">
+              如果您未申請重設密碼，請忽略此郵件。
+            </p>
+          </div>
+        `,
+      });
+
+      res.status(200).json({
+        success: true,
+        message: "驗證碼已發送至您的信箱",
+      });
+    } catch (emailError) {
+      console.error("Email sending error:", emailError);
+
+      // 如果郵件發送失敗，清除資料庫中的驗證碼
+      await connection.execute(
+        "UPDATE users SET verification_code = NULL, code_expire = NULL WHERE mail = ?",
+        [mail]
+      );
+
+      return res.status(500).json({
+        success: false,
+        message: "驗證碼發送失敗，請稍後再試",
+      });
+    }
   } catch (error) {
+    console.error("Forgot password error:", error);
     res.status(500).json({
       success: false,
-      message: error.message
+      message: "伺服器錯誤，請稍後再試",
+    });
+  }
+});
+
+// 驗證驗證碼並重設密碼
+router.post("/verification-code", upload.none(), async (req, res) => {
+  try {
+    const { mail, verificationCode, password } = req.body;
+
+    if (!mail || !verificationCode || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "尚有欄位未填寫",
+      });
+    }
+
+    // 檢查驗證碼和過期時間
+    const sqlCheck = `
+      SELECT * FROM users 
+      WHERE mail = ? AND verification_code = ? AND code_expire > NOW() AND is_valid = 1
+    `;
+    const user = await connection
+      .execute(sqlCheck, [mail, verificationCode])
+      .then(([result]) => result[0]);
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "驗證碼無效或已過期",
+      });
+    }
+
+    // 加密新密碼
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // 更新密碼並清除驗證碼
+    const sqlUpdate = `
+      UPDATE users 
+      SET password = ?, verification_code = NULL, code_expire = NULL 
+      WHERE mail = ?
+    `;
+    await connection.execute(sqlUpdate, [hashedPassword, mail]);
+
+    res.status(200).json({
+      success: true,
+      message: "密碼重設成功",
+    });
+  } catch (error) {
+    console.error("Reset password error:", error);
+    res.status(500).json({
+      success: false,
+      message: "密碼重設失敗，請稍後再試",
     });
   }
 });
