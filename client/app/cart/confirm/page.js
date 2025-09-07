@@ -56,9 +56,10 @@ export default function Page() {
                     {/* 收件與運送摘要 */}
                     <section className="checkout">
                         <div className="panel">
-                            <h3 className="panel-title">收件與運送</h3>
+                            <h3 className="panel-title">寄送與付款</h3>
                             <div className="panel-body">
                                 <div className="row">
+                                <label className="radio">7-11 取貨付款</label>
                                     <label className="radio">收貨人：{form.receiverName}</label>
                                     <label className="radio">手機號碼：{form.receiverPhone }</label>
                                 </div>
@@ -72,13 +73,6 @@ export default function Page() {
                             </div>
                         </div>
 
-                        {/* 付款方式摘要 */}
-                        <div className="panel">
-                            <h3 className="panel-title">付款方式</h3>
-                            <div className="panel-body">
-                                <label className="radio">7-11 取貨付款</label>
-                            </div>
-                        </div>
 
                         {/* 購買人資訊摘要 */}
                         <div className="panel">
