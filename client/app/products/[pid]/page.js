@@ -42,6 +42,9 @@ export default function ProductDetail({ params }) {
     return null;
   }
 
+  
+  
+
   const images = product.images || [];
   const introImages = product.introImages || [];
 
@@ -142,7 +145,7 @@ export default function ProductDetail({ params }) {
 
         <div className="tab-content" id="myTabContent">
           <div className="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-            <div id="intro" className="mt-2 preserve-format"><p>商品介紹 {product.intro}</p></div>
+            <div id="intro" className="mt-2 preserve-format"><pre>商品介紹 {product.intro}</pre></div>
             <div className="d-flex gap-3 flex-wrap mt-3">
 
               {introImages.map((img) => (
@@ -159,7 +162,7 @@ export default function ProductDetail({ params }) {
             </div>
           </div>
           <div className="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-            <div id="spec" className=" mt-2 preserve-format"><p>商品規格 {product.spec}</p></div>
+            <div id="spec" className=" mt-2 preserve-format"><pre>商品規格 {product.spec}</pre></div>
 
           </div>
         </div>
