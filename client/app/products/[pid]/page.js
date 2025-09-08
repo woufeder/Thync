@@ -42,9 +42,6 @@ export default function ProductDetail({ params }) {
     return null;
   }
 
-  
-  
-
   const images = product.images || [];
   const introImages = product.introImages || [];
 
@@ -68,7 +65,7 @@ export default function ProductDetail({ params }) {
   return (
     <>
       <Header />
-      <main className="container">
+      <main className="container P-detail">
         <Breadcrumb product={product} />
         <div className="area1">
           <div className="product-images">
@@ -126,50 +123,45 @@ export default function ProductDetail({ params }) {
         </div>
 
 
+        {/* 加購區 */}
+        <div className='add-on'></div>
 
 
-
-
-
-        <ul className="nav nav-tabs">
-          <li className="nav-item" role="presentation">
-            <button className="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home"
-              type="button" role="tab" aria-controls="home" aria-selected="true">商品介紹</button>
-          </li>
-          <li className="nav-item" role="presentation">
-            <button className="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button"
-              role="tab" aria-controls="profile" aria-selected="false">商品規格</button>
-          </li>
-        </ul>
-
-
-        <div className="tab-content" id="myTabContent">
-          <div className="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-            <div id="intro" className="mt-2 preserve-format"><pre>商品介紹 {product.intro}</pre></div>
-            <div className="d-flex gap-3 flex-wrap mt-3">
-
-              {introImages.map((img) => (
-                <img
-                  key={img.id}
-                  src={`/images/products/uploads/${img.file}`}
-                  alt={product.product_name}
-                  style={{ width: "200px", height: "auto", objectFit: "cover" }}
-                />
-              ))}
+        <div className='area2'>
+          <div className="nav nav-tabs">
+            <div className="nav-item" role="presentation">
+              <button className="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home"
+                type="button" role="tab" aria-controls="home" aria-selected="true">商品介紹</button>
             </div>
-            <div>
-
+            <div className="nav-item" role="presentation">
+              <button className="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button"
+                role="tab" aria-controls="profile" aria-selected="false">商品規格</button>
             </div>
           </div>
-          <div className="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-            <div id="spec" className=" mt-2 preserve-format"><pre>商品規格 {product.spec}</pre></div>
+          <div className="tab-content" id="myTabContent">
+            <div className="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+              <div id="intro" className="mt-2 preserve-format"><pre>商品介紹 {product.intro}</pre></div>
+              <div className="d-flex gap-3 flex-wrap mt-3">
 
+                {introImages.map((img) => (
+                  <img
+                    key={img.id}
+                    src={`/images/products/uploads/${img.file}`}
+                    alt={product.product_name}
+                    style={{ width: "200px", height: "auto", objectFit: "cover" }}
+                  />
+                ))}
+              </div>
+              <div>
+
+              </div>
+            </div>
+            <div className="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+              <div id="spec" className=" mt-2 preserve-format"><pre>商品規格 {product.spec}</pre></div>
+
+            </div>
           </div>
         </div>
-
-
-
-
 
 
 
