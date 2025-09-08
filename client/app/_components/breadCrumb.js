@@ -3,7 +3,7 @@ import Link from "next/link"
 import { usePathname, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faHouse, faAngleRight } from '@fortawesome/free-solid-svg-icons'
+import { faHouseChimney, faAngleRight } from '@fortawesome/free-solid-svg-icons'
 
 export default function Breadcrumb({ product }) {
   const pathname = usePathname()
@@ -31,7 +31,9 @@ export default function Breadcrumb({ product }) {
   const mainName = categories.main.find(m => m.id === Number(mid))?.name
   const subName = categories.sub.find(s => s.id === Number(cid))?.name
 
-  let items = [{ label: <><FontAwesomeIcon icon={faHouse} style={{ marginRight: 4 }} />首頁</>, href: "/" }]
+
+
+  let items = [{ label: <>  <FontAwesomeIcon icon={faHouseChimney} style={{ marginRight: 4 }} />首頁</>, href: "/" }]
 
   // 商品頁
   if (pathname === "/products") {
@@ -83,6 +85,7 @@ export default function Breadcrumb({ product }) {
             {item.href ? <Link href={item.href}>{item.label}</Link> : <span>{item.label}</span>}
             {idx < items.length - 1 && <span>
               <FontAwesomeIcon icon={faAngleRight} />
+              
             </span>}
           </li>
         ))}
