@@ -10,8 +10,12 @@ import couponRouter from "./routes/coupon.js";
 import articlesRouter from "./routes/articles.js";
 
 // 設定區
-const upload = multer();
-let whitelist = ["http://localhost:5500", "http://localhost:3000"];
+let whitelist = [
+  "http://localhost:5500",
+  "http://localhost:3000",
+  "http://localhost:5173" // React/Vite 開發用
+];
+
 let corsOptions = {
   credentials: true,
   origin(origin, callback) {
@@ -28,8 +32,8 @@ const app = express();
 
 // 全域中介軟體
 app.use(cors(corsOptions));
-app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // 路由區
 app.get("/", (req, res) => {
