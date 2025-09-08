@@ -223,9 +223,25 @@ export function AuthProvider({ children }) {
     }
   }, [isLoading, user, pathname]);
 
+  const loginWithToken = async (token, user) => {
+    localStorage.setItem(appKey, token);
+    setUser(user);
+    router.replace("/user");
+  };
+
   return (
     <AuthContext.Provider
-      value={{ user, login, logout, isLoading, list, users, setUser, add }}
+      value={{
+        user,
+        login,
+        loginWithToken,
+        logout,
+        isLoading,
+        list,
+        users,
+        setUser,
+        add,
+      }}
     >
       {/* 這裡的第一個大括號表示要寫程式，第二個大括號表示要寫物件 */}
 

@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Script from "next/script";
 import styles from "@/styles/forgot-password.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRightToBracket } from "@fortawesome/free-solid-svg-icons";
 
 export default function ForgotPasswordPage() {
   const [mail, setMail] = useState("");
@@ -36,13 +38,16 @@ export default function ForgotPasswordPage() {
     setMessage("");
 
     try {
-      const response = await fetch("http://localhost:3007/api/users/forgot-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ mail }),
-      });
+      const response = await fetch(
+        "http://localhost:3007/api/users/forgot-password",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ mail }),
+        }
+      );
 
       const data = await response.json();
 
@@ -50,12 +55,12 @@ export default function ForgotPasswordPage() {
         setMessage("驗證碼已發送至您的信箱，請查收");
         setMessageType("success");
 
-        // 3秒後跳轉到驗證碼頁面
+        // 1秒後跳轉到驗證碼頁面
         setTimeout(() => {
           router.push(
             `/user/verification-code?mail=${encodeURIComponent(mail)}`
           );
-        }, 3000);
+        }, 1000);
       } else {
         setMessage(data.message || "發送失敗，請稍後再試");
         setMessageType("error");
@@ -197,7 +202,7 @@ export default function ForgotPasswordPage() {
         <div className="left">
           <div className="block1">
             <div className="header">
-              <img src="/images/users/LOGO_3.png" alt="" />
+              <img src="/images/LOGO.png" alt="" />
               <h1 className="register-title">忘記密碼</h1>
               <div className="toggle">
                 <Link href="/user/login" className="toggle-active">
@@ -244,6 +249,7 @@ export default function ForgotPasswordPage() {
 
                 <p className="signin">
                   <a href="/user/login" className="link2">
+                    <FontAwesomeIcon icon={faRightToBracket} className="me-1" />
                     返回登入
                   </a>
                 </p>

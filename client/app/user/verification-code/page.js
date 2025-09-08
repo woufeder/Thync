@@ -6,7 +6,9 @@ import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Script from "next/script";
-import styles from "@/styles/forgot-password.css";
+import styles from "@/styles/verification-code.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRightToBracket } from "@fortawesome/free-solid-svg-icons";
 
 export default function VerificationPage() {
   const searchParams = useSearchParams();
@@ -294,7 +296,7 @@ export default function VerificationPage() {
         <div className="left">
           <div className="block1">
             <div className="header">
-              <img src="/images/users/LOGO_3.png" alt="" />
+              <img src="/images/LOGO.png" alt="" />
               <h1 className="register-title">忘記密碼</h1>
               <div className="toggle">
                 <Link href="/user/login" className="toggle-active">
@@ -406,48 +408,51 @@ export default function VerificationPage() {
                 )}
 
                 {/* 按鈕 */}
-                <button
-                  className="btn-primary"
-                  type="button"
-                  onClick={handleResendCode}
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <>
-                      <i className="fa-solid fa-spinner fa-spin"></i>
-                      &nbsp;&nbsp;發送中...
-                    </>
-                  ) : (
-                    <>
-                      <i className="fa-solid fa-envelope"></i>
-                      &nbsp;&nbsp;重新發送驗證碼
-                    </>
-                  )}
-                </button>
+                <div className="d-flex gap-3 align-items-center">
+                  <button
+                    className="btn-primary"
+                    type="button"
+                    onClick={handleResendCode}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <>
+                        <i className="fa-solid fa-spinner fa-spin"></i>
+                        &nbsp;&nbsp;發送中...
+                      </>
+                    ) : (
+                      <>
+                        <i className="fa-solid fa-envelope"></i>
+                        &nbsp;&nbsp;重新發送驗證碼
+                      </>
+                    )}
+                  </button>
 
-                <button
-                  className="btn-primary reset-pass"
-                  type="button"
-                  onClick={handleResetPassword}
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <>
-                      <i className="fa-solid fa-spinner fa-spin"></i>
-                      &nbsp;&nbsp;處理中...
-                    </>
-                  ) : (
-                    <>
-                      <i className="fa-solid fa-key"></i>
-                      &nbsp;&nbsp;重設密碼
-                    </>
-                  )}
-                </button>
+                  <button
+                    className="btn-primary"
+                    type="button"
+                    onClick={handleResetPassword}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <>
+                        <i className="fa-solid fa-spinner fa-spin"></i>
+                        &nbsp;&nbsp;處理中...
+                      </>
+                    ) : (
+                      <>
+                        <i className="fa-solid fa-key"></i>
+                        &nbsp;&nbsp;重設密碼
+                      </>
+                    )}
+                  </button>
+                </div>
 
                 <div className="divider">或</div>
 
                 <p className="signin">
                   <a href="/user/login" className="link2">
+                  <FontAwesomeIcon icon={faRightToBracket} className="me-1" />
                     返回登入
                   </a>
                 </p>

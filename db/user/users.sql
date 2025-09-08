@@ -29,6 +29,7 @@ CREATE TABLE `users` (
   `is_valid` TINYINT NOT NULL DEFAULT 1,
   `verification_code` VARCHAR(6),
   `code_expire` DATETIME,
+  `google_id` VARCHAR(255) UNIQUE,
   FOREIGN KEY (gender_id) REFERENCES gender(id),
   FOREIGN KEY (city_id) REFERENCES city(id)
 );

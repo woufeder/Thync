@@ -6,11 +6,14 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Script from "next/script";
 import styles from "@/styles/login.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHouseChimney } from "@fortawesome/free-solid-svg-icons";
 
 export default function UserLoginPage() {
   const [mail, setMail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isGoogleLoaded, setIsGoogleLoaded] = useState(true);
   const { login, user, logout, isLoading } = useAuth();
   const router = useRouter();
   const [lottieLoaded, setLottieLoaded] = useState(false);
@@ -28,6 +31,168 @@ export default function UserLoginPage() {
       initializeLottie();
     }
   }, [lottieLoaded]);
+
+  // Google 登入初始化
+
+  // useEffect(() => {
+  //   // 載入 Google Identity Services script
+
+  //   const script = document.createElement("script");
+
+  //   script.src = "https://accounts.google.com/gsi/client";
+
+  //   script.async = true;
+
+  //   script.defer = true;
+
+  //   script.onload = initializeGoogle;
+
+  //   document.head.appendChild(script);
+
+  //   return () => {
+  //     // 清理
+
+  //     if (document.head.contains(script)) {
+  //       document.head.removeChild(script);
+  //     }
+  //   };
+  // }, []);
+
+  // 在 useEffect 中加入
+  useEffect(() => {
+    // 檢查 URL 是否包含 Google 回傳的 token
+    const hash = window.location.hash;
+    if (hash && hash.includes("access_token")) {
+      const params = new URLSearchParams(hash.substring(1));
+      const accessToken = params.get("access_token");
+      const state = params.get("state");
+
+      if (accessToken && state === "login") {
+        handleGoogleToken(accessToken);
+      }
+    }
+  }, []);
+
+  const handleGoogleToken = async (accessToken) => {
+    try {
+      const userResponse = await fetch(
+        `https://www.googleapis.com/oauth2/v2/userinfo?access_token=${accessToken}`
+      );
+      const userInfo = await userResponse.json();
+
+      const response = await fetch(
+        "http://localhost:3007/api/users/google-login-token",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: userInfo.email,
+            name: userInfo.name,
+            picture: userInfo.picture,
+            id: userInfo.id,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        if (loginWithToken) {
+          await loginWithToken(data.data.token, data.data.user);
+        } else {
+          localStorage.setItem("token", data.data.token);
+          localStorage.setItem("user", JSON.stringify(data.data.user));
+          window.location.href = "/user";
+        }
+      }
+    } catch (error) {
+      console.error("處理 Google token 錯誤:", error);
+    }
+  };
+
+  const initializeGoogle = () => {
+    if (window.google) {
+      window.google.accounts.id.initialize({
+        client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+        callback: handleCredentialResponse,
+        auto_select: false,
+        cancel_on_tap_outside: false,
+        // 禁用 FedCM
+        use_fedcm_for_prompt: false,
+      });
+      setIsGoogleLoaded(true);
+    }
+  };
+
+  const handleCredentialResponse = async (response) => {
+    try {
+      console.log("Google 回傳的憑證:", response.credential);
+
+      // 將 Google JWT token 發送到後端驗證
+
+      const backendResponse = await fetch(
+        "http://localhost:3007/api/users/google-login",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify({
+            credential: response.credential,
+          }),
+        }
+      );
+
+      const data = await backendResponse.json();
+
+      console.log("後端回應:", data);
+
+      if (data.success) {
+        // 登入成功，使用 useAuth 的 login 方法
+        if (login) {
+          // 這裡直接傳入 token 和 user
+          await login(data.data.token, data.data.user);
+          // login 內部已經有 router.replace("/user")
+        } else {
+          localStorage.setItem("token", data.data.token);
+          localStorage.setItem("user", JSON.stringify(data.data.user));
+          window.location.href = "/user";
+        }
+
+        alert("Google 登入成功！");
+      } else {
+        alert("Google 登入失敗：" + data.message);
+      }
+    } catch (error) {
+      console.error("Google 登入錯誤:", error);
+
+      alert("Google 登入發生錯誤，請稍後再試");
+    }
+  };
+
+  // const handleGoogleLogin = () => {
+  //   if (window.google && isGoogleLoaded) {
+  //     // 直接觸發 One Tap 登入
+  //     window.google.accounts.id.prompt();
+  //   } else {
+  //     alert("Google 登入服務尚未載入完成，請稍後再試");
+  //   }
+  // };
+
+  const handleGoogleLogin = () => {
+    // 使用正確的 Google OAuth 2.0 授權端點
+    const googleAuthUrl =
+      `https://accounts.google.com/o/oauth2/v2/auth?` +
+      `client_id=${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}&` +
+      `redirect_uri=${encodeURIComponent("http://localhost:3000")}&` +
+      `scope=${encodeURIComponent("email profile")}&` +
+      `response_type=token&` +
+      `state=login`;
+
+    window.location.href = googleAuthUrl;
+  };
 
   const onclick = async () => {
     await login(mail, password);
@@ -161,7 +326,16 @@ export default function UserLoginPage() {
         <div className="left">
           <div className="block1">
             <div className="header">
-              <img src="/images/users/LOGO_3.png" alt="" />
+              <div className="d-flex align-items-center justify-content-between">
+                <img src="/images/LOGO.png" alt="LOGO" />
+                <Link href="/" className="home-link" aria-label="回到首頁">
+                  <FontAwesomeIcon
+                    icon={faHouseChimney}
+                    className="home-icon"
+                  />
+                </Link>
+              </div>
+
               <h1 className="register-title">會員登入</h1>
               <div className="toggle">
                 <Link href="/user/login" className="toggle-active">
@@ -236,16 +410,28 @@ export default function UserLoginPage() {
 
                 <div className="divider">或</div>
 
-                <p className="signin">
-                  還不是會員？{" "}
-                  <a href="/user/add" className="link2">
-                    立即註冊！
-                  </a>
-                </p>
+                <div className="d-flex align-items-center justify-content-between">
+                  <p className="signin">
+                    還不是會員？{" "}
+                    <a href="/user/add" className="link2">
+                      立即註冊！
+                    </a>
+                  </p>
+                </div>
 
-                <button type="button" className="btn-google">
+                <button
+                  type="button"
+                  className="btn-google"
+                  onClick={handleGoogleLogin}
+                  disabled={!isGoogleLoaded}
+                >
                   <img src="/images/users/Google Logo.png" alt="" />
-                  <span>使用 Google 帳號登入</span>
+
+                  <span>
+                    {isGoogleLoaded
+                      ? "使用 Google 帳號登入"
+                      : "載入 Google 登入中..."}
+                  </span>
                 </button>
               </form>
             </main>

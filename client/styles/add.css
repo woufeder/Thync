@@ -46,9 +46,24 @@ body {
 .header {
   display: flex;
   flex-direction: column;
+  gap: 2rem;
 }
-img {
+.header img {
   width: 129px;
+}
+.home-icon {
+  font-size: 25px;
+  color: var(--Primary500);
+}
+
+.home-icon:link,
+.home-icon:visited {
+  color: var(--Primary500);
+}
+.home-icon:hover,
+.home-icon:active {
+  color: var(--Secondary800);
+  text-decoration: none;
 }
 .header h1 {
   font-size: 3rem;

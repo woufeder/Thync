@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import Script from "next/script";
 import styles from "@/styles/add.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHouseChimney } from "@fortawesome/free-solid-svg-icons";
 
 export default function UserAddPage() {
   const [account, setAccount] = useState("");
@@ -159,7 +161,15 @@ export default function UserAddPage() {
         <div className="left">
           <div className="block1">
             <div className="header">
-              <img src="/images/users/LOGO_3.png" alt="" />
+              <div className="d-flex align-items-center justify-content-between">
+                <img src="/images/LOGO.png" alt="LOGO" />
+                <Link href="/" className="home-link" aria-label="回到首頁">
+                  <FontAwesomeIcon
+                    icon={faHouseChimney}
+                    className="home-icon"
+                  />
+                </Link>
+              </div>
               <h1 className="register-title">會員註冊</h1>
               <div className="toggle">
                 <Link href="/user/login" className="toggle-link">
