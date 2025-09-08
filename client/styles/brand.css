@@ -1,0 +1,76 @@
+.brand-row {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #ccc;
+  /* 分隔線 */
+  padding: 20px 0;
+}
+
+.brand-letter {
+  width: 60px;
+  /* 固定寬度 */
+  font-size: 48px;
+  font-weight: 500;
+  text-align: center;
+  flex-shrink: 0;
+  /* 不要被壓縮 */
+  color: var(--Primary800);
+  padding: 10px 64px;
+  border-right: 1px solid var(--Primary300);
+
+  @media (max-width: 768px) {
+    padding: 10px;
+    box-sizing: border-box;
+  }
+}
+
+.brand-items {
+  flex: 1;
+  /* 自動佔滿剩餘空間 */
+  display: flex;
+  flex-wrap: wrap;
+  /* 換行 */
+  gap: 10px;
+
+  /* 每個品牌間距 */
+  @media (max-width: 768px) {
+    /* gap: 5px; */
+    justify-content: space-evenly;
+  }
+}
+
+.brand-img {
+  display: flex;
+  height: 35.5px;
+  max-width: var(--width-396_66, 396.66px);
+  max-height: 99.165px;
+  align-items: center;
+  gap: 20px;
+  align-self: stretch;
+  aspect-ratio: 4/1;
+  justify-content: center;
+
+  @media (max-width: 768px) {
+    /* gap: 5px; */
+    justify-content: space-evenly;
+  }
+}
+
+.brand-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: auto;
+  min-width: 100px;
+  /* 每個品牌區塊寬度 */
+}
+
+.brand-item img {
+  max-width: 80px;
+  max-height: 40px;
+  object-fit: contain;
+}
+
+p {
+  margin: 0;
+}

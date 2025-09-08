@@ -6,9 +6,11 @@
 * {
   box-sizing: border-box;
 }
+
 body {
   background: var(--Secondary100);
 }
+
 main {
   font-family: "Noto Sans TC", sans-serif;
   margin: 0;
@@ -25,6 +27,7 @@ main {
   position: relative;
   z-index: 1;
 }
+
 .cartIcon {
   color: #274a78;
   font-size: 18px;
@@ -34,6 +37,7 @@ main {
   gap: 10px;
   margin-left: 9%;
 }
+
 .backtomain {
   display: inline-flex;
   align-items: center;
@@ -47,6 +51,7 @@ main {
   cursor: pointer;
   margin-right: 9%;
 }
+
 .backtomain i {
   font-size: 15px;
 }
@@ -61,6 +66,7 @@ main {
   justify-content: space-between;
   align-items: center;
 }
+
 .cart-step {
   --circle: 28px;
   --r: 14px;
@@ -68,11 +74,13 @@ main {
   text-align: center;
   position: relative;
 }
+
 .cart-step-label {
   margin-top: 8px;
   font-size: 12px;
   color: #9aa6b2;
 }
+
 .cart-step-circle {
   width: var(--circle);
   height: var(--circle);
@@ -83,6 +91,7 @@ main {
   position: relative;
   z-index: 1;
 }
+
 .cart-step-circle::after {
   content: "";
   position: absolute;
@@ -94,6 +103,7 @@ main {
   background: var(--Primary800);
   display: none;
 }
+
 .cart-step:not(:first-child)::before {
   content: "";
   position: absolute;
@@ -103,20 +113,25 @@ main {
   height: 2px;
   background: #d7e1ea;
 }
+
 .cart-step.active .cart-step-circle {
   border-color: var(--Primary800);
 }
+
 .cart-step.active .cart-step-circle::after {
   display: block;
 }
+
 .cart-step.active .cart-step-label {
   color: var(--Primary800);
   font-weight: 700;
 }
+
 .cart-step.done .cart-step-circle {
   background: var(--Primary800);
   border-color: var(--Primary800);
 }
+
 .cart-step.done .cart-step-circle::after {
   content: "✔";
   display: flex;
@@ -125,6 +140,7 @@ main {
   color: #fff;
   font-size: 14px;
 }
+
 .cart-step.done .cart-step-label {
   color: var(--Primary800);
   font-weight: 700;
@@ -143,6 +159,7 @@ main {
   position: relative;
   box-shadow: 0 4px 4px rgba(39, 74, 120, 0.4);
 }
+
 .recommend-section::before {
   content: "";
   position: absolute;
@@ -153,6 +170,7 @@ main {
   border-radius: 8px 8px 0 0;
   background: linear-gradient(90deg, var(--Primary300), var(--Primary800));
 }
+
 .recommend-title {
   font-size: 18px;
   font-weight: 700;
@@ -162,6 +180,7 @@ main {
   align-items: center;
   gap: 8px;
 }
+
 .recommend-list {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -169,6 +188,7 @@ main {
   border-top: 4px solid #e8f4f8;
   padding-top: 25px;
 }
+
 .recommend-item {
   width: 95%;
   background: var(--Secondary100);
@@ -176,6 +196,7 @@ main {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
   overflow: hidden;
 }
+
 .recommend-item img {
   width: 100%;
   aspect-ratio: 4/3;
@@ -183,40 +204,67 @@ main {
   display: block;
   margin: 0 0 8px;
 }
+
 .recommend-item-title {
-  font-weight: 600;
-  font-size: 18px;
-  color: #333;
-  margin: 8px 0;
+  /* font-size: 14px; */
+  overflow: hidden;
+  color: var(--Black);
+  text-overflow: ellipsis;
+  font-weight: 500;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  /* 顯示兩行 */
   -webkit-box-orient: vertical;
-  overflow: hidden;
-  min-height: 3.5em;
-  padding: 12px 12px;
+  white-space: normal;
+  padding: 0 10px;
 }
+
 .recommend-price {
   color: var(--Primary800);
   font-size: 18px;
   font-weight: 800;
-  margin-bottom: 4px;
+  /* margin-bottom: 4px; */
   padding: 5px 10px;
 }
+
 .recommend-item-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 12px 2px 16px;
 }
-.recommend-btn {
-  background: var(--Secondary800);
-  color: #fff;
-  border: 0;
-  border-radius: 10px;
-  padding: 7px 11px;
-  margin: 8px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-}
+
+.recommend-btn{
+    position: relative;
+    display: flex;
+    padding: 0px 10px;
+    justify-content: center;
+    align-items: center;
+    gap: 2px;
+    align-self: stretch;
+    background-color: var(--Secondary800);
+    color: var(--White);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-right: 10px;
+
+    &:hover {
+      background-color: var(--Secondary800);
+      color: var(--White);
+    }
+
+    &:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, var(--Secondary100), transparent);
+      transition: left 0.5s;
+    }
+
+    &:hover:before {
+      left: 100%;
+    }
+  }

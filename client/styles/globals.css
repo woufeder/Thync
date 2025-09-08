@@ -15,7 +15,7 @@
   --Danger100: #F5D2D2;
   --Black: #101C35;
   --White: #FFFFFF;
-  --card-shadow: 0 4px 10px 0 rgba(48, 74, 111, 0.25);
+  --card-shadow: 0 4px 5px 0 rgba(148, 175, 202, 0.25);
   --highlight: var(--Primary300) 0px 0px 10px;
 }
 
@@ -152,8 +152,13 @@ body {
 
 /*---------------header----------------*/
 
+header {
+  box-shadow: var(--card-shadow);
+}
 
 .header {
+
+
 
   .btn {
     padding: 6px;
@@ -236,6 +241,42 @@ body {
   }
 }
 
+/* 麵包屑 */
+.breadcrumb {
+  color: var(--Primary800);
+  display: flex;
+  align-items: center;
+
+  .fa-house {
+    margin-right: 8px;
+  }
+
+  ol {
+    display: flex;
+    flex-wrap: wrap;
+    /* gap: 8px; */
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  a {
+    color: var(--Primary800);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    font-size: 16px;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  span {
+    margin: 0 5px;
+  }
+}
+
 /* Footer區域 */
 
 footer {
@@ -288,5 +329,69 @@ footer {
       width: 100%;
       margin: 0;
     }
+  }
+}
+
+
+/* 偷sally的loading動畫 */
+
+/* CSS Loaders */
+/* HTML: <div class="loader"></div> */
+.loader {
+  width: 40px;
+  aspect-ratio: 1;
+  position: relative;
+}
+
+.loader:before,
+.loader:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: -8px 0 0 -8px;
+  width: 16px;
+  aspect-ratio: 1;
+  background: #3fb8af;
+  animation: l1-1 2s infinite, l1-2 0.5s infinite;
+}
+
+.loader:after {
+  background: #ff3d7f;
+  animation-delay: -1s, 0s;
+}
+
+@keyframes l1-1 {
+  0% {
+    top: 0;
+    left: 0;
+  }
+
+  25% {
+    top: 100%;
+    left: 0;
+  }
+
+  50% {
+    top: 100%;
+    left: 100%;
+  }
+
+  75% {
+    top: 0;
+    left: 100%;
+  }
+
+  100% {
+    top: 0;
+    left: 0;
+  }
+}
+
+@keyframes l1-2 {
+
+  80%,
+  100% {
+    transform: rotate(0.5turn);
   }
 }

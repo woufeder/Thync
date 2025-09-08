@@ -19,3 +19,6 @@ logs/
 
 # Testing
 coverage/
+
+# misc
+.DS_Store
