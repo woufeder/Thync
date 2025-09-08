@@ -208,9 +208,8 @@ export default function Page() {
           <RecommendList recommend={recommend} />
         </div>
       </main>
-      <footer>
         <Footer />
-      </footer>
+
     </>
   );
 }

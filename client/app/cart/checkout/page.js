@@ -6,12 +6,14 @@ import CartSteps from "@/app/_components/cart/cartSteps";
 import RecommendList from "@/app/_components/cart/recommendList";
 import Header from "@/app/_components/header";
 import Footer from "@/app/_components/footer";
+import { useShip711StoreOpener } from "@/hooks/use-ship-711-store";
 import "./checkout.css";
-
 
 export default function CheckoutPage() {
   // 門市資訊顯示狀態
-
+  const { store711, openWindow } = useShip711StoreOpener(
+    "http://localhost:3007/shipment/711" // 指到你 Express 的 /shipment/711
+  );
   const [mobileCarrier, setMobileCarrier] = useState("");
 
   const [storeInfo, setStoreInfo] = useState({
@@ -897,29 +899,6 @@ export default function CheckoutPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  async function handleSelectStore() {
-    const res = await fetch("http://localhost:3007/api/cart/cvs/genMac");
-    const params = await res.json();
-    console.log("送出的參數:", params);
-
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = "https://logistics-stage.ecpay.com.tw/Express/map"; // ← 綠界電子地圖
-    form.target = "_blank";
-
-    Object.entries(params).forEach(([key, value]) => {
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.name = key;
-      input.value = value;
-      form.appendChild(input);
-    });
-
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
-  }
-
   function handleConfirm() {
     // 檢查必填欄位
     const required = [
@@ -1033,16 +1012,20 @@ export default function CheckoutPage() {
                         <button
                           className="checkout-btn checkout-btn-light"
                           type="button"
-                          onClick={handleSelectStore}
+                          onClick={openWindow}
                         >
                           依地圖選擇
                         </button>
                       </label>
                     </div>
-                    <div className="form-row">
+                    <div className="row">
                       <div className="store-info-text">
-                        <div>門市名稱：{storeInfo.name}</div>
-                        <div>門市地址：{storeInfo.address}</div>
+                        {store711.storename && (
+                          <div>
+                            <p>門市名稱：{store711.storename}</p>
+                            <p>門市地址：{store711.storeaddress}</p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </>
@@ -1319,9 +1302,8 @@ export default function CheckoutPage() {
           <RecommendList recommend={recommend} />
         </div>
       </main>
-      <footer>
-        <Footer />
-      </footer>
+
+      <Footer />
     </>
   );
 }

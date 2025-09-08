@@ -8,12 +8,13 @@ import productsRouter from "./routes/products.js";
 import cartRouter from "./routes/cart.js";
 import couponRouter from "./routes/coupon.js";
 import articlesRouter from "./routes/articles.js";
+import shipmentRouter from "./routes/shipment.js";
 
 // 設定區
 let whitelist = [
   "http://localhost:5500",
   "http://localhost:3000",
-  "http://localhost:5173" // React/Vite 開發用
+  "http://localhost:5173", // React/Vite 開發用
 ];
 
 let corsOptions = {
@@ -46,7 +47,19 @@ app.use("/api/cart", cartRouter);
 app.use("/api/coupon", couponRouter);
 app.use("/api/articles", articlesRouter);
 
-app.listen(3007, ()=>{
+app.use("/shipment", shipmentRouter);
+
+// 給綠界的 callback，不要 cors
+app.post(
+  "/api/cart/cvs/callback",
+  express.urlencoded({ extended: true }),
+  (req, res) => {
+    console.log("綠界 callback:", req.body);
+    res.send("1|OK");
+  }
+);
+
+app.listen(3007, () => {
   console.log("主機啟動 http://localhost:3007");
 });
 

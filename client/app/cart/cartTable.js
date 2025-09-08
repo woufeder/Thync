@@ -16,7 +16,6 @@ export default function CartTable({ items, onQtyChange, onRemove }) {
         {items.map((item, i) => (
           <tr key={i}>
             <td className="product-info">
-            {console.log(item.images)}
               <img
                 src={`/images/products/uploads/${item.images[0]?.file}`}
                 alt={item.product_name}

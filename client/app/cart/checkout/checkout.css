@@ -1,7 +1,7 @@
 /* 讓取貨門市與依地圖選擇之間有空格 */
 .panel-body label>.checkout-btn {
   margin-left: 16px;
-  margin-top: 17px;
+  margin-top: 20px;
 }
 
 .form-row.checkbox-row label {
