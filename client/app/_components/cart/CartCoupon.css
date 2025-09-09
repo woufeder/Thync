@@ -1,0 +1,57 @@
+.cart-coupon-area {
+  margin: 20px 0;
+}
+
+.cart-coupon-list {
+  display: flex;
+  overflow-x: auto;
+  gap: 16px;
+  padding-bottom: 10px;
+  scroll-snap-type: x mandatory; /* 加上滾動貼合效果 */
+}
+
+.cart-coupon-list::-webkit-scrollbar {
+  display: none; /* 隱藏捲軸 */
+}
+
+.cart-coupon-card {
+  flex: 0 0 240px; /* 固定寬度，避免被壓縮 */
+  scroll-snap-align: start;
+  background: linear-gradient(135deg, #fff, #fff8f0);
+  border: 2px solid #ff7a00;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.cart-coupon-card:hover {
+  transform: scale(1.03);
+}
+
+.coupon-left h4 {
+  font-size: 16px;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+.coupon-right {
+  font-size: 22px;
+  font-weight: bold;
+  color: #ff7a00;
+}
+
+.cart-coupon-card.active {
+  border-color: #ff7a00;
+  background: #fff5e6;
+}
+
+.cart-coupon-card.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.coupon-left {
+  flex: 1;
+}
