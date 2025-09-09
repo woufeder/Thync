@@ -3,7 +3,7 @@ import Link from "next/link"
 import { usePathname, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faHouseChimney, faAngleRight } from '@fortawesome/free-solid-svg-icons'
+import { faHouse, faAngleRight } from '@fortawesome/free-solid-svg-icons'
 
 export default function Breadcrumb({ product }) {
   const pathname = usePathname()
@@ -31,9 +31,7 @@ export default function Breadcrumb({ product }) {
   const mainName = categories.main.find(m => m.id === Number(mid))?.name
   const subName = categories.sub.find(s => s.id === Number(cid))?.name
 
-
-
-  let items = [{ label: <>  <FontAwesomeIcon icon={faHouseChimney} style={{ marginRight: 4 }} />首頁</>, href: "/" }]
+  let items = [{ label: <><FontAwesomeIcon icon={faHouse} style={{ marginRight: 4 }} />首頁</>, href: "/" }]
 
   // 商品頁
   if (pathname === "/products") {
@@ -61,11 +59,13 @@ export default function Breadcrumb({ product }) {
 
 
   // 會員頁
-  if (pathname.startsWith("/member")) {
-    items.push({ label: "會員中心", href: "/member" })
-    if (pathname.includes("profile")) items.push({ label: "個人資料" })
-    if (pathname.includes("orders")) items.push({ label: "我的訂單" })
-    if (pathname.includes("password")) items.push({ label: "修改密碼" })
+  if (pathname.startsWith("/user")) {
+    items.push({ label: "會員中心", href: "/user" })
+    if (pathname.includes("edit")) items.push({ label: "會員資料管理", href: "/user/edit" })
+    if (pathname.includes("order")) items.push({ label: "我的訂單", href: "/user/order" })
+    if (pathname.includes("coupon")) items.push({ label: "我的優惠券", href: "/user/coupon" })
+    if (pathname.includes("wishlist")) items.push({ label: "追蹤商品", href: "/user/wishlist" })
+    if (pathname.includes("favorites")) items.push({ label: "已收藏文章", href: "/user/favorites" })
   }
 
   const [iconReady, setIconReady] = useState(false);
@@ -85,7 +85,6 @@ export default function Breadcrumb({ product }) {
             {item.href ? <Link href={item.href}>{item.label}</Link> : <span>{item.label}</span>}
             {idx < items.length - 1 && <span>
               <FontAwesomeIcon icon={faAngleRight} />
-              
             </span>}
           </li>
         ))}

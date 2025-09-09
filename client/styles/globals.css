@@ -238,6 +238,23 @@ header {
     box-shadow: var(--highlight);
     border: none;
     margin-top: 5px;
+
+    .user_account {
+      line-height: 2;
+      font-size: larger;
+      font-weight: 700;
+      color: var(--Primary800);
+      border-bottom: 1px solid var(--Primary300);
+      margin-bottom: 5px;
+      padding-bottom: 8px;
+    }
+  }
+
+  @media (min-width: 992px) and (max-width: 1547px) {
+    .dropdown-menu.dropdown-menu-lg-start {
+      right: 0;
+      left: auto;
+    }
   }
 }
 
