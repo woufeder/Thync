@@ -130,34 +130,32 @@ export default function ProductDetail({ params }) {
         <div className='area2'>
           <div className="nav nav-tabs">
             <div className="nav-item" role="presentation">
-              <button className="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home"
-                type="button" role="tab" aria-controls="home" aria-selected="true">商品介紹</button>
+              <button className="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#introArea"
+                type="button" role="tab" aria-controls="introArea" aria-selected="true">商品介紹</button>
             </div>
             <div className="nav-item" role="presentation">
-              <button className="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button"
-                role="tab" aria-controls="profile" aria-selected="false">商品規格</button>
+              <button className="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#spec" type="button"
+                role="tab" aria-controls="spec" aria-selected="false">商品規格</button>
             </div>
           </div>
           <div className="tab-content" id="myTabContent">
-            <div className="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-              <div id="intro" className="mt-2 preserve-format"><pre>商品介紹 {product.intro}</pre></div>
-              <div className="d-flex gap-3 flex-wrap mt-3">
-
+            <div id="introArea" className="tab-pane fade show active" role="tabpanel" aria-labelledby="home-tab">
+              <div className="mt-2 preserve-format" id="introText">
+                <pre>{product.intro}</pre>
+              </div>
+              <div className="" id="introImg">
                 {introImages.map((img) => (
                   <img
                     key={img.id}
                     src={`/images/products/uploads/${img.file}`}
                     alt={product.product_name}
-                    style={{ width: "200px", height: "auto", objectFit: "cover" }}
                   />
                 ))}
               </div>
-              <div>
 
-              </div>
             </div>
-            <div className="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-              <div id="spec" className=" mt-2 preserve-format"><pre>商品規格 {product.spec}</pre></div>
+            <div id="spec" className="tab-pane fade" role="tabpanel" aria-labelledby="profile-tab">
+              <div className=" mt-2 preserve-format"><pre>{product.spec}</pre></div>
 
             </div>
           </div>
