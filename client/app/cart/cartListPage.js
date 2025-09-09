@@ -4,6 +4,7 @@ import CartTable from "./cartTable";
 import CartSummary from "./cartSummary";
 import CartCouponArea from "@/app/_components/cart/CartCouponArea";
 
+
 export default function CartListPage({
   items,
   setItems,
@@ -44,24 +45,9 @@ export default function CartListPage({
   );
   const shipping = 60; // 可根據條件調整
 
-  const [coupons, setCoupons] = useState([]);
+
   const [selectedCoupon, setSelectedCoupon] = useState(null);
   const [discount, setDiscount] = useState(0);
-
-  useEffect(() => {
-    async function fetchCoupons() {
-      try {
-        const res = await fetch(
-          `http://localhost:3007/api/coupon/user/${userId}/available`
-        );
-        const data = await res.json();
-        setCoupons(data);
-      } catch (err) {
-        console.error("載入優惠券失敗", err);
-      }
-    }
-    fetchCoupons();
-  }, [userId]);
 
   return (
     <>
@@ -84,6 +70,7 @@ export default function CartListPage({
                 setCouponCode(coupon.code);
               }}
             />
+            
           </div>
           <CartSummary
             items={items}

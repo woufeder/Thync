@@ -5,7 +5,9 @@ import { useState, useEffect } from "react";
 import CartCouponCard from "./CartCouponCard";
 import "./CartCoupon.css";
 
+
 export default function CartCouponArea({ userId, total, onApply }) {
+  console.log("CartCouponArea rendered", userId, total);
   const [coupons, setCoupons] = useState([]);
   const [selectedCoupon, setSelectedCoupon] = useState(null);
 
@@ -16,16 +18,31 @@ export default function CartCouponArea({ userId, total, onApply }) {
           `http://localhost:3007/api/coupon/user/${userId}/available`
         );
         const data = await res.json();
-        // 🔑 確保一定是陣列
-        setCoupons(Array.isArray(data) ? data : []);
+        console.log("API 回傳優惠券", data);
+
+        // 🔹 把後端數字型 type 轉成前端能讀的字串
+        const normalized = data.map((c) => ({
+          ...c,
+          type:
+            c.type === 0
+              ? "amount"
+              : c.type === 1
+              ? "free_shipping"
+              : c.type === 2
+              ? "percent"
+              : "unknown",
+        }));
+
+        console.log("轉換後的優惠券", normalized);
+
+        setCoupons(normalized); // ✅ 設定到 state
       } catch (err) {
         console.error("載入優惠券失敗", err);
-        setCoupons([]); // 避免 map 爆炸
       }
     }
-    fetchCoupons();
-  }, [userId]);
 
+    if (userId) fetchCoupons();
+  }, [userId]);
   function handleSelect(coupon) {
     const isValid = total >= coupon.min;
     if (!isValid) {

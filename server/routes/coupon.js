@@ -40,7 +40,8 @@ router.post("/register", async (req, res) => {
 router.get("/user/:userId/available", async (req, res) => {
   try {
     const [rows] = await connection.query(
-      `SELECT uc.id, c.code, c.\`desc\`, c.value, c.min, uc.is_used, uc.used_at, c.expires_at
+      `SELECT uc.id, c.id AS coupon_id, c.code, c.\`desc\`, c.type, c.value, c.min,
+              uc.is_used, uc.used_at, c.expires_at
        FROM user_coupons uc
        JOIN coupon c ON uc.coupon_id = c.id
        WHERE uc.user_id = ?
@@ -50,6 +51,7 @@ router.get("/user/:userId/available", async (req, res) => {
     );
     res.json(rows);
   } catch (err) {
+    console.error("查詢優惠券失敗:", err);
     res.status(500).json({ error: err.message });
   }
 });
