@@ -676,9 +676,12 @@ aside {
     #introArea {
       position: relative;
       /* 給 introImg 定位用 */
-      display: flex;
+      /* display: flex; */
       align-items: flex-start;
       gap: 20px;
+      &.active {
+        display: flex;
+      }
     }
 
     #introText {
