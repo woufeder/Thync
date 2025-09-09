@@ -15,6 +15,8 @@ export default function UserEditPage() {
   const { user, isLoading } = useAuth();
   const router = useRouter();
 
+  console.log("UserEditPage - isLoading:", isLoading, "user:", user);
+
   // 沒有登入不能夠觀看1
   useEffect(() => {
     if (!isLoading && !user) {

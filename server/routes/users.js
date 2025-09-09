@@ -635,42 +635,222 @@ router.post("/verification-code", upload.none(), async (req, res) => {
 });
 
 // Google 登入路由
-router.post("/google-login", async (req, res) => {
+// router.post("/google-login", async (req, res) => {
+//   try {
+//     console.log("=== Google 登入請求 ===");
+//     console.log("請求內容:", req.body);
+
+//     const { credential } = req.body;
+
+//     if (!credential) {
+//       console.log("錯誤: 缺少 credential");
+//       return res.status(400).json({
+//         success: false,
+//         message: "請提供 Google 憑證",
+//       });
+//     }
+
+//     console.log("開始驗證 Google token");
+
+//     // 驗證 Google JWT token
+//     const ticket = await client.verifyIdToken({
+//       idToken: credential,
+//       audience: process.env.GOOGLE_CLIENT_ID,
+//     });
+
+//     const payload = ticket.getPayload();
+//     const { email, name, picture, sub: googleId } = payload;
+
+//     console.log("Google 用戶資料:", { email, name, googleId });
+
+//     if (!email) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "無法取得 Google 帳號資訊",
+//       });
+//     }
+
+//     // 檢查用戶是否已存在
+//     const sqlCheck =
+//       "SELECT * FROM users WHERE mail = ? OR google_id = ? AND is_valid = 1";
+//     const [existingUsers] = await connection.execute(sqlCheck, [
+//       email,
+//       googleId,
+//     ]);
+
+//     let user;
+
+//     if (existingUsers.length > 0) {
+//       console.log("用戶已存在");
+//       user = existingUsers[0];
+
+//       // 更新 Google 資訊
+//       if (!user.google_id) {
+//         await connection.execute(
+//           "UPDATE users SET google_id = ?, name = COALESCE(name, ?), img = COALESCE(img, ?) WHERE id = ?",
+//           [googleId, name, picture, user.id]
+//         );
+//       }
+
+//       // 重新取得用戶資料
+//       const [updatedUsers] = await connection.execute(
+//         "SELECT * FROM users WHERE id = ?",
+//         [user.id]
+//       );
+//       user = updatedUsers[0];
+//     } else {
+//       console.log("建立新用戶");
+
+//       const randomAccount = `google_${Date.now()}`;
+//       const randomPassword = await bcrypt.hash(
+//         `google_${googleId}_${Date.now()}`,
+//         10
+//       );
+
+//       const sqlInsert = `
+//         INSERT INTO users (account, mail, name, password, img, google_id, is_valid)
+//         VALUES (?, ?, ?, ?, ?, ?, 1)
+//       `;
+
+//       const [result] = await connection.execute(sqlInsert, [
+//         randomAccount,
+//         email,
+//         name || email.split("@")[0],
+//         randomPassword,
+//         picture,
+//         googleId,
+//       ]);
+
+//       const [newUsers] = await connection.execute(
+//         "SELECT * FROM users WHERE id = ?",
+//         [result.insertId]
+//       );
+//       user = newUsers[0];
+//     }
+
+//     // 產生 JWT token
+//     const token = jwt.sign(
+//       {
+//         mail: user.mail,
+//         img: user.img,
+//       },
+//       secretKey,
+//       { expiresIn: "30m" }
+//     );
+
+//     console.log("Google 登入成功");
+
+//     res.status(200).json({
+//       success: true,
+//       message: "Google 登入成功",
+//       data: {
+//         token,
+//         user: {
+//           account: user.account,
+//           mail: user.mail,
+//           name: user.name,
+//           img: user.img,
+//         },
+//       },
+//     });
+//   } catch (error) {
+//     console.error("Google 登入錯誤:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Google 登入失敗：" + error.message,
+//     });
+//   }
+// });
+
+// router.post("/google-login-token", async (req, res) => {
+//   try {
+//     const { email, name, picture, id: googleId } = req.body;
+
+//     // 與原本的 google-login 邏輯相同，但不需要驗證 JWT
+//     const sqlCheck =
+//       "SELECT * FROM users WHERE mail = ? OR google_id = ? AND is_valid = 1";
+//     const [existingUsers] = await connection.execute(sqlCheck, [
+//       email,
+//       googleId,
+//     ]);
+
+//     let user;
+//     if (existingUsers.length > 0) {
+//       user = existingUsers[0];
+//       if (!user.google_id) {
+//         await connection.execute(
+//           "UPDATE users SET google_id = ?, name = COALESCE(name, ?), img = COALESCE(img, ?) WHERE id = ?",
+//           [googleId, name, picture, user.id]
+//         );
+//       }
+//       const [updatedUsers] = await connection.execute(
+//         "SELECT * FROM users WHERE id = ?",
+//         [user.id]
+//       );
+//       user = updatedUsers[0];
+//     } else {
+//       const randomAccount = `google_${Date.now()}`;
+//       const randomPassword = await bcrypt.hash(
+//         `google_${googleId}_${Date.now()}`,
+//         10
+//       );
+//       const sqlInsert = `INSERT INTO users (account, mail, name, password, img, google_id, is_valid) VALUES (?, ?, ?, ?, ?, ?, 1)`;
+//       const [result] = await connection.execute(sqlInsert, [
+//         randomAccount,
+//         email,
+//         name,
+//         randomPassword,
+//         picture,
+//         googleId,
+//       ]);
+//       const [newUsers] = await connection.execute(
+//         "SELECT * FROM users WHERE id = ?",
+//         [result.insertId]
+//       );
+//       user = newUsers[0];
+//     }
+
+//     const token = jwt.sign({ mail: user.mail, img: user.img }, secretKey, {
+//       expiresIn: "30m",
+//     });
+
+//     res.status(200).json({
+//       success: true,
+//       data: {
+//         token,
+//         user: {
+//           account: user.account,
+//           mail: user.mail,
+//           name: user.name,
+//           img: user.img,
+//         },
+//       },
+//     });
+//   } catch (error) {
+//     console.error("Google token 登入錯誤:", error);
+//     res.status(500).json({ success: false, message: "Google 登入失敗" });
+//   }
+// });
+
+// 新增到你的 users.js 路由檔案中
+
+// 簡化版 Google 登入 - 不需要驗證 JWT
+router.post("/google-login-simple", async (req, res) => {
   try {
-    console.log("=== Google 登入請求 ===");
-    console.log("請求內容:", req.body);
+    console.log("=== 簡化版 Google 登入 API 被呼叫 ===");
+    console.log("請求資料:", req.body);
 
-    const { credential } = req.body;
+    const { email, name, picture, googleId } = req.body;
 
-    if (!credential) {
-      console.log("錯誤: 缺少 credential");
+    // 基本驗證
+    if (!email || !googleId) {
       return res.status(400).json({
         success: false,
-        message: "請提供 Google 憑證",
+        message: "缺少必要的 Google 帳號資訊",
       });
     }
 
-    console.log("開始驗證 Google token");
-
-    // 驗證 Google JWT token
-    const ticket = await client.verifyIdToken({
-      idToken: credential,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    });
-
-    const payload = ticket.getPayload();
-    const { email, name, picture, sub: googleId } = payload;
-
-    console.log("Google 用戶資料:", { email, name, googleId });
-
-    if (!email) {
-      return res.status(400).json({
-        success: false,
-        message: "無法取得 Google 帳號資訊",
-      });
-    }
-
-    // 檢查用戶是否已存在
+    // 檢查使用者是否已存在（透過 email 或 google_id）
     const sqlCheck =
       "SELECT * FROM users WHERE mail = ? OR google_id = ? AND is_valid = 1";
     const [existingUsers] = await connection.execute(sqlCheck, [
@@ -681,10 +861,11 @@ router.post("/google-login", async (req, res) => {
     let user;
 
     if (existingUsers.length > 0) {
-      console.log("用戶已存在");
+      // 使用者已存在
+      console.log("使用者已存在，更新資料");
       user = existingUsers[0];
 
-      // 更新 Google 資訊
+      // 如果沒有 google_id，就更新它
       if (!user.google_id) {
         await connection.execute(
           "UPDATE users SET google_id = ?, name = COALESCE(name, ?), img = COALESCE(img, ?) WHERE id = ?",
@@ -692,16 +873,17 @@ router.post("/google-login", async (req, res) => {
         );
       }
 
-      // 重新取得用戶資料
+      // 重新取得更新後的使用者資料
       const [updatedUsers] = await connection.execute(
         "SELECT * FROM users WHERE id = ?",
         [user.id]
       );
       user = updatedUsers[0];
     } else {
-      console.log("建立新用戶");
+      // 建立新使用者
+      console.log("建立新使用者");
 
-      const randomAccount = `google_${Date.now()}`;
+      const randomAccount = `${Date.now()}`;
       const randomPassword = await bcrypt.hash(
         `google_${googleId}_${Date.now()}`,
         10
@@ -715,12 +897,13 @@ router.post("/google-login", async (req, res) => {
       const [result] = await connection.execute(sqlInsert, [
         randomAccount,
         email,
-        name || email.split("@")[0],
+        name || email.split("@")[0], // 如果沒有 name 就用 email 前半部
         randomPassword,
         picture,
         googleId,
       ]);
 
+      // 取得新建立的使用者
       const [newUsers] = await connection.execute(
         "SELECT * FROM users WHERE id = ?",
         [result.insertId]
@@ -738,97 +921,30 @@ router.post("/google-login", async (req, res) => {
       { expiresIn: "30m" }
     );
 
-    console.log("Google 登入成功");
+    // 準備回傳的使用者資料
+    const userData = {
+      account: user.account,
+      mail: user.mail,
+      name: user.name,
+      img: user.img,
+    };
+
+    console.log("準備回傳的資料:", { token: "***", user: userData });
 
     res.status(200).json({
       success: true,
       message: "Google 登入成功",
       data: {
         token,
-        user: {
-          account: user.account,
-          mail: user.mail,
-          name: user.name,
-          img: user.img,
-        },
+        user: userData,
       },
     });
   } catch (error) {
-    console.error("Google 登入錯誤:", error);
+    console.error("簡化版 Google 登入錯誤:", error);
     res.status(500).json({
       success: false,
       message: "Google 登入失敗：" + error.message,
     });
-  }
-});
-
-router.post("/google-login-token", async (req, res) => {
-  try {
-    const { email, name, picture, id: googleId } = req.body;
-
-    // 與原本的 google-login 邏輯相同，但不需要驗證 JWT
-    const sqlCheck =
-      "SELECT * FROM users WHERE mail = ? OR google_id = ? AND is_valid = 1";
-    const [existingUsers] = await connection.execute(sqlCheck, [
-      email,
-      googleId,
-    ]);
-
-    let user;
-    if (existingUsers.length > 0) {
-      user = existingUsers[0];
-      if (!user.google_id) {
-        await connection.execute(
-          "UPDATE users SET google_id = ?, name = COALESCE(name, ?), img = COALESCE(img, ?) WHERE id = ?",
-          [googleId, name, picture, user.id]
-        );
-      }
-      const [updatedUsers] = await connection.execute(
-        "SELECT * FROM users WHERE id = ?",
-        [user.id]
-      );
-      user = updatedUsers[0];
-    } else {
-      const randomAccount = `google_${Date.now()}`;
-      const randomPassword = await bcrypt.hash(
-        `google_${googleId}_${Date.now()}`,
-        10
-      );
-      const sqlInsert = `INSERT INTO users (account, mail, name, password, img, google_id, is_valid) VALUES (?, ?, ?, ?, ?, ?, 1)`;
-      const [result] = await connection.execute(sqlInsert, [
-        randomAccount,
-        email,
-        name,
-        randomPassword,
-        picture,
-        googleId,
-      ]);
-      const [newUsers] = await connection.execute(
-        "SELECT * FROM users WHERE id = ?",
-        [result.insertId]
-      );
-      user = newUsers[0];
-    }
-
-    const token = jwt.sign({ mail: user.mail, img: user.img }, secretKey, {
-      expiresIn: "30m",
-    });
-
-    res.status(200).json({
-      success: true,
-      data: {
-        token,
-        user: {
-          account: user.account,
-          mail: user.mail,
-          name: user.name,
-          img: user.img,
-        },
-      },
-    });
-  } catch (error) {
-    console.error("Google token 登入錯誤:", error);
-    res.status(500).json({ success: false, message: "Google 登入失敗" });
   }
 });
 
