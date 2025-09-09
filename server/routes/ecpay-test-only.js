@@ -1,7 +1,14 @@
 import express from "express";
 const router = express.Router();
 import * as crypto from "crypto";
-import { isDev, successResponse, errorResponse } from "../lib/utils.js";
+
+const isDev = true;
+const successResponse = (res, data = null, status = 200) =>
+  res.status(status).json({ status: "success", data });
+const errorResponse = (res, error, status = 200) =>
+  res
+    .status(status)
+    .json({ status: "error", message: error?.message || error });
 
 /* GET home page. */
 router.get("/", function (req, res) {
@@ -40,10 +47,8 @@ router.get("/", function (req, res) {
 
   // 付款結果通知回傳網址(這網址可能需要網路上的真實網址或IP，才能正確接收回傳結果)
   const ReturnURL = "https://www.ecpay.com.tw";
-  // (二選一)以下這個設定，會有回傳結果，但要用前端的api路由來接收並協助重新導向到前端成功callback頁面(不用時下面要83~97從中的值要註解)
-  const OrderResultURL = "http://localhost:3000/ecpay/api"; //前端成功頁面api路由(POST)
-  // (二選一)以下這個設定，不會任何回傳結果(不用時下面要83~97從中的值要註解)
-  // const ClientBackURL = 'http://localhost:3000/ecpay/callback' //前端成功頁面
+
+  const ClientBackURL = "http://localhost:3000/cart/success"; //前端成功頁面
   const ChoosePayment = "ALL";
 
   ////////////////////////以下參數不用改////////////////////////
@@ -91,8 +96,7 @@ router.get("/", function (req, res) {
     ItemName: ItemName,
     ReturnURL: ReturnURL,
     ChoosePayment: ChoosePayment,
-    OrderResultURL,
-    // ClientBackURL,
+    ClientBackURL,
   };
 
   //四、計算 CheckMacValue

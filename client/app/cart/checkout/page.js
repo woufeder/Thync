@@ -12,7 +12,7 @@ import "./checkout.css";
 export default function CheckoutPage() {
   // 門市資訊顯示狀態
   const { store711, openWindow } = useShip711StoreOpener(
-    "http://localhost:3007/shipment/711" // 指到你 Express 的 /shipment/711
+    "http://localhost:3000/cart/ship/api"
   );
   const [mobileCarrier, setMobileCarrier] = useState("");
 
@@ -24,30 +24,35 @@ export default function CheckoutPage() {
   // 同步訂購人資訊到會員資料
   const [syncMember, setSyncMember] = useState(false);
   // 預設值
-  const getDefaultForm = () => {
-    if (typeof window !== "undefined") {
-      const data = localStorage.getItem("checkoutForm");
-      if (data) return JSON.parse(data);
+  const [form, setForm] = useState(null);
+
+  useEffect(() => {
+    const data = localStorage.getItem("checkoutForm");
+    if (data) {
+      const saved = JSON.parse(data);
+      setForm((prev) => ({
+        ...prev,
+        ...saved, // 這裡就會帶入 payType、shippingType
+      }));
+    } else {
+      setForm({
+        receiverName: "",
+        receiverPhone: "",
+        receiverEmail: "",
+        receiverCity: "",
+        receiverDistrict: "",
+        receiverZip: "",
+        receiverAddress: "",
+        deliveryTime: "",
+        buyerName: "",
+        buyerPhone: "",
+        buyerEmail: "",
+        shippingType: "7-11取貨", // 預設值
+        payType: "貨到付款", // 預設值
+        invoiceType: "手機載具",
+      });
     }
-    return {
-      receiverName: "",
-      receiverPhone: "",
-      receiverEmail: "",
-      receiverCity: "",
-      receiverDistrict: "",
-      receiverZip: "",
-      receiverAddress: "",
-      deliveryTime: "",
-      buyerName: "",
-      buyerPhone: "",
-      buyerEmail: "",
-      shippingType: "7-11取貨",
-      storeName: "",
-      storeAddress: "",
-      invoiceType: "手機載具",
-    };
-  };
-  const [form, setForm] = useState(getDefaultForm());
+  }, []);
 
   const cities = [
     "請選擇縣市",
@@ -938,8 +943,9 @@ export default function CheckoutPage() {
     title: "A4tech 雙飛燕 Bloody S98",
     price: "$2390",
   });
-
   useEffect(() => {
+    if (!form) return; // form 還是 null 的時候先跳出，不做任何事
+
     if (syncMember) {
       setForm((form) => ({
         ...form,
@@ -948,7 +954,7 @@ export default function CheckoutPage() {
         buyerEmail: form.receiverEmail,
       }));
     }
-  }, [syncMember, form.receiverName, form.receiverPhone, form.receiverEmail]);
+  }, [syncMember, form]); // ✅ 改成依賴 syncMember 和整個 form，而不是展開裡面的屬性
 
   useEffect(() => {
     fetch("/api/cart/cvs/store")
@@ -964,6 +970,20 @@ export default function CheckoutPage() {
         }
       });
   }, []);
+
+  useEffect(() => {
+    if (store711.storename) {
+      setForm((f) => ({
+        ...f,
+        storeName: store711.storename,
+        storeAddress: store711.storeaddress,
+      }));
+    }
+  }, [store711]);
+
+  if (!form) {
+    return null;
+  }
 
   return (
     <>
@@ -1174,15 +1194,22 @@ export default function CheckoutPage() {
                   <label className="radio">
                     <input
                       type="radio"
-                      name="pay"
+                      name="payType"
                       value="7-11取貨付款"
-                      defaultChecked
+                      checked={form.payType === "7-11取貨付款"}
+                      onChange={handleChange}
                     />
                     <span></span>
                     超商取貨付款
                   </label>
                   <label className="radio">
-                    <input type="radio" name="pay" value="信用卡" />
+                    <input
+                      type="radio"
+                      name="payType"
+                      value="信用卡"
+                      checked={form.payType === "信用卡"}
+                      onChange={handleChange}
+                    />
                     <span></span>
                     信用卡一次付清
                   </label>

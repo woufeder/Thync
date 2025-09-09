@@ -40,7 +40,7 @@ export default function CartListPage({
 
   // 動態計算金額
   const total = items.reduce(
-    (sum, i) => sum + (i.priceNum || 0) * (i.qty || 1),
+    (sum, i) => sum + (i.price || 0) * (i.qty || 1),
     0
   );
   const shipping = 60; // 可根據條件調整
@@ -72,12 +72,12 @@ export default function CartListPage({
       <main className="container">
         <div className="cart-container">
           <div className="cart-main">
-              <CartTable
-                items={items}
-                onQtyChange={onQtyChange}
-                onRemove={onRemove}
-              />
-              <hr className="cart-line" />
+            <CartTable
+              items={items}
+              onQtyChange={onQtyChange}
+              onRemove={onRemove}
+            />
+            <hr className="cart-line" />
             <div className="coupon-box">
               <input
                 className="inputcoupon"

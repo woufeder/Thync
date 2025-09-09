@@ -10,62 +10,48 @@ import "./confirm.css";
 
 async function handleSubmitOrder() {
   try {
-    // 從 localStorage 拿資料
+    // 1. 從 localStorage 拿表單與購物車資料
     const form = JSON.parse(localStorage.getItem("checkoutForm")) || {};
     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
     const discount = Number(localStorage.getItem("discount") || 0);
 
-    // 計算金額
+    // 2. 計算金額
     const subtotal = cartItems.reduce(
-      (sum, item) => sum + item.priceNum * item.qty,
+      (sum, item) => sum + (item.price || 0) * (item.qty || 1),
       0
     );
     const shipping = form.shippingType === "宅配到府" ? 80 : 60;
     const total = subtotal + shipping;
     const finalAmount = total - discount;
 
-    // 組成 payload (對應 orders 表)
-    const orderPayload = {
-      user_id: 115, // TODO: 改成實際登入使用者 ID
-      delivery_method: form.shippingType,
-      delivery_address: form.receiverAddress || form.storeAddress,
-      recipient: form.receiverName,
-      pay_method: form.pay || "7-11取貨付款",
-      pay_info: "", // 信用卡號 / 超商代號，這裡先留空
-      status_now: "pending", // 初始狀態
-      order_date: new Date().toISOString(),
-      total,
-      coupons_id: null, // 之後串優惠券
-      discount_info: discount > 0 ? `折扣 ${discount}` : null,
-      final_amount: finalAmount,
-      paid_at: null, // 未付款先 NULL
-      cart_items: cartItems, // 額外傳，後端可存到 order_items 表
-    };
+    // 3. 呼叫後端 ecpay 測試 API
+    const res = await fetch(
+      `http://localhost:3007/ecpay-test?amount=${finalAmount}&items=${cartItems
+        .map((i) => i.title)
+        .join(",")}`
+    );
+    const result = await res.json();
 
-    // 呼叫後端 API
-    const res = await fetch("/api/orders", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(orderPayload),
+    // 注意這裡要用 result.data
+    const { action, params } = result.data;
+
+    const formEl = document.createElement("form");
+    formEl.method = "POST";
+    formEl.action = action;
+
+    Object.entries(params).forEach(([key, value]) => {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = key;
+      input.value = value;
+      formEl.appendChild(input);
     });
 
-    if (!res.ok) {
-      throw new Error("建立訂單失敗");
-    }
-
-    const data = await res.json();
-    console.log("訂單建立成功:", data);
-
-    // 清除 localStorage
-    localStorage.removeItem("cartItems");
-    localStorage.removeItem("checkoutForm");
-    localStorage.removeItem("discount");
-
-    // 導去成功頁
-    window.location.href = "/cart/success";
+    document.body.appendChild(formEl);
+    formEl.submit();
   } catch (err) {
     console.error(err);
-    alert("送出訂單失敗，請稍後再試");
+    alert("付款流程失敗，請稍後再試");
   }
 }
 
@@ -100,7 +86,7 @@ export default function Page() {
   // 動態計算金額
   const count = cartItems.reduce((sum, item) => sum + (item.qty || 1), 0);
   const subtotal = cartItems.reduce(
-    (sum, item) => sum + (item.priceNum || 0) * (item.qty || 1),
+    (sum, item) => sum + (item.price || 0) * (item.qty || 1),
     0
   );
   const shipping = form.shippingType === "宅配到府" ? 80 : 60;
@@ -208,8 +194,7 @@ export default function Page() {
           <RecommendList recommend={recommend} />
         </div>
       </main>
-        <Footer />
-
+      <Footer />
     </>
   );
 }
