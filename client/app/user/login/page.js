@@ -32,66 +32,40 @@ export default function UserLoginPage() {
     }
   }, [lottieLoaded]);
 
-  // Google 登入初始化
-
+  // 處理 Google 登入回傳
   useEffect(() => {
-    // 載入 Google Identity Services script
+    // 檢查 URL 是否有 Google 回傳的 token
+    const hash = window.location.hash;
+    console.log("當前 URL hash:", hash);
 
-    const script = document.createElement("script");
+    if (hash && hash.includes("access_token")) {
+      const params = new URLSearchParams(hash.substring(1));
+      const accessToken = params.get("access_token");
+      const state = params.get("state");
 
-    script.src = "https://accounts.google.com/gsi/client";
+      console.log("找到 access_token:", accessToken);
+      console.log("state:", state);
 
-    script.async = true;
-
-    script.defer = true;
-
-    script.onload = initializeGoogle;
-
-    document.head.appendChild(script);
-
-    return () => {
-      // 清理
-
-      if (document.head.contains(script)) {
-        document.head.removeChild(script);
+      if (accessToken && state === "google_login") {
+        handleGoogleCallback(accessToken);
       }
-    };
-  }, []);
-
-  // 在 useEffect 中加入
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const checkHash = () => {
-        const hash = window.location.hash;
-        if (hash && hash.includes("access_token")) {
-          const params = new URLSearchParams(hash.substring(1));
-          const accessToken = params.get("access_token");
-          const state = params.get("state");
-          if (accessToken && state === "login") {
-            handleGoogleToken(accessToken);
-          }
-        }
-      };
-
-      checkHash(); // 頁面載入時執行一次
-      window.addEventListener("hashchange", checkHash);
-
-      return () => {
-        window.removeEventListener("hashchange", checkHash);
-      };
     }
   }, []);
 
-  const handleGoogleToken = async (accessToken) => {
+  const handleGoogleCallback = async (accessToken) => {
     try {
-      console.log("callback 執行");
+      console.log("=== 開始處理 Google 回傳 ===");
+
+      // 1. 用 access_token 取得使用者資訊
       const userResponse = await fetch(
         `https://www.googleapis.com/oauth2/v2/userinfo?access_token=${accessToken}`
       );
       const userInfo = await userResponse.json();
+      console.log("Google 使用者資訊:", userInfo);
 
+      // 2. 發送到我們的後端
       const response = await fetch(
-        "http://localhost:3007/api/users/google-login-token",
+        "http://localhost:3007/api/users/google-login-simple",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -99,129 +73,51 @@ export default function UserLoginPage() {
             email: userInfo.email,
             name: userInfo.name,
             picture: userInfo.picture,
-            id: userInfo.id,
+            googleId: userInfo.id,
           }),
         }
       );
 
       const data = await response.json();
+      console.log("後端回應:", data);
 
       if (data.success) {
-        // 🔥 修正：使用 loginWithToken 而不是 login
-        if (loginWithToken) {
-          await loginWithToken(data.data.token, data.data.user);
-        } else {
-          localStorage.setItem("reactLoginToken", data.data.token);
-          localStorage.setItem("user", JSON.stringify(data.data.user));
-          window.location.href = "/user";
-        }
-      }
-    } catch (error) {
-      console.error("處理 Google token 錯誤:", error);
-    }
-  };
-
-  const initializeGoogle = () => {
-    if (window.google) {
-      window.google.accounts.id.initialize({
-        client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-        callback: handleCredentialResponse,
-        auto_select: false,
-        cancel_on_tap_outside: false,
-        // 禁用 FedCM
-        use_fedcm_for_prompt: false,
-      });
-      setIsGoogleLoaded(true);
-    }
-  };
-
-  // const handleCredentialResponse = async (response) => {
-  //   try {
-  //     console.log("Google 回傳的憑證:", response.credential);
-
-  //     const backendResponse = await fetch(
-  //       "http://localhost:3007/api/users/google-login",
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify({
-  //           credential: response.credential,
-  //         }),
-  //       }
-  //     );
-
-  //     const data = await backendResponse.json();
-  //     console.log("後端回應:", data);
-
-  //     if (data.success) {
-  //       await loginWithToken(data.data.token, data.data.user);
-  //       alert("Google 登入成功！");
-  //     } else {
-  //       alert("Google 登入失敗：" + data.message);
-  //     }
-  //   } catch (error) {
-  //     console.error("Google 登入錯誤:", error);
-  //     alert("Google 登入發生錯誤，請稍後再試");
-  //   }
-  // };
-
-  const handleCredentialResponse = async (response) => {
-    try {
-      console.log("=== Google 登入開始 ===");
-      console.log("Google 回傳的憑證:", response.credential);
-
-      const backendResponse = await fetch(
-        "http://localhost:3007/api/users/google-login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            credential: response.credential,
-          }),
-        }
-      );
-
-      console.log("後端回應狀態:", backendResponse.status);
-      console.log("後端回應 headers:", backendResponse.headers);
-
-      const data = await backendResponse.json();
-      console.log("=== 完整後端回應 ===");
-      console.log(JSON.stringify(data, null, 2));
-
-      console.log("data.success:", data.success);
-      console.log("data.data:", data.data);
-      console.log("data.data.token:", data.data?.token);
-      console.log("data.data.user:", data.data?.user);
-
-      // 🔥 你忘記加上這部分！
-      if (data.success) {
+        console.log("準備呼叫 loginWithToken");
         await loginWithToken(data.data.token, data.data.user);
-        alert("Google 登入成功！");
+
+        // 清除 URL hash
+        window.location.hash = "";
+        setTimeout(() => {
+          window.location.href = "/user";
+        }, 300);
       } else {
-        alert("Google 登入失敗：" + data.message);
+        alert("登入失敗：" + data.message);
       }
     } catch (error) {
       console.error("Google 登入錯誤:", error);
-      alert("Google 登入發生錯誤，請稍後再試");
+      alert("登入過程發生錯誤");
     }
   };
 
   const handleGoogleLogin = () => {
-    console.log("Google 登入按鈕被點擊");
-    // 使用正確的 Google OAuth 2.0 授權端點
-    const googleAuthUrl =
-      `https://accounts.google.com/o/oauth2/v2/auth?` +
-      `client_id=${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}&` +
-      `redirect_uri=${encodeURIComponent("http://localhost:3000")}&` +
-      `scope=${encodeURIComponent("email profile")}&` +
-      `response_type=token&` +
-      `state=login`;
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    const redirectUri = "http://localhost:3000/user/login";
 
-    window.location.href = googleAuthUrl;
+    console.log("Client ID:", clientId);
+    console.log("Redirect URI:", redirectUri);
+    console.log("當前頁面 URL:", window.location.href);
+
+    const googleAuthUrl = new URL(
+      "https://accounts.google.com/o/oauth2/v2/auth"
+    );
+    googleAuthUrl.searchParams.set("client_id", clientId);
+    googleAuthUrl.searchParams.set("redirect_uri", redirectUri);
+    googleAuthUrl.searchParams.set("scope", "email profile");
+    googleAuthUrl.searchParams.set("response_type", "token");
+    googleAuthUrl.searchParams.set("state", "google_login");
+
+    console.log("完整 Google Auth URL:", googleAuthUrl.toString());
+    window.location.href = googleAuthUrl.toString();
   };
 
   const onclick = async () => {
