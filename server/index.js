@@ -50,7 +50,6 @@ app.use("/api/articles", articlesRouter);
 app.use("/shipments", shipmentRouter);
 app.use("/ecpay-test", ecpayTestRouter);
 
-
 app.listen(3007, () => {
   console.log("主機啟動 http://localhost:3007");
 });

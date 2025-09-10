@@ -7,7 +7,10 @@ import Link from "next/link";
 import Script from "next/script";
 import styles from "@/styles/login.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHouseChimney } from "@fortawesome/free-solid-svg-icons";
+import {
+  faHouseChimney,
+  faUserSecret,
+} from "@fortawesome/free-solid-svg-icons";
 
 export default function UserLoginPage() {
   const [mail, setMail] = useState("");
@@ -361,6 +364,11 @@ export default function UserLoginPage() {
                 </button>
               </form>
             </main>
+          </div>
+          <div className="bottom">
+            <a href="#" className="secret-block">
+              <FontAwesomeIcon icon={faUserSecret} className="faUserSecret" />
+            </a>
           </div>
         </div>
 
