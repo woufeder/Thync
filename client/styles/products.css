@@ -442,109 +442,297 @@ aside {
 
 /* 商品細節頁 */
 
-.area1 {
+
+.P-detail {
+  padding: 32px 24px;
   display: flex;
+  flex-direction: column;
   gap: 20px;
-  margin-bottom: 20px;
-}
 
-.product-images {
-  display: flex;
-  gap: 10px;
-  flex: 2;
-}
-
-.main-image img {
-  width: 100%;
-  min-width: 300px;
-  /* max-width: 400px; */
-  height: auto;
-  object-fit: cover;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-}
-
-.thumbnails {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-
-  img {
-    filter: opacity(25%);
-    width: 60px;
-    height: 60px;
-    object-fit: cover;
-    cursor: pointer;
-    border-radius: 3px;
+  .area1 {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
   }
 
-  img.active {
-    box-shadow: var(--card-shadow);
-    filter: opacity(100%);
-  }
-}
+  .product-images {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+    justify-content: center;
 
-.product-info {
-  flex: 3;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-
-  h5 {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--Primary800);
-    margin: 0;
+    @media screen and (max-width: 1000px) {
+      flex-direction: column-reverse;
+      align-items: center;
+    }
   }
 
-  p {
-    margin: 0;
-    color: var(--Primary800);
-    font-weight: 500;
-  }
-
-  .price {
-    font-size: 20px;
-    font-weight: 900;
-    color: var(--Primary800);
-  }
-
-  .stock {
-    font-size: 16px;
-    font-weight: 500;
-    color: var(--Success500);
-  }
-
-  .description {
-    font-size: 16px;
-    line-height: 1.5;
-    color: var(--Primary800);
-  }
-
-  .btnCart {
-    width: 150px;
-    padding: 10px;
-    background-color: var(--Secondary800);
-    color: var(--White);
-    border-radius: 20px;
-    text-align: center;
-    cursor: pointer;
+  .main-image {
+    width: 100%;
+    max-width: 400px;
+    /* 最大寬度，視窗縮小時自動縮 */
+    aspect-ratio: 1 / 1;
+    /* 1:1 正方形，可改 4/3、16/9 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
     overflow: hidden;
-    position: relative;
+  }
 
-    &:before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, var(--Secondary100), transparent);
-      transition: left 0.5s;
+  .main-image img {
+    width: 100%;
+    /* min-width: 400px; */
+    max-width: 400px;
+    height: auto;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+  }
+
+  .thumbnails {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-right: 10px;
+
+    @media (max-width:1000px) {
+      flex-direction: row;
     }
 
-    &:hover:before {
-      left: 100%;
+    img {
+      filter: opacity(25%);
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      cursor: pointer;
+      border-radius: 3px;
+
+      @media (max-width:1000px) {
+        width: 50px;
+        height: 50px;
+      }
+    }
+
+    img.active {
+      box-shadow: var(--card-shadow);
+      filter: opacity(100%);
+    }
+  }
+
+  .product-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: space-evenly;
+
+
+    h5 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--Primary800);
+      margin: 0;
+    }
+
+    p {
+      margin: 0;
+      color: var(--Primary800);
+      font-weight: 500;
+    }
+
+    .brand-name {
+      color: var(--Primary800);
+      font-feature-settings: 'dlig' on;
+      font-family: "Noto Sans TC";
+      font-size: var(--Font-Size-h6, 22px);
+      font-style: normal;
+      font-weight: 400;
+      line-height: 21px;
+    }
+
+    .product-model {
+      color: var(--Primary-800, #304A6F);
+      font-feature-settings: 'dlig' on;
+      font-family: "Noto Sans TC";
+      font-size: var(--Font-Size-p, 16px);
+      font-style: normal;
+      font-weight: 400;
+      line-height: 40px;
+      /* 250% */
+    }
+
+    .price {
+
+      background-color: var(--Primary800);
+      color: var(--White);
+      display: flex;
+      padding: 10px 20px;
+      align-items: center;
+      gap: 10px;
+      align-self: stretch;
+      border-radius: 10px;
+      font-size: 28px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 40px;
+      /* 142.857% */
+
+    }
+
+    .stock {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--Success500);
+    }
+
+    .description {
+      font-size: 16px;
+      line-height: 1.5;
+      color: var(--Primary800);
+    }
+
+    .btnCart {
+      width: 150px;
+      padding: 10px;
+      background-color: var(--Secondary800);
+      color: var(--White);
+      border-radius: 20px;
+      text-align: center;
+      cursor: pointer;
+      overflow: hidden;
+      position: relative;
+
+      &:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, var(--Secondary100), transparent);
+        transition: left 0.5s;
+      }
+
+      &:hover:before {
+        left: 100%;
+      }
+    }
+
+    .qtyBtn {
+      font-size: 10px;
+    }
+  }
+
+  .area2 {
+    border-radius: 10px 10px 0 0;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 10px 0 rgba(48, 74, 111, 0.20);
+    margin-bottom: 40px;
+
+    .nav-tabs {
+      margin-bottom: 20px;
+      flex-wrap: nowrap;
+      justify-content: center;
+      background-color: var(--Primary800);
+      border-radius: 10px 10px 0 0;
+
+      .nav-item {
+        margin-right: 0;
+        width: 100%;
+
+
+        .nav-link {
+          width: 100%;
+          color: var(--Secondary100);
+          background-color: transparent;
+          text-align: center;
+          font-size: 24px;
+          font-weight: 700;
+          border-radius: 10px 10px 0 0;
+
+          &:hover {
+            border: 0;
+          }
+
+          &.active {
+            background-color: var(--Secondary100);
+            color: var(--Primary800);
+            color: #304A6F;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+
+            &.active:hover {
+              border: 1px solid var(--Secondary100);
+            }
+
+          }
+        }
+
+      }
+    }
+
+    #introArea {
+      position: relative;
+      /* 給 introImg 定位用 */
+      /* display: flex; */
+      align-items: flex-start;
+      gap: 20px;
+      &.active {
+        display: flex;
+      }
+    }
+
+    #introText {
+      width: 50%;
+      padding-right: 20px;
+    }
+
+    #introImg {
+      text-align: center;
+      position: absolute;
+      /* 關鍵：不佔用流動高度 */
+      top: 0;
+      right: 0;
+      bottom: 0;
+      /* 讓它高度跟父容器一樣 */
+      width: 50%;
+      /* 或你要的固定寬度 */
+      overflow-y: auto;
+
+      /* 多的就滾動 */
+      img {
+        width: 80%;
+      }
+    }
+
+    .tab-content {
+      padding: 32px 64px;
+
+      .tab-pane {
+        font-size: 16px;
+        line-height: 1.5;
+        color: var(--Primary800);
+        display: none;
+        transition: opacity 0.3s ease-in-out;
+
+        
+        &.active {
+          display: block;
+          opacity: 1;
+        }
+      }
+
+      pre {
+        color: #304A6F;
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 40px;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        /* 250% */
+      }
     }
   }
 }
