@@ -54,7 +54,7 @@ export default function Sidebar() {
               </span>
               訂單查詢
             </Link>
-            <Link
+            {/* <Link
               href="/user/notify"
               className={`mb-1 menu-link${
                 pathname === "/user/notify" ? " active" : ""
@@ -64,7 +64,7 @@ export default function Sidebar() {
                 <i className="fa-solid fa-bell"></i>
               </span>
               貨到通知
-            </Link>
+            </Link> */}
             <Link
               href="/user/coupon"
               className={`mb-1 menu-link${

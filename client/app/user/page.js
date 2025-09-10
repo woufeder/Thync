@@ -76,12 +76,12 @@ export default function UserEditPage() {
                     <div className="label">訂單查詢</div>
                   </div>
                 </Link>
-                <Link href="#" className="tile">
+                {/* <Link href="#" className="tile">
                   <div className="inner">
                     <i className="fa-solid fa-bell"></i>
                     <div className="label">貨到通知</div>
                   </div>
-                </Link>
+                </Link> */}
                 <Link href="#" className="tile">
                   <div className="inner">
                     <i className="fa-solid fa-ticket"></i>

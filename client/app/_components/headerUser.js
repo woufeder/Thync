@@ -27,7 +27,7 @@ export default function HeaderUser() {
               <li><a className="dropdown-item" href="/user/edit"><i className="fa-solid fa-user"></i>　會員資料管理</a></li>
               <li><a className="dropdown-item" href="/user/order">
                 <i className="fa-solid fa-gift"></i>　訂單查詢</a></li>
-              <li><a className="dropdown-item" href="#"><i className="fa-solid fa-bell"></i>　貨到通知</a></li>
+              {/* <li><a className="dropdown-item" href="#"><i className="fa-solid fa-bell"></i>　貨到通知</a></li> */}
               <li><a className="dropdown-item" href="/user/coupon"><i className="fa-solid fa-ticket"></i>　我的優惠券</a></li>
               <li><a className="dropdown-item" href="/user/wishlist"><i className="fa-solid fa-heart"></i>　已追蹤商品</a></li>
               <li><a className="dropdown-item" href="/user/favorites"><i className="fa-solid fa-bookmark"></i>　已收藏文章</a></li>
