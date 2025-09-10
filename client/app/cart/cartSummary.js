@@ -8,7 +8,7 @@ export default function CartSummary({
   onCheckout,
 }) {
   // 狀態管理
-  const [payType, setPayType] = useState("貨到付款");
+  const [payType, setPayType] = useState("取貨付款");
   const [shippingType, setShippingType] = useState("超商取貨");
   const [payOpen, setPayOpen] = useState(false);
   const [shippingOpen, setShippingOpen] = useState(false);
@@ -51,14 +51,14 @@ export default function CartSummary({
               <ul className="cs-menu">
                 <li
                   className={`cs-option${
-                    payType === "貨到付款" ? " is-selected" : ""
+                    payType === "取貨付款" ? " is-selected" : ""
                   }`}
                   onClick={() => {
-                    setPayType("貨到付款");
+                    setPayType("取貨付款");
                     setPayOpen(false);
                   }}
                 >
-                  貨到付款
+                  取貨付款
                 </li>
                 <li
                   className={`cs-option${

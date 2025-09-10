@@ -24,7 +24,25 @@ export default function CheckoutPage() {
   // 同步訂購人資訊到會員資料
   const [syncMember, setSyncMember] = useState(false);
   // 預設值
-  const [form, setForm] = useState(null);
+  // page.js 裡 CheckoutPage component 最上面
+  const [form, setForm] = useState({
+    receiverName: "",
+    receiverPhone: "",
+    receiverEmail: "",
+    receiverCity: "",
+    receiverDistrict: "",
+    receiverZip: "",
+    receiverAddress: "",
+    deliveryTime: "",
+    buyerName: "",
+    buyerPhone: "",
+    buyerEmail: "",
+    shippingType: "7-11取貨", // 預設值
+    payType: "超商取貨付款", // 預設值
+    invoiceType: "手機載具", // 預設值
+    storeName: "",
+    storeAddress: "",
+  });
 
   useEffect(() => {
     const data = localStorage.getItem("checkoutForm");
@@ -944,17 +962,15 @@ export default function CheckoutPage() {
     price: "$2390",
   });
   useEffect(() => {
-    if (!form) return; // form 還是 null 的時候先跳出，不做任何事
-
-    if (syncMember) {
-      setForm((form) => ({
-        ...form,
-        buyerName: form.receiverName,
-        buyerPhone: form.receiverPhone,
-        buyerEmail: form.receiverEmail,
+    if (syncMember && form) {
+      setForm((f) => ({
+        ...f,
+        buyerName: f.receiverName,
+        buyerPhone: f.receiverPhone,
+        buyerEmail: f.receiverEmail,
       }));
     }
-  }, [syncMember, form]); // ✅ 改成依賴 syncMember 和整個 form，而不是展開裡面的屬性
+  }, [syncMember]); // 固定長度 = 1
 
   useEffect(() => {
     fetch("/api/cart/cvs/store")

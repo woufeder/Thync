@@ -49,6 +49,8 @@ export default function CartListPage({
   const [selectedCoupon, setSelectedCoupon] = useState(null);
   const [discount, setDiscount] = useState(0);
 
+  
+
   return (
     <>
       <main className="container">
