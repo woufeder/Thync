@@ -10,9 +10,6 @@ export default function ProductCard({ p }) {
 
   return (
     <>
-
-
-
       <div className="product-card">
         <Link key={p.id} href={`/products/${p.id}`}>
           <div className="card-img">

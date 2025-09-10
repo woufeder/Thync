@@ -34,3 +34,32 @@ WHERE (
 
 SHOW COLUMNS FROM coupon LIKE 'expires_at';
 
+INSERT INTO user_coupons (user_id, coupon_id, attr)
+VALUES 
+(115, 1, 'manual'),
+(115, 2, 'manual'),
+(115, 3, 'manual');
+
+SHOW DATABASES;
+
+SELECT * FROM user_coupons WHERE user_id = 115;
+
+INSERT INTO user_coupons (user_id, coupon_id, attr)
+VALUES 
+(1, 4, 'manual'),
+(1, 5, 'manual'),
+(1, 6, 'manual');
+
+SELECT * FROM user_coupons WHERE user_id = 1;
+
+SELECT * FROM coupon WHERE id IN (4,5,6);
+
+
+INSERT INTO coupon (code, `desc`, type, value, min, start_at, expires_at, is_valid, is_active)
+VALUES ('TEST01', '測試券', 0, 50, 100, '2025-09-01 00:00:00', '2025-12-31 00:00:00', 1, 1);
+
+
+INSERT INTO user_coupons (user_id, coupon_id, attr)
+VALUES (1,'77', 'manual');
+
+SELECT id FROM coupon WHERE code = 'TEST01';

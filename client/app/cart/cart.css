@@ -64,6 +64,15 @@ thead {
   border-radius: 4px;
 }
 
+.product-info span {
+  display: inline-block;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--Primary800);
+  max-width:300px ;
+  
+}
+
 .qty-control button {
   width: 40px;
   height: 40px;

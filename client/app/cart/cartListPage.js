@@ -1,7 +1,9 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useProduct } from "@/hooks/use-product";
 import CartTable from "./cartTable";
 import CartSummary from "./cartSummary";
+import CartCouponArea from "@/app/_components/cart/CartCouponArea";
+
 
 export default function CartListPage({
   items,
@@ -9,8 +11,6 @@ export default function CartListPage({
   recommend,
   couponCode,
   setCouponCode,
-  discount,
-  setDiscount,
   userId,
   couponMsg,
   setCouponMsg,
@@ -40,59 +40,38 @@ export default function CartListPage({
 
   // 動態計算金額
   const total = items.reduce(
-    (sum, i) => sum + (i.priceNum || 0) * (i.qty || 1),
+    (sum, i) => sum + (i.price || 0) * (i.qty || 1),
     0
   );
   const shipping = 60; // 可根據條件調整
 
-  async function handleUseCoupon() {
-    try {
-      const res = await fetch("/api/coupon/validate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, code: couponCode }),
-      });
-      if (!res.ok) throw new Error("伺服器錯誤，請稍後再試");
-      const data = await res.json();
-      if (data.valid) {
-        setDiscount(data.discount);
-        setCouponMsg("折扣已套用！");
-      } else {
-        setDiscount(0);
-        setCouponMsg(data.message || "折扣碼無效");
-      }
-    } catch (err) {
-      setDiscount(0);
-      setCouponMsg(err.message || "伺服器錯誤，請稍後再試");
-    }
-  }
+
+  const [selectedCoupon, setSelectedCoupon] = useState(null);
+  const [discount, setDiscount] = useState(0);
 
   return (
     <>
       <main className="container">
         <div className="cart-container">
           <div className="cart-main">
-              <CartTable
-                items={items}
-                onQtyChange={onQtyChange}
-                onRemove={onRemove}
-              />
-              <hr className="cart-line" />
-            <div className="coupon-box">
-              <input
-                className="inputcoupon"
-                type="text"
-                placeholder="輸入折扣碼"
-                value={couponCode}
-                onChange={(e) => setCouponCode(e.target.value)}
-              />
-              <button className="btn-use" onClick={handleUseCoupon}>
-                使用
-              </button>
-              {couponMsg && <div className="coupon-msg">{couponMsg}</div>}
-            </div>
-          </div>
+            <CartTable
+              items={items}
+              onQtyChange={onQtyChange}
+              onRemove={onRemove}
+            />
+            <hr className="cart-line" />
 
+            {/* 優惠券區塊 */}
+            <CartCouponArea
+              userId={userId}
+              total={total}
+              onApply={(discount, coupon) => {
+                setDiscount(discount);
+                setCouponCode(coupon.code);
+              }}
+            />
+            
+          </div>
           <CartSummary
             items={items}
             discount={discount}
