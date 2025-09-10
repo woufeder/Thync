@@ -66,9 +66,9 @@ export default function Sidebar() {
               貨到通知
             </Link>
             <Link
-              href="/user/優惠券路由"
+              href="/user/coupon"
               className={`mb-1 menu-link${
-                pathname === "/user/優惠券路由" ? " active" : ""
+                pathname === "/user/coupon" ? " active" : ""
               }`}
             >
               <span className="icon">

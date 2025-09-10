@@ -7,7 +7,7 @@ import CouponCard from "./CouponCard";
 import "./CouponArea.css";
 
 export default function CouponArea() {
-  const [activeTab, setActiveTab] = useState("unclaimed");
+  const [activeTab, setActiveTab] = useState("claimed");
   const [activeFilter, setActiveFilter] = useState("all");
   const [couponCode, setCouponCode] = useState("");
 
@@ -30,22 +30,12 @@ export default function CouponArea() {
 
   // ⬇️ 在這裡定義 tabs
   const tabs = [
-    { id: "unclaimed", label: "未領取" },
     { id: "claimed", label: "已領取" },
     { id: "history", label: "歷史紀錄" },
   ];
 
   return (
     <div className="coupon-area">
-      <div className="breadcrumb">
-        <FontAwesomeIcon icon={faHome} />
-        <span>首頁</span>
-        <FontAwesomeIcon icon={faChevronRight} />
-        <span>會員中心</span>
-        <FontAwesomeIcon icon={faChevronRight} />
-        <span>我的優惠券</span>
-      </div>
-
       <div className="title">我的優惠券</div>
 
       <div className="tabs">
