@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import CartCouponCard from "./CartCouponCard";
 import "./CartCoupon.css";
 
-
 export default function CartCouponArea({ userId, total, onApply }) {
   console.log("CartCouponArea rendered", userId, total);
   const [coupons, setCoupons] = useState([]);
@@ -14,9 +13,12 @@ export default function CartCouponArea({ userId, total, onApply }) {
   useEffect(() => {
     async function fetchCoupons() {
       try {
-        const res = await fetch(
-          `http://localhost:3007/api/coupon/user/${userId}/available`
-        );
+        const res = await fetch("http://localhost:3007/api/coupon/available", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("reactLoginToken")}`,
+          },
+          credentials: "include",
+        });
         const data = await res.json();
         console.log("API 回傳優惠券", data);
 
@@ -40,9 +42,10 @@ export default function CartCouponArea({ userId, total, onApply }) {
         console.error("載入優惠券失敗", err);
       }
     }
+    fetchCoupons(); // 直接呼叫，不要判斷 userId
+  }, []);
 
-    if (userId) fetchCoupons();
-  }, [userId]);
+  
   function handleSelect(coupon) {
     const isValid = total >= coupon.min;
     if (!isValid) {
