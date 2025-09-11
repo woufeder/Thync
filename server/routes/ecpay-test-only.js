@@ -47,8 +47,8 @@ router.get("/", function (req, res) {
 
   // 付款結果通知回傳網址(這網址可能需要網路上的真實網址或IP，才能正確接收回傳結果)
   const ReturnURL = "https://www.ecpay.com.tw";
-
-  const ClientBackURL = "http://localhost:3000/cart/success"; //前端成功頁面
+  const OrderResultURL = "http://localhost:3000/ecpay/api"; // 付款結果頁面
+  // const ClientBackURL = "http://localhost:3000/cart/success"; //前端成功頁面
   const ChoosePayment = "ALL";
 
   ////////////////////////以下參數不用改////////////////////////
@@ -61,18 +61,18 @@ router.get("/", function (req, res) {
   )
     .toString()
     .padStart(2, "0")}${new Date()
-    .getDate()
-    .toString()
-    .padStart(2, "0")}${new Date()
-    .getHours()
-    .toString()
-    .padStart(2, "0")}${new Date()
-    .getMinutes()
-    .toString()
-    .padStart(2, "0")}${new Date()
-    .getSeconds()
-    .toString()
-    .padStart(2, "0")}${new Date().getMilliseconds().toString().padStart(2)}`;
+      .getDate()
+      .toString()
+      .padStart(2, "0")}${new Date()
+        .getHours()
+        .toString()
+        .padStart(2, "0")}${new Date()
+          .getMinutes()
+          .toString()
+          .padStart(2, "0")}${new Date()
+            .getSeconds()
+            .toString()
+            .padStart(2, "0")}${new Date().getMilliseconds().toString().padStart(2)}`;
 
   const MerchantTradeDate = new Date().toLocaleDateString("zh-TW", {
     year: "numeric",
@@ -96,7 +96,8 @@ router.get("/", function (req, res) {
     ItemName: ItemName,
     ReturnURL: ReturnURL,
     ChoosePayment: ChoosePayment,
-    ClientBackURL,
+    OrderResultURL,
+    // ClientBackURL,
   };
 
   //四、計算 CheckMacValue

@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/use-auth";
 
 export default function HeaderUser() {
   const { user, logout } = useAuth();
-  console.log(user);
+  // console.log(user);
   return (
     <>
       {user && (

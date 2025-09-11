@@ -1,8 +1,3 @@
-:root {
-    --mobile-design-width: 430px;
-}
-
-
 /* panels */
 .checkout {
     max-width: auto;
@@ -12,7 +7,7 @@
 
 .panel {
     position: relative;
-    background: #F7F6F2;
+    background: var(--Secondary100);
     border: 1px solid #e5ebf2;
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(39, 74, 120, .12);
@@ -26,7 +21,7 @@
     width: 100%;
     height: 5px;
     border-radius: 8px 8px 0 0;
-    background: linear-gradient(90deg, #88A2BF, #375177);
+    background: linear-gradient(90deg, var(--Primary300), var(--Primary800));
 }
 
 .panel-title {
@@ -58,13 +53,13 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    color: #506786;
+    color: var(--Primary500);
     font-size: 14px;
 }
 
 .bill {
     font-size: 16px;
-    color: #506786;
+    color: var(--Primary500);
     min-width: 60px;
 }
 
@@ -84,7 +79,7 @@
 }
 
 .summary-list .label {
-    color: #375177;
+    color: var(--Primary700);
 }
 
 .summary-list .total .right {
@@ -95,7 +90,7 @@
 }
 
 /* buttons */
-.btn {
+.confirm-btn {
     border: 0;
     border-radius: 8px;
     height: 45px;
@@ -106,7 +101,7 @@
 }
 
 .btn-secondary {
-    background: #506786;
+    background: var(--Primary500);
     color: #fff;
 }
 

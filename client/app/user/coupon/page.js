@@ -11,7 +11,7 @@ import Breadcrumb from "@/app/_components/breadCrumb";
 import Sidebar from "@/app/_components/user/sidebar";
 import Footer from "@/app/_components/footer";
 
-export default function UserPage() {
+export default function UserCouponPage() {
   const { user, setUser } = useAuth();
 
   // 編輯模式狀態

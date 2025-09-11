@@ -7,7 +7,10 @@ import Link from "next/link";
 import Script from "next/script";
 import styles from "@/styles/login.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHouseChimney } from "@fortawesome/free-solid-svg-icons";
+import {
+  faHouseChimney,
+  faUserSecret,
+} from "@fortawesome/free-solid-svg-icons";
 
 export default function UserLoginPage() {
   const [mail, setMail] = useState("");
@@ -254,12 +257,19 @@ export default function UserLoginPage() {
             <div className="header">
               <div className="d-flex align-items-center justify-content-between">
                 <img src="/images/LOGO.png" alt="LOGO" />
-                <Link href="/" className="home-link" aria-label="回到首頁">
+                <a onClick={() =>
+                  (window.location.href = "/")
+                } className="home-link" aria-label="回到首頁"
+                  style={{
+                    textDecoration: "none",
+                    cursor: "pointer"
+                  }}
+                >
                   <FontAwesomeIcon
                     icon={faHouseChimney}
                     className="home-icon"
                   />
-                </Link>
+                </a>
               </div>
 
               <h1 className="register-title">會員登入</h1>
@@ -361,6 +371,11 @@ export default function UserLoginPage() {
                 </button>
               </form>
             </main>
+          </div>
+          <div className="bottom">
+            <a href="#" className="secret-block">
+              <FontAwesomeIcon icon={faUserSecret} className="faUserSecret" />
+            </a>
           </div>
         </div>
 

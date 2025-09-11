@@ -10,6 +10,7 @@ import couponRouter from "./routes/coupon.js";
 import articlesRouter from "./routes/articles.js";
 import shipmentRouter from "./routes/shipments.js";
 import ecpayTestRouter from "./routes/ecpay-test-only.js";
+import ecpayCallbackRouter from "./routes/ecpay-callback.js";
 
 // 設定區
 let whitelist = [
@@ -49,7 +50,7 @@ app.use("/api/coupon", couponRouter);
 app.use("/api/articles", articlesRouter);
 app.use("/shipments", shipmentRouter);
 app.use("/ecpay-test", ecpayTestRouter);
-
+app.use("/ecpay-callback", ecpayCallbackRouter);
 
 app.listen(3007, () => {
   console.log("主機啟動 http://localhost:3007");

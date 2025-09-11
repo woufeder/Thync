@@ -174,14 +174,14 @@ export default function Page() {
             {/* 底部操作 */}
             <div className="actions">
               <button
-                className="btn btn-secondary"
+                className="confirm-btn btn-secondary"
                 type="button"
                 onClick={() => (window.location.href = "/cart/checkout")}
               >
                 回到上一頁
               </button>
               <button
-                className="btn btn-primary"
+                className="confirm-btn btn-primary"
                 type="button"
                 onClick={handleSubmitOrder}
               >
@@ -190,7 +190,6 @@ export default function Page() {
             </div>
           </section>
 
-          {/* 推薦商品區塊（與 cartPage.js 統一） */}
           <RecommendList recommend={recommend} />
         </div>
       </main>
