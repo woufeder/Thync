@@ -47,7 +47,7 @@ router.get("/", function (req, res) {
 
   // 付款結果通知回傳網址(這網址可能需要網路上的真實網址或IP，才能正確接收回傳結果)
   const ReturnURL = "https://www.ecpay.com.tw";
-  const OrderResultURL = "http://localhost:3000/ecpay/api"; // 付款結果頁面
+  const OrderResultURL = "http://localhost:3007/ecpay-callback";
   // const ClientBackURL = "http://localhost:3000/cart/success"; //前端成功頁面
   const ChoosePayment = "ALL";
 
@@ -56,24 +56,24 @@ router.get("/", function (req, res) {
   const algorithm = "sha256";
   const digest = "hex";
   const APIURL = `https://payment${stage}.ecpay.com.tw//Cashier/AioCheckOut/V5`;
-  const MerchantTradeNo = `od${new Date().getFullYear()}${(
-    new Date().getMonth() + 1
-  )
-    .toString()
-    .padStart(2, "0")}${new Date()
-      .getDate()
-      .toString()
-      .padStart(2, "0")}${new Date()
-        .getHours()
-        .toString()
-        .padStart(2, "0")}${new Date()
-          .getMinutes()
-          .toString()
-          .padStart(2, "0")}${new Date()
-            .getSeconds()
-            .toString()
-            .padStart(2, "0")}${new Date().getMilliseconds().toString().padStart(2)}`;
-
+  // const MerchantTradeNo = `od${new Date().getFullYear()}${(
+  //   new Date().getMonth() + 1
+  // )
+  //   .toString()
+  //   .padStart(2, "0")}${new Date()
+  //     .getDate()
+  //     .toString()
+  //     .padStart(2, "0")}${new Date()
+  //       .getHours()
+  //       .toString()
+  //       .padStart(2, "0")}${new Date()
+  //         .getMinutes()
+  //         .toString()
+  //         .padStart(2, "0")}${new Date()
+  //           .getSeconds()
+  //           .toString()
+  //           .padStart(2, "0")}${new Date().getMilliseconds().toString().padStart(2)}`;
+const MerchantTradeNo = req.query.orderNo;
   const MerchantTradeDate = new Date().toLocaleDateString("zh-TW", {
     year: "numeric",
     month: "2-digit",

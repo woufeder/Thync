@@ -8,14 +8,62 @@ import Header from "@/app/_components/header";
 import Footer from "@/app/_components/footer";
 import "./confirm.css";
 
+
+// 這是原本串綠界測試 API 的程式碼
+// async function handleSubmitOrder() {
+//   try {
+//     // 1. 從 localStorage 拿表單與購物車資料
+//     const form = JSON.parse(localStorage.getItem("checkoutForm")) || {};
+//     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+//     const discount = Number(localStorage.getItem("discount") || 0);
+
+//     // 2. 計算金額
+//     const subtotal = cartItems.reduce(
+//       (sum, item) => sum + (item.price || 0) * (item.qty || 1),
+//       0
+//     );
+//     const shipping = form.shippingType === "宅配到府" ? 80 : 60;
+//     const total = subtotal + shipping;
+//     const finalAmount = total - discount;
+
+//     // 3. 呼叫後端 ecpay 測試 API
+//     const res = await fetch(
+//       `http://localhost:3007/ecpay-test?amount=${finalAmount}&items=${cartItems
+//         .map((i) => i.title)
+//         .join(",")}`
+//     );
+//     const result = await res.json();
+
+//     // 注意這裡要用 result.data
+//     const { action, params } = result.data;
+
+//     const formEl = document.createElement("form");
+//     formEl.method = "POST";
+//     formEl.action = action;
+
+//     Object.entries(params).forEach(([key, value]) => {
+//       const input = document.createElement("input");
+//       input.type = "hidden";
+//       input.name = key;
+//       input.value = value;
+//       formEl.appendChild(input);
+//     });
+
+//     document.body.appendChild(formEl);
+//     formEl.submit();
+//   } catch (err) {
+//     console.error(err);
+//     alert("付款流程失敗，請稍後再試");
+//   }
+// }
+
 async function handleSubmitOrder() {
   try {
-    // 1. 從 localStorage 拿表單與購物車資料
+    // 1. 取資料
     const form = JSON.parse(localStorage.getItem("checkoutForm")) || {};
     const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
     const discount = Number(localStorage.getItem("discount") || 0);
 
-    // 2. 計算金額
     const subtotal = cartItems.reduce(
       (sum, item) => sum + (item.price || 0) * (item.qty || 1),
       0
@@ -24,21 +72,48 @@ async function handleSubmitOrder() {
     const total = subtotal + shipping;
     const finalAmount = total - discount;
 
-    // 3. 呼叫後端 ecpay 測試 API
+    // 2. 建立訂單
+    const resOrder = await fetch("http://localhost:3007/api/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        user_id: 1, // 先寫死，等會員系統好了再換
+        delivery_method: form.shippingType,
+        delivery_address: form.storeAddress,
+        recipient: form.receiverName,
+        pay_method: "ecpay",
+        subtotal,
+        discount,
+        finalAmount,
+        items: cartItems.map((i) => ({
+          id: i.id,
+          qty: i.qty,
+          price: i.price,
+        })),
+      }),
+    });
+
+    const orderResult = await resOrder.json();
+    if (orderResult.status !== "success") {
+      alert("建立訂單失敗: " + (orderResult.message || "未知錯誤"));
+      return;
+    }
+
+    const { numerical_order } = orderResult;
+
+    // 3. 呼叫 ecpay-test
     const res = await fetch(
-      `http://localhost:3007/ecpay-test?amount=${finalAmount}&items=${cartItems
-        .map((i) => i.title)
+      `http://localhost:3007/ecpay-test?orderNo=${numerical_order}&amount=${finalAmount}&items=${cartItems
+        .map((i) => i.product_name)
         .join(",")}`
     );
     const result = await res.json();
-
-    // 注意這裡要用 result.data
     const { action, params } = result.data;
 
+    // 4. 自動建立表單送出
     const formEl = document.createElement("form");
     formEl.method = "POST";
     formEl.action = action;
-
     Object.entries(params).forEach(([key, value]) => {
       const input = document.createElement("input");
       input.type = "hidden";
@@ -46,7 +121,6 @@ async function handleSubmitOrder() {
       input.value = value;
       formEl.appendChild(input);
     });
-
     document.body.appendChild(formEl);
     formEl.submit();
   } catch (err) {
@@ -54,6 +128,8 @@ async function handleSubmitOrder() {
     alert("付款流程失敗，請稍後再試");
   }
 }
+
+
 
 // 推薦商品假資料（與 cartPage.js 統一格式）
 const recommend = Array(6).fill({

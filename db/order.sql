@@ -42,3 +42,11 @@ CREATE TABLE order_items (
 
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+ALTER TABLE order_items
+DROP FOREIGN KEY order_items_ibfk_2;
+
+ALTER TABLE order_items
+ADD CONSTRAINT order_items_ibfk_2
+FOREIGN KEY (product_id) REFERENCES products(id);
+
