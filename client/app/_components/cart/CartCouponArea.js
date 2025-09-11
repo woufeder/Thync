@@ -1,4 +1,3 @@
-// app/_components/cart/CartCouponArea.js
 "use client";
 
 import { useState, useEffect } from "react";
@@ -29,9 +28,9 @@ export default function CartCouponArea({ userId, total, onApply }) {
             c.type === 0
               ? "amount"
               : c.type === 1
-              ? "free_shipping"
-              : c.type === 2
               ? "percent"
+              : c.type === 2
+              ? "free_shipping"
               : "unknown",
         }));
 
@@ -45,7 +44,6 @@ export default function CartCouponArea({ userId, total, onApply }) {
     fetchCoupons(); // 直接呼叫，不要判斷 userId
   }, []);
 
-  
   function handleSelect(coupon) {
     const isValid = total >= coupon.min;
     if (!isValid) {
@@ -60,7 +58,7 @@ export default function CartCouponArea({ userId, total, onApply }) {
     } else if (coupon.type === "percent") {
       discount = Math.floor(total * (coupon.value / 100));
     } else if (coupon.type === "free_shipping") {
-      discount = 60; // 假設免運
+      discount = 0; // 免運不在這裡扣，由 CartSummary 處理
     }
     onApply(discount, coupon);
   }
@@ -68,7 +66,7 @@ export default function CartCouponArea({ userId, total, onApply }) {
   return (
     <div className="cart-coupon-area">
       <h3>可用的優惠券</h3>
-      <div className="cart-coupon-list">
+      <div className="coupon-scroll-list">
         {coupons.map((c) => {
           const discountPreview =
             c.type === "amount"

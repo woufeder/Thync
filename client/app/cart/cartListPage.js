@@ -83,7 +83,7 @@ export default function CartListPage({
           <CartSummary
             items={items}
             discount={discount}
-            couponCode={couponCode}
+            coupon={selectedCoupon}
             onCheckout={() => {
               window.location.href = "/cart/checkout";
             }}

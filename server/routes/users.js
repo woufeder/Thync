@@ -219,7 +219,7 @@ router.post("/", upload.none(), async (req, res) => {
         INSERT INTO user_coupons (user_id, coupon_id, is_used, created_at, attr)
         SELECT ?, c.id, 0, NOW(), 'force'
         FROM coupon c
-        WHERE c.code IN ('C001','C002','C003','C004')
+        WHERE c.id IN ('82','83','84','85')
       `,
       [newUserId]
     );
