@@ -7,8 +7,8 @@ import jwt from "jsonwebtoken";
 import mysql from "mysql2/promise";
 import connection from "../connect.js";
 import { fileURLToPath } from "url";
-import { forgotPassword, resetPassword } from "../controllers/auth.js";
 import sendEmail from "../utils/sendEmail.js";
+import { OAuth2Client } from "google-auth-library";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -45,6 +45,8 @@ const upload = multer({
     }
   },
 });
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // route(s) 路由規則(們)
 // routers (路由物件器)
@@ -483,30 +485,465 @@ router.post("/status", checkToken, async (req, res) => {
   }
 });
 
-// 忘記密碼
-router.post("/forgot-password", forgotPassword);
-// 重設密碼
-// :resettoken 動態參數 比照 ${resetToken}
-router.put("/resetPassword/:resettoken", resetPassword);
-
-// 測試郵件
-router.post("/test-email", async (req, res) => {
+// 忘記密碼 - 發送驗證碼
+router.post("/forgot-password", async (req, res) => {
   try {
-    await sendEmail({
-      email: req.body.email,
-      subject: "測試郵件",
-      message: "這是一封測試郵件",
-      resetUrl: "http://localhost:3007/test"
-    });
-    
-    res.json({
-      success: true,
-      message: "測試郵件發送成功"
-    });
+    const { mail } = req.body;
+
+    if (!mail) {
+      return res.status(400).json({
+        success: false,
+        message: "請提供信箱",
+      });
+    }
+
+    // 檢查用戶是否存在
+    const sqlCheck = "SELECT * FROM `users` WHERE `mail` = ? AND is_valid = 1;";
+    const user = await connection
+      .execute(sqlCheck, [mail])
+      .then(([result]) => result[0]);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "該信箱用戶不存在",
+      });
+    }
+
+    // 生成6位數驗證碼
+    const verificationCode = Math.floor(
+      100000 + Math.random() * 900000
+    ).toString();
+
+    // 設定驗證碼過期時間（10分鐘）
+    const codeExpire = new Date(Date.now() + 10 * 60 * 1000);
+
+    // 將驗證碼和過期時間存入資料庫
+    const sqlUpdate = `
+      UPDATE users 
+      SET verification_code = ?, code_expire = ? 
+      WHERE mail = ?
+    `;
+    await connection.execute(sqlUpdate, [verificationCode, codeExpire, mail]);
+
+    try {
+      // 發送驗證碼郵件
+      await sendEmail({
+        email: mail,
+        subject: "密碼重設驗證碼",
+        message: `您的驗證碼是：${verificationCode}`,
+        html: `
+          <div style="max-width: 600px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif;">
+            <h2 style="color: #333; text-align: center;">密碼重設驗證碼</h2>
+            <p>您好，</p>
+            <p>我們收到您重設密碼的請求。請使用以下驗證碼來重設您的密碼：</p>
+            <div style="text-align: center; margin: 30px 0;">
+              <div style="background-color: #f8f9fa; border: 2px dashed #007bff; 
+                          padding: 20px; border-radius: 10px; display: inline-block;">
+                <h1 style="color: #007bff; margin: 0; font-size: 32px; letter-spacing: 5px;">
+                  ${verificationCode}
+                </h1>
+              </div>
+            </div>
+            <p style="color: #666; font-size: 14px; text-align: center;">
+              此驗證碼將在 <strong>10 分鐘</strong> 後過期。
+            </p>
+            <p style="color: #999; font-size: 12px; text-align: center;">
+              如果您未申請重設密碼，請忽略此郵件。
+            </p>
+          </div>
+        `,
+      });
+
+      res.status(200).json({
+        success: true,
+        message: "驗證碼已發送至您的信箱",
+      });
+    } catch (emailError) {
+      console.error("Email sending error:", emailError);
+
+      // 如果郵件發送失敗，清除資料庫中的驗證碼
+      await connection.execute(
+        "UPDATE users SET verification_code = NULL, code_expire = NULL WHERE mail = ?",
+        [mail]
+      );
+
+      return res.status(500).json({
+        success: false,
+        message: "驗證碼發送失敗，請稍後再試",
+      });
+    }
   } catch (error) {
+    console.error("Forgot password error:", error);
     res.status(500).json({
       success: false,
-      message: error.message
+      message: "伺服器錯誤，請稍後再試",
+    });
+  }
+});
+
+// 驗證驗證碼並重設密碼
+router.post("/verification-code", upload.none(), async (req, res) => {
+  try {
+    const { mail, verificationCode, password } = req.body;
+
+    if (!mail || !verificationCode || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "尚有欄位未填寫",
+      });
+    }
+
+    // 檢查驗證碼和過期時間
+    const sqlCheck = `
+      SELECT * FROM users 
+      WHERE mail = ? AND verification_code = ? AND code_expire > NOW() AND is_valid = 1
+    `;
+    const user = await connection
+      .execute(sqlCheck, [mail, verificationCode])
+      .then(([result]) => result[0]);
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "驗證碼無效或已過期",
+      });
+    }
+
+    // 加密新密碼
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // 更新密碼並清除驗證碼
+    const sqlUpdate = `
+      UPDATE users 
+      SET password = ?, verification_code = NULL, code_expire = NULL 
+      WHERE mail = ?
+    `;
+    await connection.execute(sqlUpdate, [hashedPassword, mail]);
+
+    res.status(200).json({
+      success: true,
+      message: "密碼重設成功",
+    });
+  } catch (error) {
+    console.error("Reset password error:", error);
+    res.status(500).json({
+      success: false,
+      message: "密碼重設失敗，請稍後再試",
+    });
+  }
+});
+
+// Google 登入路由
+// router.post("/google-login", async (req, res) => {
+//   try {
+//     console.log("=== Google 登入請求 ===");
+//     console.log("請求內容:", req.body);
+
+//     const { credential } = req.body;
+
+//     if (!credential) {
+//       console.log("錯誤: 缺少 credential");
+//       return res.status(400).json({
+//         success: false,
+//         message: "請提供 Google 憑證",
+//       });
+//     }
+
+//     console.log("開始驗證 Google token");
+
+//     // 驗證 Google JWT token
+//     const ticket = await client.verifyIdToken({
+//       idToken: credential,
+//       audience: process.env.GOOGLE_CLIENT_ID,
+//     });
+
+//     const payload = ticket.getPayload();
+//     const { email, name, picture, sub: googleId } = payload;
+
+//     console.log("Google 用戶資料:", { email, name, googleId });
+
+//     if (!email) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "無法取得 Google 帳號資訊",
+//       });
+//     }
+
+//     // 檢查用戶是否已存在
+//     const sqlCheck =
+//       "SELECT * FROM users WHERE mail = ? OR google_id = ? AND is_valid = 1";
+//     const [existingUsers] = await connection.execute(sqlCheck, [
+//       email,
+//       googleId,
+//     ]);
+
+//     let user;
+
+//     if (existingUsers.length > 0) {
+//       console.log("用戶已存在");
+//       user = existingUsers[0];
+
+//       // 更新 Google 資訊
+//       if (!user.google_id) {
+//         await connection.execute(
+//           "UPDATE users SET google_id = ?, name = COALESCE(name, ?), img = COALESCE(img, ?) WHERE id = ?",
+//           [googleId, name, picture, user.id]
+//         );
+//       }
+
+//       // 重新取得用戶資料
+//       const [updatedUsers] = await connection.execute(
+//         "SELECT * FROM users WHERE id = ?",
+//         [user.id]
+//       );
+//       user = updatedUsers[0];
+//     } else {
+//       console.log("建立新用戶");
+
+//       const randomAccount = `google_${Date.now()}`;
+//       const randomPassword = await bcrypt.hash(
+//         `google_${googleId}_${Date.now()}`,
+//         10
+//       );
+
+//       const sqlInsert = `
+//         INSERT INTO users (account, mail, name, password, img, google_id, is_valid)
+//         VALUES (?, ?, ?, ?, ?, ?, 1)
+//       `;
+
+//       const [result] = await connection.execute(sqlInsert, [
+//         randomAccount,
+//         email,
+//         name || email.split("@")[0],
+//         randomPassword,
+//         picture,
+//         googleId,
+//       ]);
+
+//       const [newUsers] = await connection.execute(
+//         "SELECT * FROM users WHERE id = ?",
+//         [result.insertId]
+//       );
+//       user = newUsers[0];
+//     }
+
+//     // 產生 JWT token
+//     const token = jwt.sign(
+//       {
+//         mail: user.mail,
+//         img: user.img,
+//       },
+//       secretKey,
+//       { expiresIn: "30m" }
+//     );
+
+//     console.log("Google 登入成功");
+
+//     res.status(200).json({
+//       success: true,
+//       message: "Google 登入成功",
+//       data: {
+//         token,
+//         user: {
+//           account: user.account,
+//           mail: user.mail,
+//           name: user.name,
+//           img: user.img,
+//         },
+//       },
+//     });
+//   } catch (error) {
+//     console.error("Google 登入錯誤:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Google 登入失敗：" + error.message,
+//     });
+//   }
+// });
+
+// router.post("/google-login-token", async (req, res) => {
+//   try {
+//     const { email, name, picture, id: googleId } = req.body;
+
+//     // 與原本的 google-login 邏輯相同，但不需要驗證 JWT
+//     const sqlCheck =
+//       "SELECT * FROM users WHERE mail = ? OR google_id = ? AND is_valid = 1";
+//     const [existingUsers] = await connection.execute(sqlCheck, [
+//       email,
+//       googleId,
+//     ]);
+
+//     let user;
+//     if (existingUsers.length > 0) {
+//       user = existingUsers[0];
+//       if (!user.google_id) {
+//         await connection.execute(
+//           "UPDATE users SET google_id = ?, name = COALESCE(name, ?), img = COALESCE(img, ?) WHERE id = ?",
+//           [googleId, name, picture, user.id]
+//         );
+//       }
+//       const [updatedUsers] = await connection.execute(
+//         "SELECT * FROM users WHERE id = ?",
+//         [user.id]
+//       );
+//       user = updatedUsers[0];
+//     } else {
+//       const randomAccount = `google_${Date.now()}`;
+//       const randomPassword = await bcrypt.hash(
+//         `google_${googleId}_${Date.now()}`,
+//         10
+//       );
+//       const sqlInsert = `INSERT INTO users (account, mail, name, password, img, google_id, is_valid) VALUES (?, ?, ?, ?, ?, ?, 1)`;
+//       const [result] = await connection.execute(sqlInsert, [
+//         randomAccount,
+//         email,
+//         name,
+//         randomPassword,
+//         picture,
+//         googleId,
+//       ]);
+//       const [newUsers] = await connection.execute(
+//         "SELECT * FROM users WHERE id = ?",
+//         [result.insertId]
+//       );
+//       user = newUsers[0];
+//     }
+
+//     const token = jwt.sign({ mail: user.mail, img: user.img }, secretKey, {
+//       expiresIn: "30m",
+//     });
+
+//     res.status(200).json({
+//       success: true,
+//       data: {
+//         token,
+//         user: {
+//           account: user.account,
+//           mail: user.mail,
+//           name: user.name,
+//           img: user.img,
+//         },
+//       },
+//     });
+//   } catch (error) {
+//     console.error("Google token 登入錯誤:", error);
+//     res.status(500).json({ success: false, message: "Google 登入失敗" });
+//   }
+// });
+
+// 新增到你的 users.js 路由檔案中
+
+// 簡化版 Google 登入 - 不需要驗證 JWT
+router.post("/google-login-simple", async (req, res) => {
+  try {
+    console.log("=== 簡化版 Google 登入 API 被呼叫 ===");
+    console.log("請求資料:", req.body);
+
+    const { email, name, picture, googleId } = req.body;
+
+    // 基本驗證
+    if (!email || !googleId) {
+      return res.status(400).json({
+        success: false,
+        message: "缺少必要的 Google 帳號資訊",
+      });
+    }
+
+    // 檢查使用者是否已存在（透過 email 或 google_id）
+    const sqlCheck =
+      "SELECT * FROM users WHERE mail = ? OR google_id = ? AND is_valid = 1";
+    const [existingUsers] = await connection.execute(sqlCheck, [
+      email,
+      googleId,
+    ]);
+
+    let user;
+
+    if (existingUsers.length > 0) {
+      // 使用者已存在
+      console.log("使用者已存在，更新資料");
+      user = existingUsers[0];
+
+      // 如果沒有 google_id，就更新它
+      if (!user.google_id) {
+        await connection.execute(
+          "UPDATE users SET google_id = ?, name = COALESCE(name, ?), img = COALESCE(img, ?) WHERE id = ?",
+          [googleId, name, picture, user.id]
+        );
+      }
+
+      // 重新取得更新後的使用者資料
+      const [updatedUsers] = await connection.execute(
+        "SELECT * FROM users WHERE id = ?",
+        [user.id]
+      );
+      user = updatedUsers[0];
+    } else {
+      // 建立新使用者
+      console.log("建立新使用者");
+
+      const randomAccount = `${Date.now()}`;
+      const randomPassword = await bcrypt.hash(
+        `google_${googleId}_${Date.now()}`,
+        10
+      );
+
+      const sqlInsert = `
+        INSERT INTO users (account, mail, name, password, img, google_id, is_valid) 
+        VALUES (?, ?, ?, ?, ?, ?, 1)
+      `;
+
+      const [result] = await connection.execute(sqlInsert, [
+        randomAccount,
+        email,
+        name || email.split("@")[0], // 如果沒有 name 就用 email 前半部
+        randomPassword,
+        picture,
+        googleId,
+      ]);
+
+      // 取得新建立的使用者
+      const [newUsers] = await connection.execute(
+        "SELECT * FROM users WHERE id = ?",
+        [result.insertId]
+      );
+      user = newUsers[0];
+    }
+
+    // 產生 JWT token
+    const token = jwt.sign(
+      {
+        mail: user.mail,
+        img: user.img,
+      },
+      secretKey,
+      { expiresIn: "30m" }
+    );
+
+    // 準備回傳的使用者資料
+    const userData = {
+      account: user.account,
+      mail: user.mail,
+      name: user.name,
+      img: user.img,
+    };
+
+    console.log("準備回傳的資料:", { token: "***", user: userData });
+
+    res.status(200).json({
+      success: true,
+      message: "Google 登入成功",
+      data: {
+        token,
+        user: userData,
+      },
+    });
+  } catch (error) {
+    console.error("簡化版 Google 登入錯誤:", error);
+    res.status(500).json({
+      success: false,
+      message: "Google 登入失敗：" + error.message,
     });
   }
 });

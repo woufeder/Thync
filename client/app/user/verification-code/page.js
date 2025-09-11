@@ -3,126 +3,34 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Script from "next/script";
-import styles from "@/styles/login.css";
+import styles from "@/styles/verification-code.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHouseChimney } from "@fortawesome/free-solid-svg-icons";
+import { faRightToBracket } from "@fortawesome/free-solid-svg-icons";
 
-export default function UserLoginPage() {
-  const [mail, setMail] = useState("");
+export default function VerificationPage() {
+  const searchParams = useSearchParams();
+  const mailFromQuery = searchParams.get("mail") || "";
+  const [mail, setMail] = useState(mailFromQuery);
+  const [verificationCode, setVerificationCode] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [isGoogleLoaded, setIsGoogleLoaded] = useState(true);
-  const { login, loginWithToken, user, logout, isLoading } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("");
+  const { user, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const [lottieLoaded, setLottieLoaded] = useState(false);
   const animationRef = useRef(null);
-
-  // 跳轉會員中心
-  useEffect(() => {
-    if (!isLoading && user) {
-      window.location.href = "/user";
-    }
-  }, [user, router, isLoading]);
 
   useEffect(() => {
     if (lottieLoaded || window.lottie) {
       initializeLottie();
     }
   }, [lottieLoaded]);
-
-  // 處理 Google 登入回傳
-  useEffect(() => {
-    // 檢查 URL 是否有 Google 回傳的 token
-    const hash = window.location.hash;
-    console.log("當前 URL hash:", hash);
-
-    if (hash && hash.includes("access_token")) {
-      const params = new URLSearchParams(hash.substring(1));
-      const accessToken = params.get("access_token");
-      const state = params.get("state");
-
-      console.log("找到 access_token:", accessToken);
-      console.log("state:", state);
-
-      if (accessToken && state === "google_login") {
-        handleGoogleCallback(accessToken);
-      }
-    }
-  }, []);
-
-  const handleGoogleCallback = async (accessToken) => {
-    try {
-      console.log("=== 開始處理 Google 回傳 ===");
-
-      // 1. 用 access_token 取得使用者資訊
-      const userResponse = await fetch(
-        `https://www.googleapis.com/oauth2/v2/userinfo?access_token=${accessToken}`
-      );
-      const userInfo = await userResponse.json();
-      console.log("Google 使用者資訊:", userInfo);
-
-      // 2. 發送到我們的後端
-      const response = await fetch(
-        "http://localhost:3007/api/users/google-login-simple",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: userInfo.email,
-            name: userInfo.name,
-            picture: userInfo.picture,
-            googleId: userInfo.id,
-          }),
-        }
-      );
-
-      const data = await response.json();
-      console.log("後端回應:", data);
-
-      if (data.success) {
-        console.log("準備呼叫 loginWithToken");
-        await loginWithToken(data.data.token, data.data.user);
-
-        // 清除 URL hash
-        window.location.hash = "";
-        setTimeout(() => {
-          window.location.href = "/user";
-        }, 300);
-      } else {
-        alert("登入失敗：" + data.message);
-      }
-    } catch (error) {
-      console.error("Google 登入錯誤:", error);
-      alert("登入過程發生錯誤");
-    }
-  };
-
-  const handleGoogleLogin = () => {
-    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-    const redirectUri = "http://localhost:3000/user/login";
-
-    console.log("Client ID:", clientId);
-    console.log("Redirect URI:", redirectUri);
-    console.log("當前頁面 URL:", window.location.href);
-
-    const googleAuthUrl = new URL(
-      "https://accounts.google.com/o/oauth2/v2/auth"
-    );
-    googleAuthUrl.searchParams.set("client_id", clientId);
-    googleAuthUrl.searchParams.set("redirect_uri", redirectUri);
-    googleAuthUrl.searchParams.set("scope", "email profile");
-    googleAuthUrl.searchParams.set("response_type", "token");
-    googleAuthUrl.searchParams.set("state", "google_login");
-
-    console.log("完整 Google Auth URL:", googleAuthUrl.toString());
-    window.location.href = googleAuthUrl.toString();
-  };
-
-  const onclick = async () => {
-    await login(mail, password);
-  };
 
   // Lottie 動畫初始化
   const initializeLottie = () => {
@@ -232,7 +140,143 @@ export default function UserLoginPage() {
     };
   }, []);
 
-  if (isLoading) {
+  // 重新發送驗證碼
+
+  const handleResendCode = async (e) => {
+    e.preventDefault();
+
+    if (!mail) {
+      setMessage("請輸入信箱地址");
+
+      setMessageType("error");
+
+      return;
+    }
+
+    setIsLoading(true);
+
+    setMessage("");
+
+    try {
+      const response = await fetch(
+        "http://localhost:3007/api/users/forgot-password",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify({ mail }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMessage("新驗證碼已發送至您的信箱");
+
+        setMessageType("success");
+
+        setVerificationCode(""); // 清空舊的驗證碼
+      } else {
+        setMessage(data.message || "重新發送失敗");
+
+        setMessageType("error");
+      }
+    } catch (error) {
+      console.error("重新發送驗證碼錯誤:", error);
+
+      setMessage("網路錯誤，請稍後再試");
+
+      setMessageType("error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 重設密碼
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+
+    if (!mail || !verificationCode || !password) {
+      setMessage("請填寫所有欄位");
+
+      setMessageType("error");
+
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setMessage("密碼確認不一致");
+
+      setMessageType("error");
+
+      return;
+    }
+
+    if (password.length < 6) {
+      setMessage("密碼至少需要6個字符");
+
+      setMessageType("error");
+
+      return;
+    }
+
+    setIsLoading(true);
+
+    setMessage("");
+
+    try {
+      const response = await fetch(
+        "http://localhost:3007/api/users/verification-code",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify({
+            mail,
+
+            verificationCode,
+
+            password,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMessage("密碼重設成功！正在跳轉到登入頁面...");
+
+        setMessageType("success");
+
+        // 3秒後跳轉到登入頁面
+
+        setTimeout(() => {
+          router.push("/user/login");
+        }, 3000);
+      } else {
+        setMessage(data.message || "密碼重設失敗");
+
+        setMessageType("error");
+      }
+    } catch (error) {
+      console.error("重設密碼錯誤:", error);
+
+      setMessage("網路錯誤，請稍後再試");
+
+      setMessageType("error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (authLoading) {
     return <div className="loader"></div>;
   }
 
@@ -252,17 +296,8 @@ export default function UserLoginPage() {
         <div className="left">
           <div className="block1">
             <div className="header">
-              <div className="d-flex align-items-center justify-content-between">
-                <img src="/images/LOGO.png" alt="LOGO" />
-                <Link href="/" className="home-link" aria-label="回到首頁">
-                  <FontAwesomeIcon
-                    icon={faHouseChimney}
-                    className="home-icon"
-                  />
-                </Link>
-              </div>
-
-              <h1 className="register-title">會員登入</h1>
+              <img src="/images/LOGO.png" alt="" />
+              <h1 className="register-title">忘記密碼</h1>
               <div className="toggle">
                 <Link href="/user/login" className="toggle-active">
                   登入
@@ -273,14 +308,7 @@ export default function UserLoginPage() {
               </div>
             </div>
             <main>
-              <form
-                id="login-form"
-                autoComplete="on"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  onclick();
-                }}
-              >
+              <form id="login-form" autoComplete="on">
                 {/* 信箱 */}
                 <div className="field">
                   <label htmlFor="mail" className="label">
@@ -295,13 +323,33 @@ export default function UserLoginPage() {
                     value={mail}
                     onChange={(e) => setMail(e.target.value)}
                     required
+                    disabled={isLoading}
                   />
                 </div>
 
-                {/* 密碼 */}
+                {/* 驗證碼 */}
+                <div className="field">
+                  <label htmlFor="verification-code" className="label">
+                    驗證碼
+                  </label>
+                  <input
+                    id="verification-code"
+                    name="verificationCode"
+                    type="text"
+                    placeholder="請輸入6位數驗證碼"
+                    className="input"
+                    value={verificationCode}
+                    onChange={(e) => setVerificationCode(e.target.value)}
+                    maxLength="6"
+                    required
+                    disabled={isLoading}
+                  />
+                </div>
+
+                {/* 新密碼 */}
                 <div className="field">
                   <label htmlFor="password" className="label">
-                    密碼
+                    新密碼
                   </label>
                   <div className="password-block">
                     <input
@@ -309,9 +357,11 @@ export default function UserLoginPage() {
                       name="password"
                       type={showPassword ? "text" : "password"}
                       className="input"
+                      placeholder="請輸入新密碼"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
+                      disabled={isLoading}
                     />
                     <i
                       className={
@@ -324,41 +374,88 @@ export default function UserLoginPage() {
                   </div>
                 </div>
 
-                <a href="/user/forgot-password" className="link forget">
-                  忘記密碼
-                </a>
+                {/* 確認密碼 */}
+                <div className="field">
+                  <label htmlFor="confirm-password" className="label">
+                    確認密碼
+                  </label>
+                  <div className="password-block">
+                    <input
+                      id="confirm-password"
+                      name="confirm-password"
+                      type={showPassword ? "text" : "password"}
+                      className="input"
+                      placeholder="請再次輸入新密碼"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                      disabled={isLoading}
+                    />
+                    <i
+                      className={
+                        showPassword
+                          ? "fa-solid fa-eye"
+                          : "fa-solid fa-eye-slash"
+                      }
+                      onClick={() => setShowPassword((prev) => !prev)}
+                    ></i>
+                  </div>
+                </div>
+
+                {/* 訊息顯示 */}
+                {message && (
+                  <div className={`message ${messageType}`}>{message}</div>
+                )}
 
                 {/* 按鈕 */}
-                <button className="btn-primary" type="submit">
-                  <i className="fa-solid fa-right-to-bracket"></i>
-                  &nbsp;登入
-                </button>
+                <div className="d-flex gap-3 align-items-center">
+                  <button
+                    className="btn-primary"
+                    type="button"
+                    onClick={handleResendCode}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <>
+                        <i className="fa-solid fa-spinner fa-spin"></i>
+                        &nbsp;&nbsp;發送中...
+                      </>
+                    ) : (
+                      <>
+                        <i className="fa-solid fa-envelope"></i>
+                        &nbsp;&nbsp;重新發送驗證碼
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    className="btn-primary"
+                    type="button"
+                    onClick={handleResetPassword}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <>
+                        <i className="fa-solid fa-spinner fa-spin"></i>
+                        &nbsp;&nbsp;處理中...
+                      </>
+                    ) : (
+                      <>
+                        <i className="fa-solid fa-key"></i>
+                        &nbsp;&nbsp;重設密碼
+                      </>
+                    )}
+                  </button>
+                </div>
 
                 <div className="divider">或</div>
 
-                <div className="d-flex align-items-center justify-content-between">
-                  <p className="signin">
-                    還不是會員？{" "}
-                    <a href="/user/add" className="link2">
-                      立即註冊！
-                    </a>
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  className="btn-google"
-                  onClick={handleGoogleLogin}
-                  disabled={!isGoogleLoaded}
-                >
-                  <img src="/images/users/Google Logo.png" alt="" />
-
-                  <span>
-                    {isGoogleLoaded
-                      ? "使用 Google 帳號登入"
-                      : "載入 Google 登入中..."}
-                  </span>
-                </button>
+                <p className="signin">
+                  <a href="/user/login" className="link2">
+                  <FontAwesomeIcon icon={faRightToBracket} className="me-1" />
+                    返回登入
+                  </a>
+                </p>
               </form>
             </main>
           </div>

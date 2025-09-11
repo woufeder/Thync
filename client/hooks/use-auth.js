@@ -168,9 +168,11 @@ export function AuthProvider({ children }) {
     const checkToken = async () => {
       const API = "http://localhost:3007/api/users/status";
       const token = localStorage.getItem(appKey);
+      console.log("[checkToken] localStorage token:", token);
       if (!token) {
         setUser(null);
         setIsLoading(false);
+        console.log("[checkToken] 沒有 token，user=null，isLoading=false");
         return;
       }
       try {
@@ -181,10 +183,12 @@ export function AuthProvider({ children }) {
           },
         });
         const result = await res.json();
-        console.log("status result:", result);
+        console.log("[checkToken] status result:", result);
         if (result.status === "success") {
           const newToken = result.data.token;
           const basicUser = result.data.user;
+          console.log("[checkToken] newToken:", newToken);
+          console.log("[checkToken] basicUser:", basicUser);
 
           // 存新的 token
           localStorage.setItem(appKey, newToken);
@@ -195,21 +199,25 @@ export function AuthProvider({ children }) {
             { headers: { Authorization: `Bearer ${newToken}` } }
           );
           const profile = await profileRes.json();
+          console.log("[checkToken] profile:", profile);
 
           if (profile.status === "success") {
             setUser(profile.data);
+            console.log("[checkToken] setUser(profile.data):", profile.data);
           } else {
             setUser(basicUser);
+            console.log("[checkToken] setUser(basicUser):", basicUser);
           }
         } else {
           // ⚠️ 這裡修改：不要立刻登出，保留現有 user
-          console.warn("status 驗證失敗，保留現有登入狀態");
+          console.warn("[checkToken] status 驗證失敗，保留現有登入狀態");
         }
       } catch (error) {
-        console.error("status check error:", error);
+        console.error("[checkToken] status check error:", error);
         // ⚠️ 這裡修改：不要立刻登出，保留現有 user
       } finally {
         setIsLoading(false);
+        console.log("[checkToken] isLoading=false");
       }
     };
     checkToken();
@@ -223,9 +231,31 @@ export function AuthProvider({ children }) {
     }
   }, [isLoading, user, pathname]);
 
+  const loginWithToken = async (token, user) => {
+    try {
+      console.log("loginWithToken token:", token, "user:", user)
+      // 直接設定 token 和 user，不需要再呼叫 API
+      localStorage.setItem(appKey, token);
+      setUser(user);
+      router.replace("/user");
+    } catch (error) {
+      console.error("loginWithToken error:", error);
+    }
+  };
+
   return (
     <AuthContext.Provider
-      value={{ user, login, logout, isLoading, list, users, setUser, add }}
+      value={{
+        user,
+        login,
+        loginWithToken,
+        logout,
+        isLoading,
+        list,
+        users,
+        setUser,
+        add,
+      }}
     >
       {/* 這裡的第一個大括號表示要寫程式，第二個大括號表示要寫物件 */}
 

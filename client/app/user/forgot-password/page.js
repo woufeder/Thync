@@ -1,21 +1,20 @@
 "use client";
 
 import { useAuth } from "@/hooks/use-auth";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Script from "next/script";
-import styles from "@/styles/add.css";
+import styles from "@/styles/forgot-password.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHouseChimney } from "@fortawesome/free-solid-svg-icons";
+import { faRightToBracket } from "@fortawesome/free-solid-svg-icons";
 
-export default function UserAddPage() {
-  const [account, setAccount] = useState("");
+export default function ForgotPasswordPage() {
   const [mail, setMail] = useState("");
-  const [password, setPassword] = useState("");
-  const [statement, setStatement] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const { user, isLoading, add } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState(""); // 'success' or 'error'
+  const { user, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const [lottieLoaded, setLottieLoaded] = useState(false);
   const animationRef = useRef(null);
@@ -26,9 +25,53 @@ export default function UserAddPage() {
     }
   }, [lottieLoaded]);
 
-  const onclick = () => {
-    console.log("account:", account, "Mail:", mail, "Password:", password);
-    add(account, mail, password);
+  const handleSendCode = async (e) => {
+    e.preventDefault();
+
+    if (!mail) {
+      setMessage("請輸入信箱");
+      setMessageType("error");
+      return;
+    }
+
+    setIsLoading(true);
+    setMessage("");
+
+    try {
+      const response = await fetch(
+        "http://localhost:3007/api/users/forgot-password",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ mail }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMessage("驗證碼已發送至您的信箱，請查收");
+        setMessageType("success");
+
+        // 1秒後跳轉到驗證碼頁面
+        setTimeout(() => {
+          router.push(
+            `/user/verification-code?mail=${encodeURIComponent(mail)}`
+          );
+        }, 1000);
+      } else {
+        setMessage(data.message || "發送失敗，請稍後再試");
+        setMessageType("error");
+      }
+    } catch (error) {
+      console.error("發送驗證碼錯誤:", error);
+      setMessage("網路錯誤，請稍後再試");
+      setMessageType("error");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Lottie 動畫初始化
@@ -124,9 +167,7 @@ export default function UserAddPage() {
         // 設置縮放使遮罩填滿容器
         maskContent.setAttribute(
           "transform",
-          `scale(-${scaleX}, ${scaleY}) translate(-${
-            animationSVG.viewBox.baseVal.width + 200
-          }, 0)`
+          `scale(${scaleX}, ${scaleY}) translate(-200, 0)`
         );
       }
     }
@@ -141,7 +182,7 @@ export default function UserAddPage() {
     };
   }, []);
 
-  if (isLoading) {
+  if (authLoading) {
     return <div className="loader"></div>;
   }
 
@@ -161,51 +202,19 @@ export default function UserAddPage() {
         <div className="left">
           <div className="block1">
             <div className="header">
-              <div className="d-flex align-items-center justify-content-between">
-                <img src="/images/LOGO.png" alt="LOGO" />
-                <Link href="/" className="home-link" aria-label="回到首頁">
-                  <FontAwesomeIcon
-                    icon={faHouseChimney}
-                    className="home-icon"
-                  />
-                </Link>
-              </div>
-              <h1 className="register-title">會員註冊</h1>
+              <img src="/images/LOGO.png" alt="" />
+              <h1 className="register-title">忘記密碼</h1>
               <div className="toggle">
-                <Link href="/user/login" className="toggle-link">
+                <Link href="/user/login" className="toggle-active">
                   登入
                 </Link>
-                <Link href="/user/add" className="toggle-active">
+                <Link href="/user/add" className="toggle-link">
                   註冊
                 </Link>
               </div>
             </div>
             <main>
-              <form
-                id="register-form"
-                autoComplete="on"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  onclick();
-                }}
-              >
-                {/* 帳號 */}
-                <div className="field">
-                  <label htmlFor="account" className="label">
-                    帳號
-                  </label>
-                  <input
-                    id="account"
-                    name="account"
-                    type="text"
-                    className="input"
-                    autoComplete="account"
-                    value={account}
-                    onChange={(e) => setAccount(e.target.value)}
-                    required
-                  />
-                </div>
-
+              <form id="login-form" autoComplete="on" onSubmit={handleSendCode}>
                 {/* 信箱 */}
                 <div className="field">
                   <label htmlFor="mail" className="label">
@@ -220,77 +229,30 @@ export default function UserAddPage() {
                     value={mail}
                     onChange={(e) => setMail(e.target.value)}
                     required
+                    disabled={isLoading}
                   />
                 </div>
 
-                {/* 密碼 */}
-                <div className="field">
-                  <label htmlFor="password" className="label">
-                    密碼
-                  </label>
-                  <div className="password-block">
-                    <input
-                      id="password"
-                      name="password"
-                      type={showPassword ? "text" : "password"}
-                      className="input"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      minLength="6"
-                      pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{6,}$"
-                      title="密碼需要至少6位，包含字母和數字"
-                      required
-                    />
-                    <i
-                      className={
-                        showPassword
-                          ? "fa-solid fa-eye"
-                          : "fa-solid fa-eye-slash"
-                      }
-                      onClick={() => setShowPassword((prev) => !prev)}
-                    ></i>
-                  </div>
-                </div>
+                {/* 訊息顯示 */}
 
-                {/* 條款 */}
-                <div className="statement">
-                  <input
-                    type="checkbox"
-                    name="statement"
-                    id="statement"
-                    checked={statement}
-                    onChange={(e) => setStatement(e.target.checked)}
-                    required
-                  />
-                  我已閱讀並同意{" "}
-                  <a href="#" className="link">
-                    服務條款
-                  </a>{" "}
-                  與
-                  <a href="#" className="link">
-                    隱私政策
-                  </a>
-                </div>
+                {message && (
+                  <div className={`message ${messageType}`}>{message}</div>
+                )}
 
                 {/* 按鈕 */}
                 <button className="btn-primary" type="submit">
-                  <i className="fa-solid fa-pen"></i>
-                  &nbsp;註冊
+                  <i className="fa-solid fa-envelope"></i>
+                  &nbsp;&nbsp;發送驗證碼
                 </button>
 
                 <div className="divider">或</div>
 
                 <p className="signin">
-                  已經有帳號？{" "}
-                  <Link href="/user/login" className="link2">
-                    前往登入！
-                  </Link>
+                  <a href="/user/login" className="link2">
+                    <FontAwesomeIcon icon={faRightToBracket} className="me-1" />
+                    返回登入
+                  </a>
                 </p>
-
-                <button type="button" className="btn-google google-pc">
-                  <img src="/images/users/Google Logo.png" alt="Google Logo" />
-                  <span>使用 Google 帳號登入</span>
-                </button>
               </form>
             </main>
           </div>

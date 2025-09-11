@@ -1,3 +1,4 @@
+-- Active: 1747618751654@@127.0.0.1@3306@restful
 use restful;
 
 CREATE table coupon (

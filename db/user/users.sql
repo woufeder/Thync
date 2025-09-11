@@ -27,8 +27,9 @@ CREATE TABLE `users` (
   `update_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `img` VARCHAR(255),
   `is_valid` TINYINT NOT NULL DEFAULT 1,
-  `reset_password_token` VARCHAR(255),
-  `reset_password_expire` DATETIME,
+  `verification_code` VARCHAR(6),
+  `code_expire` DATETIME,
+  `google_id` VARCHAR(255) UNIQUE,
   FOREIGN KEY (gender_id) REFERENCES gender(id),
   FOREIGN KEY (city_id) REFERENCES city(id)
 );

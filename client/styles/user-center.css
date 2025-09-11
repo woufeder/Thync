@@ -107,6 +107,29 @@ main {
   padding: 10px;
   align-items: center;
   gap: 10px;
+  position: relative;
+  transition: all 0.8s ease;
+  overflow: hidden;
+
+  &:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--Primary100),
+      transparent
+    );
+    transition: left 0.8s;
+  }
+
+  &:hover:before {
+    left: 100%;
+  }
 }
 .menu-link:hover {
   background: var(--primary-800);
@@ -116,6 +139,7 @@ main {
   background: var(--primary-800);
   color: var(--bg);
 }
+
 button.logout {
   border: none;
   border-radius: 10px;
@@ -177,6 +201,9 @@ button.logout:active {
   align-self: stretch;
   flex-wrap: wrap;
   margin-top: 8px;
+  max-width: calc(3 * 200px + 2 * 20px); /* 最多3個tile+間距 */
+  margin-left: auto;
+  margin-right: auto;
 }
 .tile {
   text-decoration: none;
@@ -214,18 +241,19 @@ button.logout:active {
 }
 
 @media (max-width: 768px) {
-  main {
-    padding: 0;
-  }
-  .sidebar {
-    display: none;
-  }
-  .main-content {
-    gap: 20px;
-  }
-  .hidden {
+  .tile {
+    text-decoration: none;
+    background: linear-gradient(138deg, #e8f4f8 4.99%, #dbeafe 97.61%);
+    box-shadow: 0 4px 10px 0 rgba(48, 74, 111, 0.25);
+    border-radius: 18px;
+    width: 200px;
+    height: 200px;
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    flex: 0 0 200px;
   }
   button.logout {
     padding: 10px 20px;

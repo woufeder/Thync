@@ -5,25 +5,9 @@
 .coupon-area {
   font-family: "Noto Sans TC", sans-serif;
   background: #f7f6f2;
-  min-height: 100vh;
+  /* min-height: 100vh; */
   padding: 40px;
   max-width: 1200px;
-  margin: 0 auto;
-}
-
-/* Breadcrumb */
-.breadcrumb {
-  color: #2f4a6f;
-  font-size: 0.95rem;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.breadcrumb svg {
-  width: 16px;
-  height: 16px;
 }
 
 /* Title */
@@ -181,6 +165,10 @@
   border-radius: 12px;
   box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
   overflow: hidden;
+  width: 100%;
+  min-width: 375px;
+  gap: 15px;
+  flex: 1 0 0;
 }
 
 .coupon-card .top {
@@ -239,6 +227,16 @@
 
 .coupon-card .get-btn:hover {
   background: #556080;
+}
+
+.coupon-grid {
+  display: flex;
+  /* height: 836px; */
+  align-items: flex-start;
+  align-content: flex-start;
+  gap: 20px;
+  align-self: stretch;
+  flex-wrap: wrap;
 }
 
 /* Responsive design */

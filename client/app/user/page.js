@@ -15,6 +15,8 @@ export default function UserEditPage() {
   const { user, isLoading } = useAuth();
   const router = useRouter();
 
+  console.log("UserEditPage - isLoading:", isLoading, "user:", user);
+
   // 沒有登入不能夠觀看1
   useEffect(() => {
     if (!isLoading && !user) {
@@ -74,12 +76,12 @@ export default function UserEditPage() {
                     <div className="label">訂單查詢</div>
                   </div>
                 </Link>
-                <Link href="#" className="tile">
+                {/* <Link href="#" className="tile">
                   <div className="inner">
                     <i className="fa-solid fa-bell"></i>
                     <div className="label">貨到通知</div>
                   </div>
-                </Link>
+                </Link> */}
                 <Link href="#" className="tile">
                   <div className="inner">
                     <i className="fa-solid fa-ticket"></i>

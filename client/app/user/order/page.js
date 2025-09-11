@@ -29,6 +29,7 @@ export default function UserPage() {
               <Breadcrumb />
             </div>
 
+            {/* 電腦版 */}
             <div className="table-container hidden-mobile">
               <table>
                 <thead>
@@ -87,7 +88,7 @@ export default function UserPage() {
                 </tbody>
               </table>
             </div>
-
+            {/* 手機版 */}
             <div className="orders-container hidden-pc">
               {/* 訂單卡片 1 */}
               <div className="order-card">
