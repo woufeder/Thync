@@ -8,22 +8,25 @@ import "./CouponArea.css";
 
 export default function CouponArea() {
   const [coupons, setCoupons] = useState([]);
-  const userId = 115; // TODO: 從登入會員狀態/JWT 拿
 
   useEffect(() => {
     async function fetchCoupons() {
       try {
-        const res = await fetch(
-          `http://localhost:3007/api/coupon/user/${userId}/available`
-        );
+        const res = await fetch("http://localhost:3007/api/coupon/available", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("reactLoginToken")}`,
+          },
+          credentials: "include",
+        });
         const data = await res.json();
-        setCoupons(data);
+        setCoupons(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("讀取優惠券失敗:", err);
+        setCoupons([]); // 發生錯誤時也給空陣列
       }
     }
     fetchCoupons();
-  }, [userId]);
+  }, []);
 
   return (
     <div className="coupon-area">

@@ -204,7 +204,30 @@ router.post("/", upload.none(), async (req, res) => {
     // 建立 SQL 語法
     const sql =
       "INSERT INTO `users` (account, mail, password, img) VALUES (?, ?, ?, ?);";
-    await connection.execute(sql, [account, mail, hashedPassword, img]);
+    const [result] = await connection.execute(sql, [
+      account,
+      mail,
+      hashedPassword,
+      img,
+    ]);
+
+    const newUserId = result.insertId;
+
+    // 註冊成功 → 發放固定三張優惠券
+    await connection.query(
+      `
+        INSERT INTO user_coupons (user_id, coupon_id, is_used, created_at, attr)
+        SELECT ?, c.id, 0, NOW(), 'force'
+        FROM coupon c
+        WHERE c.code IN ('C001','C002','C003','C004')
+      `,
+      [newUserId]
+    );
+
+    // 產生 JWT token（一定要帶 id）
+    const token = jwt.sign({ id: newUserId, mail, account }, secretKey, {
+      expiresIn: "30m",
+    });
 
     res.status(201).json({
       status: "success",
@@ -364,11 +387,7 @@ router.post("/login", upload.none(), async (req, res) => {
     }
 
     const token = jwt.sign(
-      // 加密進 token 的內容
-      {
-        mail: user.mail,
-        img: user.img,
-      },
+      { id: user.id, mail: user.mail, img: user.img },
       secretKey,
       { expiresIn: "30m" }
     );
@@ -454,10 +473,7 @@ router.post("/status", checkToken, async (req, res) => {
     }
 
     const token = jwt.sign(
-      {
-        mail: user.mail,
-        img: user.img,
-      },
+      { id: user.id, mail: user.mail, img: user.img },
       secretKey,
       { expiresIn: "30m" }
     );

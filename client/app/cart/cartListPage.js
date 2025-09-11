@@ -14,11 +14,18 @@ export default function CartListPage({
   couponMsg,
   setCouponMsg,
 }) {
-  // 新增：自動從 localStorage 讀取 cart 資料
+  // 從 localStorage 讀取 cart 資料
   useEffect(() => {
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    if (!userId) return; // 沒有登入就不要讀
+    const cart = JSON.parse(localStorage.getItem(`cart_${userId}`) || "[]");
     if (cart.length) setItems(cart);
-  }, [setItems]);
+  }, [userId, setItems]);
+
+  useEffect(() => {
+    if (userId) {
+      localStorage.setItem(`cart_${userId}`, JSON.stringify(items));
+    }
+  }, [items, userId]);
 
   const { products } = useProduct();
   // 父層傳入 setItems
