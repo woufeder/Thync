@@ -1,6 +1,6 @@
 "use client";
 
-import styles from "@/styles/user-profile.css";
+import styles from "@/styles/change-password.css";
 import { useAuth } from "@/hooks/use-auth";
 import Image from "next/image";
 import Link from "next/link";
@@ -86,6 +86,7 @@ export default function ResetPasswordPage() {
         setOldPassword("");
         setNewPassword("");
         setConfirmPassword("");
+        window.location.href = "/user/edit";
       } else {
         alert(result.message || "密碼變更失敗");
       }

@@ -366,6 +366,7 @@ router.post("/login", upload.none(), async (req, res) => {
     const token = jwt.sign(
       // 加密進 token 的內容
       {
+        id: user.id,
         mail: user.mail,
         img: user.img,
       },
@@ -455,6 +456,7 @@ router.post("/status", checkToken, async (req, res) => {
 
     const token = jwt.sign(
       {
+        id: user.id,
         mail: user.mail,
         img: user.img,
       },
@@ -713,6 +715,7 @@ router.post("/google-login-simple", async (req, res) => {
     // 產生 JWT token
     const token = jwt.sign(
       {
+        id: user.id,
         mail: user.mail,
         img: user.img,
       },
@@ -832,6 +835,102 @@ router.post("/change-password", checkToken, upload.none(), async (req, res) => {
   }
 });
 
+// 追蹤商品
+router.post("/add-wishlist", checkToken, async (req, res) => {
+  try {
+    const userId = req.decoded.id; // 👈 從 JWT 拿 userId
+    const { productId } = req.body;
+
+    if (!userId || !productId) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "缺少 userId 或 productId" });
+    }
+
+    const sql = "INSERT INTO wishlist (users_id, products_id) VALUES (?, ?)";
+    const [result] = await connection.execute(sql, [userId, productId]);
+
+    res.json({ status: "success", message: "收藏成功", result });
+  } catch (err) {
+    res.status(500).json({ status: "error", message: err.message });
+  }
+});
+
+// ✅ 取得收藏清單
+// router.get("/wishlist", checkToken, async (req, res) => {
+//   const userId = req.decoded.id;
+
+//   try {
+//     const [rows] = await connection.execute(
+//       `
+//       SELECT 
+//         p.id, 
+//         p.name, 
+//         p.price, 
+//         pi.file AS first_image
+//       FROM wishlist w
+//       JOIN products p ON w.products_id = p.id
+//       LEFT JOIN products_imgs pi ON p.id = pi.product_id
+//       WHERE w.users_id = ?
+//       `,
+//       [userId]
+//     );
+//     console.log("🔥 wishlist route hit");
+//     console.log("wishlist rows:", rows);
+//     res.json({ status: "success", data: rows });
+//   } catch (err) {
+//     res.status(500).json({ status: "error", message: err.message });
+//   }
+// });
+
+// server/routes/users.js
+router.get("/wishlist", checkToken, async (req, res) => {
+  console.log("🔥 wishlist route hit"); // <- 確認 route 被呼叫
+  const userId = req.decoded.id;
+  console.log("userId from token:", userId);
+
+  try {
+    const [rows] = await connection.execute(
+      `
+      SELECT 
+        p.id, 
+        p.name, 
+        p.price, 
+        pi.file AS first_image
+      FROM wishlist w
+      JOIN products p ON w.products_id = p.id
+      LEFT JOIN products_imgs pi ON p.id = pi.product_id
+      WHERE w.users_id = ?
+      `,
+      [userId]
+    );
+
+    console.log("wishlist rows:", rows); // <- 確認 SQL 有回資料
+
+    res.json({ status: "success", data: rows });
+  } catch (err) {
+    console.error("SQL error:", err);
+    res.status(500).json({ status: "error", message: err.message });
+  }
+});
+
+
+// ✅ 移除收藏
+router.delete("/:productId", checkToken, async (req, res) => {
+  const { productId } = req.params;
+  const userId = req.decoded.id;
+
+  try {
+    await connection.execute(
+      "DELETE FROM wishlist WHERE users_id=? AND products_id=?",
+      [userId, productId]
+    );
+    res.json({ status: "success", message: "已移除" });
+  } catch (err) {
+    res.status(500).json({ status: "error", message: err.message });
+  }
+});
+
 function checkToken(req, res, next) {
   // 讀取前端送來的 token，從 HTTP Header 取得 Authorization 欄位
   let token = req.get("Authorization");
@@ -850,6 +949,7 @@ function checkToken(req, res, next) {
       }
       // 將解碼後的 payload(加密的 token 內容) 存入 req 物件，之後路由才知道是誰要登出(執行動作)
       req.decoded = decoded;
+      console.log("checkToken decoded:", req.decoded);
       next();
     });
   } else {

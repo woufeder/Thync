@@ -1,21 +1,29 @@
 "use client";
-import style from '@/styles/products.css'
+import style from "@/styles/products.css";
 import { useProduct } from "@/hooks/use-product";
 import { use, useEffect, useState } from "react";
 import Breadcrumb from "@/app/_components/breadCrumb";
 import Header from "@/app/_components/header";
 import Footer from "@/app/_components/footer";
 import Link from "next/link";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faMinus, faCashRegister, faCartShopping, faHeart } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faPlus,
+  faMinus,
+  faCashRegister,
+  faCartShopping,
+  faHeart,
+} from "@fortawesome/free-solid-svg-icons";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function ProductDetail({ params }) {
+  const { user } = useAuth();
   const { pid } = use(params);
   const { product, getOne, isLoading } = useProduct();
   const [hasFetched, setHasFetched] = useState(false);
   const [mainImg, setMainImg] = useState(""); // 新增主圖 state
   const [qty, setQty] = useState(1);
-  console.log(product)
+  console.log(product);
 
   useEffect(() => {
     if (pid) {
@@ -30,7 +38,7 @@ export default function ProductDetail({ params }) {
   }, [product]);
 
   if (isLoading) {
-    return <div className="loader container"></div>
+    return <div className="loader container"></div>;
   }
 
   if (hasFetched && product === null) {
@@ -47,10 +55,10 @@ export default function ProductDetail({ params }) {
 
   function handleAddToCart(product) {
     const cart = JSON.parse(localStorage.getItem("cartItems") || "[]");
-    const exist = cart.find(i => i.id === product.id);
+    const exist = cart.find((i) => i.id === product.id);
     let newCart;
     if (exist) {
-      newCart = cart.map(i =>
+      newCart = cart.map((i) =>
         i.id === product.id ? { ...i, qty: i.qty + qty } : i
       );
     } else {
@@ -62,6 +70,27 @@ export default function ProductDetail({ params }) {
     alert("已加入購物車");
   }
 
+  // 追蹤商品 開始
+  async function handleAddToWishlist(productId) {
+    console.log("[Wishlist Debug] product:", product);
+    if (!user) {
+      alert("請先登入");
+      return;
+    }
+    const token = localStorage.getItem("reactLoginToken");
+    const res = await fetch("http://localhost:3007/api/users/add-wishlist", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ productId }),
+    });
+    const result = await res.json();
+    alert(result.message);
+  }
+  // 追蹤商品 結束
+
   return (
     <>
       <Header />
@@ -70,10 +99,7 @@ export default function ProductDetail({ params }) {
         <div className="area1">
           <div className="product-images">
             {/* 縮圖列 */}
-            <div
-              className="thumbnails"
-              style={{}}
-            >
+            <div className="thumbnails" style={{}}>
               {images.map((img) => (
                 <img
                   key={img.id}
@@ -93,53 +119,102 @@ export default function ProductDetail({ params }) {
                 />
               )}
             </div>
-
           </div>
           <div className="product-info">
-            <div className='d-flex align-items-center justify-content-between gap-3 mb-2'>
-              <Link href={`/products?brand_id=${product.brand_id}`}
-                className='brand-link text-decoration-none'>
-                <h5 className='brand-name'>{product.brand_name}</h5>
+            <div className="d-flex align-items-center justify-content-between gap-3 mb-2">
+              <Link
+                href={`/products?brand_id=${product.brand_id}`}
+                className="brand-link text-decoration-none"
+              >
+                <h5 className="brand-name">{product.brand_name}</h5>
               </Link>
-              <p className='product-model'>商品型號：{product.model}</p>
+              <p className="product-model">商品型號：{product.model}</p>
             </div>
 
             <h5>{product.product_name}</h5>
 
-            <div className='price'>${product.price}</div>
+            <div className="price">${product.price}</div>
 
-            <div className='d-flex align-items-center gap-2 mb-3'>
-              <p className='mb-0 me-2'>數量</p>
-              <button onClick={() => setQty(q => Math.max(1, q - 1))} className='btn btn-outline-secondary qtyBtn'><FontAwesomeIcon icon={faMinus} /></button>
+            <div className="d-flex align-items-center gap-2 mb-3">
+              <p className="mb-0 me-2">數量</p>
+              <button
+                onClick={() => setQty((q) => Math.max(1, q - 1))}
+                className="btn btn-outline-secondary qtyBtn"
+              >
+                <FontAwesomeIcon icon={faMinus} />
+              </button>
               <span>{qty}</span>
-              <button onClick={() => setQty(q => q + 1)} className='btn btn-outline-secondary qtyBtn'><FontAwesomeIcon icon={faPlus} /></button>
+              <button
+                onClick={() => setQty((q) => q + 1)}
+                className="btn btn-outline-secondary qtyBtn"
+              >
+                <FontAwesomeIcon icon={faPlus} />
+              </button>
             </div>
-            <div className='d-flex gap-3 flex-wrap'>
-              <button onClick={() => handleAddToCart(product)} className='btn btn-primary CartBtn'><FontAwesomeIcon icon={faCartShopping} />　加入購物車</button>
-              <button className="btn btn-primary CheckoutBtn"><FontAwesomeIcon icon={faCashRegister} />　直接結帳</button>
-              <button className="btn btn-primary FollowBtn"><FontAwesomeIcon icon={faHeart} />　收藏商品</button>
+            <div className="d-flex gap-3 flex-wrap">
+              <button
+                onClick={() => handleAddToCart(product)}
+                className="btn btn-primary CartBtn"
+              >
+                <FontAwesomeIcon icon={faCartShopping} />
+                　加入購物車
+              </button>
+              <button className="btn btn-primary CheckoutBtn">
+                <FontAwesomeIcon icon={faCashRegister} />
+                　直接結帳
+              </button>
+              <button
+                onClick={() => handleAddToWishlist(product.id)}
+                className="btn btn-primary FollowBtn"
+              >
+                <FontAwesomeIcon icon={faHeart} />
+                　收藏商品
+              </button>
             </div>
           </div>
         </div>
 
-
         {/* 加購區 */}
-        <div className='add-on'></div>
+        <div className="add-on"></div>
 
-
-        <div className='area2'>
+        <div className="area2">
           <div className="nav nav-tabs">
             <div className="nav-item" role="presentation">
-              <button className="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#introArea"
-                type="button" role="tab" aria-controls="introArea" aria-selected="true">商品介紹</button>
+              <button
+                className="nav-link active"
+                id="home-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#introArea"
+                type="button"
+                role="tab"
+                aria-controls="introArea"
+                aria-selected="true"
+              >
+                商品介紹
+              </button>
             </div>
             <div className="nav-item" role="presentation">
-              <button className="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#spec" type="button"
-                role="tab" aria-controls="spec" aria-selected="false">商品規格</button>
+              <button
+                className="nav-link"
+                id="profile-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#spec"
+                type="button"
+                role="tab"
+                aria-controls="spec"
+                aria-selected="false"
+              >
+                商品規格
+              </button>
             </div>
           </div>
           <div className="tab-content" id="myTabContent">
-            <div id="introArea" className="tab-pane fade show active" role="tabpanel" aria-labelledby="home-tab">
+            <div
+              id="introArea"
+              className="tab-pane fade show active"
+              role="tabpanel"
+              aria-labelledby="home-tab"
+            >
               <div className="mt-2 preserve-format" id="introText">
                 <pre>{product.intro}</pre>
               </div>
@@ -152,22 +227,19 @@ export default function ProductDetail({ params }) {
                   />
                 ))}
               </div>
-
             </div>
-            <div id="spec" className="tab-pane fade" role="tabpanel" aria-labelledby="profile-tab">
-              <div className=" mt-2 preserve-format"><pre>{product.spec}</pre></div>
-
+            <div
+              id="spec"
+              className="tab-pane fade"
+              role="tabpanel"
+              aria-labelledby="profile-tab"
+            >
+              <div className=" mt-2 preserve-format">
+                <pre>{product.spec}</pre>
+              </div>
             </div>
           </div>
         </div>
-
-
-
-
-
-
-
-
       </main>
       <Footer />
     </>
