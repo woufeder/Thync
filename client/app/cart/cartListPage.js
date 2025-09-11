@@ -65,21 +65,23 @@ export default function CartListPage({
               onRemove={onRemove}
             />
             <hr className="cart-line" />
+            <div className="cart-coupon-wrapper">
+              {/* 優惠券區塊 */}
+              <CartCouponArea
+                userId={userId}
+                total={total}
+                onApply={(discount, coupon) => {
+                  setDiscount(discount);
+                  setCouponCode(coupon.code);
 
-            {/* 優惠券區塊 */}
-            <CartCouponArea
-              userId={userId}
-              total={total}
-              onApply={(discount, coupon) => {
-                setDiscount(discount);
-                setCouponCode(coupon.code);
-
-                // 🔹 同步存入 localStorage，讓 Checkout / Confirm 頁能讀到
-                localStorage.setItem("discount", discount);
-                localStorage.setItem("couponCode", coupon.code);
-              }}
-            />
+                  // 🔹 同步存入 localStorage，讓 Checkout / Confirm 頁能讀到
+                  localStorage.setItem("discount", discount);
+                  localStorage.setItem("couponCode", coupon.code);
+                }}
+              />
+            </div>
           </div>
+          <div className="cart-summary-wrapper">
           <CartSummary
             items={items}
             discount={discount}
@@ -88,6 +90,7 @@ export default function CartListPage({
               window.location.href = "/cart/checkout";
             }}
           />
+          </div>
         </div>
       </main>
     </>

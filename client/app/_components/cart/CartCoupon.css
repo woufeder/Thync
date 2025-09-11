@@ -1,8 +1,6 @@
 /* Import Google Fonts */
 @import url("https://fonts.googleapis.com/css?family=Noto+Sans+TC:400,700&display=swap");
 
-
-
 /* Base styles */
 .coupon-area {
   font-family: "Noto Sans TC", sans-serif;
@@ -25,11 +23,29 @@
   display: inline-block;
 }
 
-
 /* Coupon list */
+
+.cart-coupon-wrapper .cart-coupon-list {
+  display: flex;
+  overflow-x: auto;
+  gap: 16px;
+  padding: 8px 0;
+  scroll-snap-type: x mandatory;
+}
+
+.cart-coupon-wrapper .cart-coupon-list::-webkit-scrollbar {
+  display: none;
+}
+
+.cart-coupon-wrapper .coupon-scroll-card {
+  flex: 0 0 auto;
+  min-width: 250px;
+  scroll-snap-align: start;
+}
+
 .coupon-scroll-list {
   display: flex;
-  overflow-x: auto;   /* 水平滑動 */
+  overflow-x: auto; /* 水平滑動 */
   gap: 16px;
   padding: 8px 0;
   scroll-snap-type: x mandatory;
