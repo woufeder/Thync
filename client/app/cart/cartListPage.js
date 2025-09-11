@@ -4,7 +4,6 @@ import CartTable from "./cartTable";
 import CartSummary from "./cartSummary";
 import CartCouponArea from "@/app/_components/cart/CartCouponArea";
 
-
 export default function CartListPage({
   items,
   setItems,
@@ -45,7 +44,6 @@ export default function CartListPage({
   );
   const shipping = 60; // 可根據條件調整
 
-
   const [selectedCoupon, setSelectedCoupon] = useState(null);
   const [discount, setDiscount] = useState(0);
 
@@ -68,9 +66,12 @@ export default function CartListPage({
               onApply={(discount, coupon) => {
                 setDiscount(discount);
                 setCouponCode(coupon.code);
+
+                // 🔹 同步存入 localStorage，讓 Checkout / Confirm 頁能讀到
+                localStorage.setItem("discount", discount);
+                localStorage.setItem("couponCode", coupon.code);
               }}
             />
-            
           </div>
           <CartSummary
             items={items}
