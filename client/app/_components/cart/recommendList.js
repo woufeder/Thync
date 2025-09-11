@@ -46,7 +46,7 @@ export default function RecommendList() {
       </div>
       <div className="recommend-list">
         {recommend.map((p) => {
-          console.log(p);// 這裡純粹是在確認 p 物件內容by光
+          {/* console.log(p);// 這裡純粹是在確認 p 物件內容by光 */}
           return (
             <div key={p.id} className="recommend-item">
               <img

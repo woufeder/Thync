@@ -14,7 +14,7 @@ export default function CartPage() {
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
   // TODO: 取得登入會員 id，暫用假資料
-  const userId = 1;
+  const userId = 97;
 
 
   useEffect(() => {
