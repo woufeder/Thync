@@ -196,7 +196,7 @@ router.post("/", upload.none(), async (req, res) => {
     }
 
     // 從 randomuser.me 取得預設使用者圖片
-    const img = await getRandomAvatar();
+    const img = "user.jpg";
 
     // 把密碼加密
     const hashedPassword = await bcrypt.hash(password, 10);
