@@ -124,8 +124,7 @@ export default function UserAddPage() {
         // 設置縮放使遮罩填滿容器
         maskContent.setAttribute(
           "transform",
-          `scale(-${scaleX}, ${scaleY}) translate(-${
-            animationSVG.viewBox.baseVal.width + 200
+          `scale(-${scaleX}, ${scaleY}) translate(-${animationSVG.viewBox.baseVal.width + 200
           }, 0)`
         );
       }
@@ -163,12 +162,19 @@ export default function UserAddPage() {
             <div className="header">
               <div className="d-flex align-items-center justify-content-between">
                 <img src="/images/LOGO.png" alt="LOGO" />
-                <Link href="/" className="home-link" aria-label="回到首頁">
+                <a onClick={() =>
+                  (window.location.href = "/")
+                } className="home-link" aria-label="回到首頁"
+                  style={{
+                    textDecoration: "none",
+                    cursor: "pointer"
+                  }}
+                >
                   <FontAwesomeIcon
                     icon={faHouseChimney}
                     className="home-icon"
                   />
-                </Link>
+                </a>
               </div>
               <h1 className="register-title">會員註冊</h1>
               <div className="toggle">
