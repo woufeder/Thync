@@ -18,7 +18,7 @@ export default function CouponCard({
       <div className="bottom">
         <div className="expire">{expireDate}</div>
         <button onClick={onClaim} className="get-btn">
-          領取
+          可使用
         </button>
       </div>
     </div>
