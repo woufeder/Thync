@@ -373,7 +373,7 @@ export default function UserLoginPage() {
             </main>
           </div>
           <div className="bottom">
-            <a href="#" className="secret-block">
+            <a href="/admin/login" className="secret-block">
               <FontAwesomeIcon icon={faUserSecret} className="faUserSecret" />
             </a>
           </div>

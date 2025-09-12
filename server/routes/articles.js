@@ -197,6 +197,140 @@ router.get("/categories", async (req, res) => {
     res.status(500).json({ status: "error", message: "DB error" });
   }
 });
+// 獲取垃圾桶文章 (必須放在 /:id 路由之前)
+router.get("/trash", async (req, res) => {
+  try {
+    const { search, page = 1, per_page = 10 } = req.query;
+    
+    let sql = `
+      SELECT DISTINCT
+        a.*,
+        c.name AS category_name
+      FROM articles a
+      LEFT JOIN categories c ON a.category_id = c.id
+      WHERE a.is_deleted = 1
+    `;
+    let params = [];
+    
+    if (search) {
+      sql += " AND (a.title LIKE ? OR a.content LIKE ?)";
+      params.push(`%${search}%`, `%${search}%`);
+    }
+    
+    sql += " ORDER BY a.updated_at DESC";
+    sql += " LIMIT ? OFFSET ?";
+    params.push(Number(per_page));
+    params.push((Number(page) - 1) * Number(per_page));
+
+    let [articles] = await connection.execute(sql, params);
+
+    // 獲取總筆數
+    let countSql = `
+      SELECT COUNT(*) as total
+      FROM articles a
+      WHERE a.is_deleted = 1
+    `;
+    let countParams = [];
+    
+    if (search) {
+      countSql += " AND (a.title LIKE ? OR a.content LIKE ?)";
+      countParams.push(`%${search}%`, `%${search}%`);
+    }
+    
+    let [countResult] = await connection.execute(countSql, countParams);
+    const total = countResult[0].total;
+    const totalPages = Math.ceil(total / Number(per_page));
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        articles,
+        pagination: {
+          current_page: Number(page),
+          per_page: Number(per_page),
+          total: total,
+          total_pages: totalPages,
+          has_prev: Number(page) > 1,
+          has_next: Number(page) < totalPages
+        }
+      },
+      message: "已獲取垃圾桶文章"
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: "error",
+      message: "獲取垃圾桶文章失敗"
+    });
+  }
+});
+
+// 獲取文章選項 (分類和標籤) - 必須放在動態路由之前
+router.get("/options", async (req, res) => {
+  try {
+    // 同時查分類、標籤
+    const [categories] = await connection.execute("SELECT id, name FROM categories WHERE 1");
+    const [tags] = await connection.execute("SELECT id, name FROM tags WHERE 1");
+
+    res.json({
+      status: "success",
+      categories,
+      tags
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ status: "error", message: "DB error" });
+  }
+});
+
+// 清空垃圾桶
+router.delete("/trash/empty", async (req, res) => {
+  try {
+    // 獲取所有已刪除的文章ID
+    const [deletedArticles] = await connection.execute(
+      "SELECT id FROM articles WHERE is_deleted = 1"
+    );
+    
+    if (deletedArticles.length === 0) {
+      return res.status(200).json({
+        status: "success",
+        message: "垃圾桶已經是空的"
+      });
+    }
+    
+    const articleIds = deletedArticles.map(article => article.id);
+    const placeholders = articleIds.map(() => '?').join(',');
+    
+    // 刪除文章標籤關聯
+    await connection.execute(
+      `DELETE FROM article_tags WHERE article_id IN (${placeholders})`,
+      articleIds
+    );
+    
+    // 刪除文章圖片關聯
+    await connection.execute(
+      `DELETE FROM article_images WHERE article_id IN (${placeholders})`,
+      articleIds
+    );
+    
+    // 永久刪除文章
+    const [result] = await connection.execute(
+      `DELETE FROM articles WHERE id IN (${placeholders})`,
+      articleIds
+    );
+
+    res.status(200).json({
+      status: "success",
+      message: `已永久刪除 ${result.affectedRows} 篇文章`
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: "error",
+      message: "清空垃圾桶失敗"
+    });
+  }
+});
 
 // 獲取特定 ID 的文章
 router.get("/:id", async (req, res) => {
@@ -336,6 +470,277 @@ router.get("/:id/related", async (req, res) => {
     res.status(500).json({
       status: "error",
       message: "獲取相關文章時發生錯誤"
+    });
+  }
+});
+
+
+// 新增文章
+router.post("/", upload.single('cover_image'), async (req, res) => {
+  try {
+    const { title, content, category_id, tags } = req.body;
+    
+    if (!title || !content) {
+      return res.status(400).json({
+        status: "error",
+        message: "標題和內容為必填欄位"
+      });
+    }
+
+    // 處理封面圖片
+    let coverImage = null;
+    if (req.file) {
+      // 這裡應該處理圖片上傳，暫時直接使用檔名
+      coverImage = req.file.originalname;
+    }
+
+    // 插入文章
+    const insertSql = `
+      INSERT INTO articles (title, content, category_id, cover_image, created_at, updated_at)
+      VALUES (?, ?, ?, ?, NOW(), NOW())
+    `;
+    
+    const [result] = await connection.execute(insertSql, [
+      title,
+      content,
+      category_id || null,
+      coverImage
+    ]);
+
+    const articleId = result.insertId;
+
+    // 處理標籤
+    if (tags && tags.trim()) {
+      const tagNames = tags.split(',').map(tag => tag.trim()).filter(tag => tag);
+      
+      for (const tagName of tagNames) {
+        // 檢查標籤是否存在，不存在則建立
+        let [existingTag] = await connection.execute(
+          "SELECT id FROM tags WHERE name = ?",
+          [tagName]
+        );
+        
+        let tagId;
+        if (existingTag.length === 0) {
+          const [tagResult] = await connection.execute(
+            "INSERT INTO tags (name) VALUES (?)",
+            [tagName]
+          );
+          tagId = tagResult.insertId;
+        } else {
+          tagId = existingTag[0].id;
+        }
+        
+        // 建立文章標籤關聯
+        await connection.execute(
+          "INSERT INTO article_tags (article_id, tag_id) VALUES (?, ?)",
+          [articleId, tagId]
+        );
+      }
+    }
+
+    res.status(201).json({
+      status: "success",
+      data: { id: articleId },
+      message: "文章建立成功"
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: "error",
+      message: "建立文章時發生錯誤"
+    });
+  }
+});
+
+// 更新文章
+router.put("/:id", upload.single('cover_image'), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, content, category_id, tags, keep_current_image, current_cover_image } = req.body;
+    
+    if (!title || !content) {
+      return res.status(400).json({
+        status: "error",
+        message: "標題和內容為必填欄位"
+      });
+    }
+
+    // 處理封面圖片
+    let coverImage = null;
+    if (req.file) {
+      coverImage = req.file.originalname;
+    } else if (keep_current_image === 'true' && current_cover_image) {
+      coverImage = current_cover_image;
+    }
+
+    // 更新文章
+    const updateSql = `
+      UPDATE articles 
+      SET title = ?, content = ?, category_id = ?, cover_image = ?, updated_at = NOW()
+      WHERE id = ? AND (is_deleted = 0 OR is_deleted IS NULL)
+    `;
+    
+    const [result] = await connection.execute(updateSql, [
+      title,
+      content,
+      category_id || null,
+      coverImage,
+      id
+    ]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        status: "error",
+        message: "文章不存在或已被刪除"
+      });
+    }
+
+    // 刪除舊的標籤關聯
+    await connection.execute("DELETE FROM article_tags WHERE article_id = ?", [id]);
+
+    // 處理新標籤
+    if (tags && tags.trim()) {
+      const tagNames = tags.split(',').map(tag => tag.trim()).filter(tag => tag);
+      
+      for (const tagName of tagNames) {
+        // 檢查標籤是否存在，不存在則建立
+        let [existingTag] = await connection.execute(
+          "SELECT id FROM tags WHERE name = ?",
+          [tagName]
+        );
+        
+        let tagId;
+        if (existingTag.length === 0) {
+          const [tagResult] = await connection.execute(
+            "INSERT INTO tags (name) VALUES (?)",
+            [tagName]
+          );
+          tagId = tagResult.insertId;
+        } else {
+          tagId = existingTag[0].id;
+        }
+        
+        // 建立文章標籤關聯
+        await connection.execute(
+          "INSERT INTO article_tags (article_id, tag_id) VALUES (?, ?)",
+          [id, tagId]
+        );
+      }
+    }
+
+    res.status(200).json({
+      status: "success",
+      message: "文章更新成功"
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: "error",
+      message: "更新文章時發生錯誤"
+    });
+  }
+});
+
+// 軟刪除文章
+router.patch("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { is_deleted } = req.body;
+    
+    const updateSql = `
+      UPDATE articles 
+      SET is_deleted = ?, updated_at = NOW()
+      WHERE id = ?
+    `;
+    
+    const [result] = await connection.execute(updateSql, [is_deleted, id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        status: "error",
+        message: "文章不存在"
+      });
+    }
+
+    const action = is_deleted === 1 ? "移至垃圾桶" : "恢復";
+    res.status(200).json({
+      status: "success",
+      message: `文章已${action}`
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: "error",
+      message: "操作失敗"
+    });
+  }
+});
+
+// 恢復文章
+router.patch("/:id/restore", async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const updateSql = `
+      UPDATE articles 
+      SET is_deleted = 0, updated_at = NOW()
+      WHERE id = ?
+    `;
+    
+    const [result] = await connection.execute(updateSql, [id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        status: "error",
+        message: "文章不存在"
+      });
+    }
+
+    res.status(200).json({
+      status: "success",
+      message: "文章已恢復"
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: "error",
+      message: "恢復文章失敗"
+    });
+  }
+});
+
+// 永久刪除文章
+router.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // 先刪除文章標籤關聯
+    await connection.execute("DELETE FROM article_tags WHERE article_id = ?", [id]);
+    
+    // 刪除文章圖片關聯
+    await connection.execute("DELETE FROM article_images WHERE article_id = ?", [id]);
+    
+    // 刪除文章
+    const deleteSql = "DELETE FROM articles WHERE id = ?";
+    const [result] = await connection.execute(deleteSql, [id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        status: "error",
+        message: "文章不存在"
+      });
+    }
+
+    res.status(200).json({
+      status: "success",
+      message: "文章已永久刪除"
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: "error",
+      message: "永久刪除失敗"
     });
   }
 });
