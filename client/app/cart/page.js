@@ -14,6 +14,7 @@ export default function CartPage() {
   const [items, setItems] = useState([]);
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
+
   const [userId, setUserId] = useState(null);
   const [mounted, setMounted] = useState(false);
 

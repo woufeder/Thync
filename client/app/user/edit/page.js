@@ -10,7 +10,7 @@ import Breadcrumb from "@/app/_components/breadCrumb";
 import Sidebar from "@/app/_components/user/sidebar";
 import Footer from "@/app/_components/footer";
 
-export default function UserPage() {
+export default function UserEditPage() {
   const { user, setUser } = useAuth();
   const [formData, setFormData] = useState(null);
 
@@ -79,8 +79,21 @@ export default function UserPage() {
   // 取消編輯
   const handleCancel = () => {
     setIsEditing(false);
-    // 直接用最新 user 回填
-    setFormData(user);
+    // 重新依照初始化邏輯回填 user 資料，確保型別正確
+    setFormData({
+      account: user.account ?? "",
+      mail: user.mail ?? "",
+      name: user.name ?? "",
+      phone: user.phone ?? "",
+      gender_id: user.gender_id != null ? String(user.gender_id) : "",
+      year: user.year ?? "",
+      month: user.month ?? "",
+      date: user.date ?? "",
+      city_id: user.city_id ?? "",
+      address: user.address ?? "",
+      img: user.img ?? "",
+      imgPreview: null,
+    });
   };
 
   // 確認更新 - 提交到後端
@@ -153,13 +166,6 @@ export default function UserPage() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  // 修改密碼
-  const handleChangePassword = () => {
-    // 這裡可以導向密碼修改頁面或開啟密碼修改彈窗
-    console.log("修改密碼");
-    alert("密碼修改功能開發中...");
   };
 
   // 刪除帳號
@@ -490,13 +496,14 @@ export default function UserPage() {
                 <div className="text-center">
                   {!isEditing && (
                     <>
-                      <button
-                        type="button"
+                      <a
                         className="btn btn-password me-5"
-                        onClick={handleChangePassword}
+                        onClick={() =>
+                          (window.location.href = "/user/change-password")
+                        }
                       >
                         <i className="fa-solid fa-key me-1"></i> 修改密碼
-                      </button>
+                      </a>
                       <button
                         type="button"
                         className="btn btn-edit me-5"

@@ -10,6 +10,8 @@ import couponRouter from "./routes/coupon.js";
 import articlesRouter from "./routes/articles.js";
 import shipmentRouter from "./routes/shipments.js";
 import ecpayTestRouter from "./routes/ecpay-test-only.js";
+import ecpayCallbackRouter from "./routes/ecpay-callback.js";
+import ordersRouter from "./routes/orders.js";
 
 // 設定區
 let whitelist = [
@@ -32,6 +34,8 @@ let corsOptions = {
 // 環境設定
 const app = express();
 
+
+app.use("/ecpay-callback", ecpayCallbackRouter);
 // 全域中介軟體
 app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: true }));
@@ -49,7 +53,7 @@ app.use("/api/coupon", couponRouter);
 app.use("/api/articles", articlesRouter);
 app.use("/shipments", shipmentRouter);
 app.use("/ecpay-test", ecpayTestRouter);
-
+app.use("/api/orders", ordersRouter);
 
 app.listen(3007, () => {
   console.log("主機啟動 http://localhost:3007");

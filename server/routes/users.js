@@ -86,6 +86,100 @@ router.get("/search", (req, res) => {
   });
 });
 
+// 追蹤商品
+router.post("/add-wishlist", checkToken, async (req, res) => {
+  try {
+    const userId = req.decoded.id; // 👈 從 JWT 拿 userId
+    const { productId } = req.body;
+
+    if (!userId || !productId) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "缺少 userId 或 productId" });
+    }
+
+    const sql = "INSERT INTO wishlist (users_id, products_id) VALUES (?, ?)";
+    const [result] = await connection.execute(sql, [userId, productId]);
+
+    res.json({ status: "success", message: "收藏成功", result });
+  } catch (err) {
+    res.status(500).json({ status: "error", message: err.message });
+  }
+});
+
+// ✅ 取得收藏清單
+router.get("/wishlist", checkToken, async (req, res) => {
+  const userId = req.decoded.id;
+  try {
+    const [rows] = await connection.execute(
+      `
+  SELECT 
+    p.id, 
+    p.name, 
+    p.price, 
+    (
+      SELECT file 
+      FROM products_imgs 
+      WHERE product_id = p.id 
+      LIMIT 1
+    ) AS first_image
+  FROM wishlist w
+  JOIN products p ON w.products_id = p.id
+  WHERE w.users_id = ?
+  `,
+      [userId]
+    );
+
+    res.json({ status: "success", data: rows });
+  } catch (err) {
+    console.error("SQL error:", err);
+    res.status(500).json({ status: "error", message: err.message });
+  }
+});
+
+// ✅ 移除收藏
+router.delete("/wishlist/:productId", checkToken, async (req, res) => {
+  const { productId } = req.params;
+  const userId = req.decoded.id;
+
+  try {
+    const [result] = await connection.execute(
+      "DELETE FROM wishlist WHERE users_id=? AND products_id=?",
+      [userId, productId]
+    );
+
+    if (result.affectedRows === 0) {
+      return res
+        .status(404)
+        .json({ status: "error", message: "找不到該收藏商品" });
+    }
+
+    res.json({ status: "success", message: "已移除收藏" });
+  } catch (err) {
+    res.status(500).json({ status: "error", message: err.message });
+  }
+});
+
+// 檢查商品是否已收藏
+router.get("/wishlist-status/:productId", checkToken, async (req, res) => {
+  try {
+    const userId = req.decoded.id;
+    const { productId } = req.params;
+
+    const [rows] = await connection.execute(
+      "SELECT * FROM wishlist WHERE users_id = ? AND products_id = ?",
+      [userId, productId]
+    );
+
+    res.json({
+      status: "success",
+      isWishlisted: rows.length > 0,
+    });
+  } catch (err) {
+    res.status(500).json({ status: "error", message: err.message });
+  }
+});
+
 // 獲取特定 ID 使用者
 router.get("/:account", async (req, res) => {
   // 路由參數
@@ -196,7 +290,7 @@ router.post("/", upload.none(), async (req, res) => {
     }
 
     // 從 randomuser.me 取得預設使用者圖片
-    const img = await getRandomAvatar();
+    const img = "user.jpg";
 
     // 把密碼加密
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -270,7 +364,6 @@ router.put("/:account", upload.single("img"), async (req, res) => {
     let img = null;
     if (req.file) {
       img = req.file.filename; // 這裡現在會有正確的文件名
-      console.log("上傳的圖片文件名:", img);
     }
 
     // 執行更新
@@ -329,8 +422,6 @@ router.put("/:account", upload.single("img"), async (req, res) => {
       message: error.message || "更新失敗",
     });
   }
-  console.log("req.body:", req.body);
-  console.log("req.file:", req.file);
 });
 
 // 刪除(特定帳號的)使用者
@@ -362,7 +453,6 @@ router.delete("/:account", async (req, res) => {
 router.post("/login", upload.none(), async (req, res) => {
   try {
     const { mail, password } = req.body;
-    console.log(mail);
 
     const sqlCheck1 = "SELECT * FROM `users` WHERE `mail` = ? AND is_valid=1;";
     let user = await connection.execute(sqlCheck1, [mail]).then(([result]) => {
@@ -387,7 +477,12 @@ router.post("/login", upload.none(), async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: user.id, mail: user.mail, img: user.img },
+      // 加密進 token 的內容
+      {
+        id: user.id,
+        mail: user.mail,
+        img: user.img,
+      },
       secretKey,
       { expiresIn: "30m" }
     );
@@ -473,7 +568,11 @@ router.post("/status", checkToken, async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: user.id, mail: user.mail, img: user.img },
+      {
+        id: user.id,
+        mail: user.mail,
+        img: user.img,
+      },
       secretKey,
       { expiresIn: "30m" }
     );
@@ -650,212 +749,9 @@ router.post("/verification-code", upload.none(), async (req, res) => {
   }
 });
 
-// Google 登入路由
-// router.post("/google-login", async (req, res) => {
-//   try {
-//     console.log("=== Google 登入請求 ===");
-//     console.log("請求內容:", req.body);
-
-//     const { credential } = req.body;
-
-//     if (!credential) {
-//       console.log("錯誤: 缺少 credential");
-//       return res.status(400).json({
-//         success: false,
-//         message: "請提供 Google 憑證",
-//       });
-//     }
-
-//     console.log("開始驗證 Google token");
-
-//     // 驗證 Google JWT token
-//     const ticket = await client.verifyIdToken({
-//       idToken: credential,
-//       audience: process.env.GOOGLE_CLIENT_ID,
-//     });
-
-//     const payload = ticket.getPayload();
-//     const { email, name, picture, sub: googleId } = payload;
-
-//     console.log("Google 用戶資料:", { email, name, googleId });
-
-//     if (!email) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "無法取得 Google 帳號資訊",
-//       });
-//     }
-
-//     // 檢查用戶是否已存在
-//     const sqlCheck =
-//       "SELECT * FROM users WHERE mail = ? OR google_id = ? AND is_valid = 1";
-//     const [existingUsers] = await connection.execute(sqlCheck, [
-//       email,
-//       googleId,
-//     ]);
-
-//     let user;
-
-//     if (existingUsers.length > 0) {
-//       console.log("用戶已存在");
-//       user = existingUsers[0];
-
-//       // 更新 Google 資訊
-//       if (!user.google_id) {
-//         await connection.execute(
-//           "UPDATE users SET google_id = ?, name = COALESCE(name, ?), img = COALESCE(img, ?) WHERE id = ?",
-//           [googleId, name, picture, user.id]
-//         );
-//       }
-
-//       // 重新取得用戶資料
-//       const [updatedUsers] = await connection.execute(
-//         "SELECT * FROM users WHERE id = ?",
-//         [user.id]
-//       );
-//       user = updatedUsers[0];
-//     } else {
-//       console.log("建立新用戶");
-
-//       const randomAccount = `google_${Date.now()}`;
-//       const randomPassword = await bcrypt.hash(
-//         `google_${googleId}_${Date.now()}`,
-//         10
-//       );
-
-//       const sqlInsert = `
-//         INSERT INTO users (account, mail, name, password, img, google_id, is_valid)
-//         VALUES (?, ?, ?, ?, ?, ?, 1)
-//       `;
-
-//       const [result] = await connection.execute(sqlInsert, [
-//         randomAccount,
-//         email,
-//         name || email.split("@")[0],
-//         randomPassword,
-//         picture,
-//         googleId,
-//       ]);
-
-//       const [newUsers] = await connection.execute(
-//         "SELECT * FROM users WHERE id = ?",
-//         [result.insertId]
-//       );
-//       user = newUsers[0];
-//     }
-
-//     // 產生 JWT token
-//     const token = jwt.sign(
-//       {
-//         mail: user.mail,
-//         img: user.img,
-//       },
-//       secretKey,
-//       { expiresIn: "30m" }
-//     );
-
-//     console.log("Google 登入成功");
-
-//     res.status(200).json({
-//       success: true,
-//       message: "Google 登入成功",
-//       data: {
-//         token,
-//         user: {
-//           account: user.account,
-//           mail: user.mail,
-//           name: user.name,
-//           img: user.img,
-//         },
-//       },
-//     });
-//   } catch (error) {
-//     console.error("Google 登入錯誤:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "Google 登入失敗：" + error.message,
-//     });
-//   }
-// });
-
-// router.post("/google-login-token", async (req, res) => {
-//   try {
-//     const { email, name, picture, id: googleId } = req.body;
-
-//     // 與原本的 google-login 邏輯相同，但不需要驗證 JWT
-//     const sqlCheck =
-//       "SELECT * FROM users WHERE mail = ? OR google_id = ? AND is_valid = 1";
-//     const [existingUsers] = await connection.execute(sqlCheck, [
-//       email,
-//       googleId,
-//     ]);
-
-//     let user;
-//     if (existingUsers.length > 0) {
-//       user = existingUsers[0];
-//       if (!user.google_id) {
-//         await connection.execute(
-//           "UPDATE users SET google_id = ?, name = COALESCE(name, ?), img = COALESCE(img, ?) WHERE id = ?",
-//           [googleId, name, picture, user.id]
-//         );
-//       }
-//       const [updatedUsers] = await connection.execute(
-//         "SELECT * FROM users WHERE id = ?",
-//         [user.id]
-//       );
-//       user = updatedUsers[0];
-//     } else {
-//       const randomAccount = `google_${Date.now()}`;
-//       const randomPassword = await bcrypt.hash(
-//         `google_${googleId}_${Date.now()}`,
-//         10
-//       );
-//       const sqlInsert = `INSERT INTO users (account, mail, name, password, img, google_id, is_valid) VALUES (?, ?, ?, ?, ?, ?, 1)`;
-//       const [result] = await connection.execute(sqlInsert, [
-//         randomAccount,
-//         email,
-//         name,
-//         randomPassword,
-//         picture,
-//         googleId,
-//       ]);
-//       const [newUsers] = await connection.execute(
-//         "SELECT * FROM users WHERE id = ?",
-//         [result.insertId]
-//       );
-//       user = newUsers[0];
-//     }
-
-//     const token = jwt.sign({ mail: user.mail, img: user.img }, secretKey, {
-//       expiresIn: "30m",
-//     });
-
-//     res.status(200).json({
-//       success: true,
-//       data: {
-//         token,
-//         user: {
-//           account: user.account,
-//           mail: user.mail,
-//           name: user.name,
-//           img: user.img,
-//         },
-//       },
-//     });
-//   } catch (error) {
-//     console.error("Google token 登入錯誤:", error);
-//     res.status(500).json({ success: false, message: "Google 登入失敗" });
-//   }
-// });
-
-// 新增到你的 users.js 路由檔案中
-
-// 簡化版 Google 登入 - 不需要驗證 JWT
+// Google 登入
 router.post("/google-login-simple", async (req, res) => {
   try {
-    console.log("=== 簡化版 Google 登入 API 被呼叫 ===");
-    console.log("請求資料:", req.body);
-
     const { email, name, picture, googleId } = req.body;
 
     // 基本驗證
@@ -930,6 +826,7 @@ router.post("/google-login-simple", async (req, res) => {
     // 產生 JWT token
     const token = jwt.sign(
       {
+        id: user.id,
         mail: user.mail,
         img: user.img,
       },
@@ -945,8 +842,6 @@ router.post("/google-login-simple", async (req, res) => {
       img: user.img,
     };
 
-    console.log("準備回傳的資料:", { token: "***", user: userData });
-
     res.status(200).json({
       success: true,
       message: "Google 登入成功",
@@ -956,7 +851,7 @@ router.post("/google-login-simple", async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("簡化版 Google 登入錯誤:", error);
+    console.error("Google 登入錯誤:", error);
     res.status(500).json({
       success: false,
       message: "Google 登入失敗：" + error.message,
@@ -964,16 +859,99 @@ router.post("/google-login-simple", async (req, res) => {
   }
 });
 
+// 變更密碼
+router.post("/change-password", checkToken, upload.none(), async (req, res) => {
+  try {
+    const { mail } = req.decoded; // 從 JWT token 取得使用者信箱
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+
+    // 後端驗證：檢查必填欄位
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "請填寫所有欄位",
+      });
+    }
+
+    // 後端驗證：檢查新密碼和確認密碼是否相同
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "新密碼與確認密碼不一致",
+      });
+    }
+
+    // 後端驗證：檢查新密碼是否與舊密碼相同
+    if (oldPassword === newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "新密碼不能與舊密碼相同",
+      });
+    }
+
+    // 取得使用者資料
+    const sqlGetUser =
+      "SELECT * FROM `users` WHERE `mail` = ? AND is_valid = 1;";
+    const user = await connection
+      .execute(sqlGetUser, [mail])
+      .then(([result]) => result[0]);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "使用者不存在",
+      });
+    }
+
+    // 驗證舊密碼是否正確
+    const isOldPasswordCorrect = await bcrypt.compare(
+      oldPassword,
+      user.password
+    );
+    if (!isOldPasswordCorrect) {
+      return res.status(400).json({
+        success: false,
+        message: "舊密碼錯誤",
+      });
+    }
+
+    // 加密新密碼
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+    // 更新密碼
+    const sqlUpdatePassword =
+      "UPDATE `users` SET `password` = ? WHERE `mail` = ?;";
+    const [result] = await connection.execute(sqlUpdatePassword, [
+      hashedNewPassword,
+      mail,
+    ]);
+
+    if (result.affectedRows === 0) {
+      throw new Error("密碼更新失敗");
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "密碼變更成功",
+    });
+  } catch (error) {
+    console.error("變更密碼錯誤:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message || "密碼變更失敗，請稍後再試",
+    });
+  }
+});
+
 function checkToken(req, res, next) {
   // 讀取前端送來的 token，從 HTTP Header 取得 Authorization 欄位
   let token = req.get("Authorization");
-  console.log(token);
   if (token && token.includes("Bearer ")) {
     // 純提取 Token 字串，去掉前面的 'Bearer '
     token = token.slice(7);
     jwt.verify(token, secretKey, (error, decoded) => {
       if (error) {
-        console.log(error);
+        console.log("JWT 驗證錯誤:", error);
         res.status(401).json({
           status: "error",
           message: "登入驗證失效，請重新登入",
@@ -992,18 +970,18 @@ function checkToken(req, res, next) {
   }
 }
 
-async function getRandomAvatar() {
-  const API = "https://randomuser.me/api";
-  try {
-    const response = await fetch(API);
-    if (!response.ok)
-      throw new Error(`${response.status}: ${response.statusText}`);
-    const result = await response.json();
-    return result.results[0].picture.large;
-  } catch (error) {
-    console.log("getRandomAvatar", error.message);
-    return null;
-  }
-}
+// async function getRandomAvatar() {
+//   const API = "https://randomuser.me/api";
+//   try {
+//     const response = await fetch(API);
+//     if (!response.ok)
+//       throw new Error(`${response.status}: ${response.statusText}`);
+//     const result = await response.json();
+//     return result.results[0].picture.large;
+//   } catch (error) {
+//     console.log("getRandomAvatar", error.message);
+//     return null;
+//   }
+// }
 
 export default router;

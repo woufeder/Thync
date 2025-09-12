@@ -155,14 +155,6 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // 沒有登入不能夠觀看2
-
-  // useEffect(() => {
-  //   if (!isLoading && !user && protectedRoutes.includes(pathname)) {
-  //     window.location.href = loginRoute;
-  //   }
-  // }, [isLoading, user, pathname]);
-
   // 驗證登入狀態 & 同步最新 user 資料
   useEffect(() => {
     const checkToken = async () => {
@@ -233,7 +225,7 @@ export function AuthProvider({ children }) {
 
   const loginWithToken = async (token, user) => {
     try {
-      console.log("loginWithToken token:", token, "user:", user)
+      console.log("loginWithToken token:", token, "user:", user);
       // 直接設定 token 和 user，不需要再呼叫 API
       localStorage.setItem(appKey, token);
       setUser(user);
