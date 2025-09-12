@@ -74,6 +74,26 @@
 }
 
 .coupon-scroll-card {
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.coupon-scroll-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.coupon-scroll-card.active {
+  border: 2px solid #375177;
+  box-shadow: 0 0 10px rgba(55, 81, 119, 0.7);
+}
+
+.coupon-scroll-card.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.coupon-scroll-card {
   background: #f7f6f2;
   border: 1px solid #88a2bf;
   border-radius: 12px;

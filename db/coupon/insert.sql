@@ -9,6 +9,7 @@ INSERT INTO
         expires_at,
         created_at,
         updated_at
+
     )
 VALUES (
         'C490',
@@ -838,62 +839,3 @@ VALUES (
         NOW()
     );
 
--- kanaa測試用的
-INSERT INTO
-    coupon (
-        code,
-        `desc`,
-        type,
-        value,
-        min,
-        start_at,
-        expires_at,
-        created_at,
-        updated_at
-    )
-VALUES (
-        '新戶專屬',
-        '滿 1500 打 85 折',
-        1,
-        15,
-        1500,
-        '2025-08-01 00:00:00',
-        '2025-12-31 00:00:00',
-        NOW(),
-        NOW()
-    ),
-    (
-        '滿額折扣',
-        '滿3000折200',
-        0,
-        200,
-        3000,
-        '2025-08-01 00:00:00',
-        '2025-12-31 00:00:00',
-        NOW(),
-        NOW()
-    ),
-    (
-        '滿額折扣',
-        '滿599折100',
-        0,
-        100,
-        599,
-        '2025-08-01 00:00:00',
-        '2025-12-31 00:00:00',
-        NOW(),
-        NOW()
-    );
-
-INSERT INTO user_coupons (
-    user_id,
-    coupon_id,
-    is_used,
-    created_at,
-    attr
-)
-SELECT 122, c.id, 0, NOW(), 'force'
-FROM coupon c
-WHERE c.id IN (88, 89, 90);
-
-DELETE

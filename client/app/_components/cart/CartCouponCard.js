@@ -4,10 +4,17 @@ export default function CouponCard({
   description,
   amount,
   expireDate,
-  onClaim,
+  isActive,
+  isDisabled,
+  onClick,
 }) {
   return (
-    <div className="coupon-scroll-card">
+    <div
+      className={`coupon-scroll-card ${isActive ? "active" : ""} ${
+        isDisabled ? "disabled" : ""
+      }`}
+      onClick={!isDisabled ? onClick : undefined}
+    >
       <div className="top">
         <div className="type">{type}</div>
         <div className="name">{name}</div>
