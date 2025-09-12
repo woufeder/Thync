@@ -40,6 +40,10 @@ export default function CartSummary({
       payType,
       shippingType,
     };
+
+    // ✅ 把 finalDiscount 存進 localStorage
+    localStorage.setItem("discount", finalDiscount);
+
     localStorage.setItem("checkoutForm", JSON.stringify(checkoutForm));
     if (onCheckout) onCheckout();
   };
