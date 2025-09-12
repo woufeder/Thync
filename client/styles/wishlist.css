@@ -234,145 +234,184 @@ td {
   color: #c62828;
 }
 
-.product-card {
-  background-color: var(--Secondary100);
+.product-list {
   display: flex;
-  width: 100%;
-  height: 330px;
-  min-width: 220px;
-  max-width: 220px;
-  flex-direction: column;
-  align-items: flex-start;
-  margin-bottom: 20px;
-  gap: 10px;
-  flex: 1 0 0;
-  box-shadow: 0 4px 10px 0 rgba(48, 74, 111, 0.25);
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: 20px;
 
-  &:hover {
-    outline: 1px solid var(--Primary500);
-    transform: translateY(-5px);
-    transition: all 0.3s ease;
-  }
-
-  .product-list {
-    display: flex;
-    flex-wrap: wrap;
-    margin: auto;
-    justify-content: space-evenly;
-  }
-
-  .card-img {
-    /* width: 200px; */
-    height: 210px;
-    background-color: var(--Secondary100);
+  .product-card {
     position: relative;
+    background-color: var(--Secondary100);
+    display: flex;
+    width: calc(25% - 15px);
+    height: 330px;
+    min-width: 220px;
+    max-width: 220px;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    gap: 10px;
+    flex: 1 0 0;
+    box-shadow: 0 4px 10px 0 rgba(48, 74, 111, 0.25);
 
-    &::before {
-      content: "點擊查看商品細節";
-      background-color: var(--Primary500);
-      text-align: center;
-      line-height: 210px;
-      color: var(--White);
-      width: 100%;
-      height: 210px;
-      position: absolute;
-      opacity: 0;
+    &:hover {
+      outline: 1px solid var(--Primary500);
+      transform: translateY(-5px);
       transition: all 0.3s ease;
     }
 
-    &:hover {
+    .card-img {
+      /* width: 200px; */
+      height: 210px;
+      background-color: var(--Secondary100);
+      position: relative;
+
       &::before {
-        opacity: 0.8;
+        content: "點擊查看商品細節";
+        background-color: var(--Primary500);
+        text-align: center;
+        line-height: 210px;
+        color: var(--White);
+        width: 100%;
+        height: 210px;
+        position: absolute;
+        opacity: 0;
         transition: all 0.3s ease;
       }
-    }
-
-    img {
-      width: 220px;
-      height: 210px;
-      object-fit: cover;
-    }
-  }
-
-  .card-body {
-    width: 100%;
-    padding: 10px;
-
-    a {
-      text-decoration: none;
 
       &:hover {
-        text-decoration: underline;
+        &::before {
+          opacity: 0.8;
+          transition: all 0.3s ease;
+        }
+      }
+
+      img {
+        width: 220px;
+        height: 210px;
+        object-fit: cover;
       }
     }
-  }
 
-  .card-title {
-    width: 100%;
-    overflow: hidden;
-    color: var(--Black);
-    text-overflow: ellipsis;
-    font-weight: 500;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    /* 顯示兩行 */
-    -webkit-box-orient: vertical;
-    white-space: normal;
-    /* 讓文字可以換行 */
-  }
-
-  .card-bottom {
-    margin-top: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    /* padding: 12px 16px; */
-    p {
-      margin: 0;
-    }
-  }
-
-  .price {
-    font-size: 18px;
-    font-weight: 900;
-    color: var(--Primary800);
-  }
-
-  .btnCart {
-    position: relative;
-    display: flex;
-    padding: 8px 10px;
-    justify-content: center;
-    align-items: center;
-    gap: 2px;
-    align-self: stretch;
-    background-color: var(--Secondary800);
-    color: var(--White);
-    border-radius: 20px;
-    overflow: hidden;
-
-    &:before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: -100%;
+    .card-body {
       width: 100%;
-      height: 100%;
-      background: linear-gradient(
-        90deg,
-        transparent,
-        var(--Secondary100),
-        transparent
-      );
-      transition: left 0.5s;
+      padding: 10px;
+
+      a {
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
     }
 
-    &:hover:before {
-      left: 100%;
+    .card-title {
+      width: 100%;
+      overflow: hidden;
+      color: var(--Black);
+      text-overflow: ellipsis;
+      font-weight: 500;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      /* 顯示兩行 */
+      -webkit-box-orient: vertical;
+      white-space: normal;
+      /* 讓文字可以換行 */
+    }
+
+    .card-bottom {
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      /* padding: 12px 16px; */
+      p {
+        margin: 0;
+      }
+    }
+
+    .price {
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--Primary800);
+    }
+
+    .btnCart {
+      position: relative;
+      display: flex;
+      padding: 8px 10px;
+      justify-content: center;
+      align-items: center;
+      gap: 2px;
+      align-self: stretch;
+      background-color: var(--Secondary800);
+      color: var(--White);
+      border-radius: 20px;
+      overflow: hidden;
+
+      &:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--Secondary100),
+          transparent
+        );
+        transition: left 0.5s;
+      }
+
+      &:hover:before {
+        left: 100%;
+      }
     }
   }
 }
+
+.btn-del {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      display: flex;
+      padding: 6px 5px;
+      justify-content: center;
+      align-items: center;
+      gap: 2px;
+      align-self: stretch;
+      background-color: #ffffff;
+      color: var(--danger-500);
+      border-radius: 20px;
+      border: var(--danger-500) 1px solid;
+      overflow: hidden;
+
+      &:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--Secondary100),
+          transparent
+        );
+        transition: left 0.5s;
+      }
+
+      &:hover:before {
+        left: 100%;
+      }
+    }
 
 @media (max-width: 768px) {
   main {

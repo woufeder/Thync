@@ -11,19 +11,21 @@ import Sidebar from "@/app/_components/user/sidebar";
 import Footer from "@/app/_components/footer";
 import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCartShopping, faPlus } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCartShopping,
+  faPlus,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 
 export default function UserWishListPage() {
-  const { user, setUser } = useAuth();
+  const { user, setUser, isLoading } = useAuth();
   const [wishlist, setWishlist] = useState([]);
   const router = useRouter();
 
-  // 編輯模式狀態
-  const [isEditing, setIsEditing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-
   useEffect(() => {
     async function fetchWishlist() {
+      if (!user) return;
+
       const token = localStorage.getItem("reactLoginToken");
       const res = await fetch("http://localhost:3007/api/users/wishlist", {
         headers: { Authorization: `Bearer ${token}` },
@@ -39,7 +41,17 @@ export default function UserWishListPage() {
     fetchWishlist();
   }, [user]);
 
-  if (!user) return <p>請先登入</p>;
+  if (isLoading) {
+    return (
+      <div>
+        <Header />
+        <div className="container">
+          <p>載入中...</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (user) {
     return (
@@ -69,6 +81,43 @@ export default function UserWishListPage() {
                       }
                       alt={p.name}
                     />
+                    <button
+                      className="btn btn-del"
+                      onClick={async (e) => {
+                        e.preventDefault(); // 阻止預設行為
+                        e.stopPropagation(); // 阻止事件冒泡
+
+                        if (!confirm("確定要移除此商品的收藏嗎？")) {
+                          return;
+                        }
+
+                        try {
+                          const token = localStorage.getItem("reactLoginToken");
+                          const res = await fetch(
+                            `http://localhost:3007/api/users/wishlist/${p.id}`,
+                            {
+                              method: "DELETE",
+                              headers: { Authorization: `Bearer ${token}` },
+                            }
+                          );
+
+                          const result = await res.json();
+                          if (result.status === "success") {
+                            // 更新狀態而不是重新載入整個頁面
+                            setWishlist(
+                              wishlist.filter((item) => item.id !== p.id)
+                            );
+                          } else {
+                            alert(result.message || "移除失敗");
+                          }
+                        } catch (error) {
+                          console.error("移除收藏錯誤:", error);
+                          alert("移除失敗，請稍後再試");
+                        }
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </button>
                   </div>
                   <div className="card-body">
                     <div

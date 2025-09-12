@@ -180,7 +180,7 @@ router.get("/wishlist-status/:productId", checkToken, async (req, res) => {
   }
 });
 
-// 獲取特定 ID 使用者
+// 獲取特定 account 使用者
 router.get("/:account", async (req, res) => {
   // 路由參數
   try {
