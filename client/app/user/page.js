@@ -6,10 +6,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import Header from "../_components/header";
-import Breadcrumb from "../_components/breadCrumb";
-import Sidebar from "../_components/user/sidebar";
-import Footer from "../_components/footer";
+import Header from "@/app/_components/header";
+import Breadcrumb from "@/app/_components/breadCrumb";
+import Sidebar from "@/app/_components/user/sidebar";
+import Footer from "@/app/_components/footer";
 
 export default function UserEditPage() {
   const { user, isLoading } = useAuth();

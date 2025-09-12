@@ -107,7 +107,7 @@ router.post("/add-wishlist", checkToken, async (req, res) => {
   }
 });
 
-// ✅ 取得收藏清單
+// ✅ 取得追蹤清單
 router.get("/wishlist", checkToken, async (req, res) => {
   const userId = req.decoded.id;
   try {
@@ -137,7 +137,7 @@ router.get("/wishlist", checkToken, async (req, res) => {
   }
 });
 
-// ✅ 移除收藏
+// ✅ 移除追蹤
 router.delete("/wishlist/:productId", checkToken, async (req, res) => {
   const { productId } = req.params;
   const userId = req.decoded.id;
@@ -160,7 +160,7 @@ router.delete("/wishlist/:productId", checkToken, async (req, res) => {
   }
 });
 
-// 檢查商品是否已收藏
+// 檢查商品是否已追蹤
 router.get("/wishlist-status/:productId", checkToken, async (req, res) => {
   try {
     const userId = req.decoded.id;
@@ -169,6 +169,101 @@ router.get("/wishlist-status/:productId", checkToken, async (req, res) => {
     const [rows] = await connection.execute(
       "SELECT * FROM wishlist WHERE users_id = ? AND products_id = ?",
       [userId, productId]
+    );
+
+    res.json({
+      status: "success",
+      isWishlisted: rows.length > 0,
+    });
+  } catch (err) {
+    res.status(500).json({ status: "error", message: err.message });
+  }
+});
+
+// 收藏文章
+router.post("/add-favorites", checkToken, async (req, res) => {
+  try {
+    const userId = req.decoded.id; // 👈 從 JWT 拿 userId
+    const { articleId } = req.body;
+
+    if (!userId || !articleId) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "缺少 userId 或 articleId" });
+    }
+
+    const sql =
+      "INSERT INTO article_favorites (users_id, articles_id) VALUES (?, ?)";
+    const [result] = await connection.execute(sql, [userId, articleId]);
+
+    res.json({ status: "success", message: "收藏成功", result });
+  } catch (err) {
+    res.status(500).json({ status: "error", message: err.message });
+  }
+});
+
+// ✅ 取得收藏清單
+router.get("/favorites", checkToken, async (req, res) => {
+  const userId = req.decoded.id;
+  try {
+    const [rows] = await connection.execute(
+      `
+      SELECT 
+        a.id,
+        a.title,
+        a.content,
+        a.cover_image,
+        a.created_at,
+        c.name AS category_name
+      FROM article_favorites f
+      JOIN articles a ON f.articles_id = a.id
+      LEFT JOIN categories c ON a.category_id = c.id
+      WHERE f.users_id = ?
+        AND a.is_deleted = 0
+      ORDER BY f.id DESC
+      `,
+      [userId]
+    );
+
+    res.json({ status: "success", data: rows });
+  } catch (err) {
+    console.error("SQL error:", err);
+    res.status(500).json({ status: "error", message: err.message });
+  }
+});
+
+// ✅ 移除收藏
+router.delete("/favorites/:articleId", checkToken, async (req, res) => {
+  const { articleId } = req.params;
+  const userId = req.decoded.id;
+
+  try {
+    const [result] = await connection.execute(
+      "DELETE FROM article_favorites WHERE users_id=? AND articles_id=?",
+      [userId, articleId]
+    );
+
+    if (result.affectedRows === 0) {
+      return res
+        .status(404)
+        .json({ status: "error", message: "找不到該收藏文章" });
+    }
+
+    res.json({ status: "success", message: "已移除收藏" });
+  } catch (err) {
+    res.status(500).json({ status: "error", message: err.message });
+  }
+});
+
+// 檢查文章是否已收藏
+router.get("/favorites-status/:articleId", checkToken, async (req, res) => {
+  try {
+    const userId = req.decoded.id;
+    const { articleId } = req.params;
+
+    const [rows] = await connection.execute(
+      "SELECT * FROM article_favorites WHERE users_id = ? AND articles_id = ?",
+      [userId, articleId]
     );
 
     res.json({
