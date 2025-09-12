@@ -13,6 +13,7 @@ import {
   faCashRegister,
   faCartShopping,
   faHeart,
+  faHeartCirclePlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -23,6 +24,7 @@ export default function ProductDetail({ params }) {
   const [hasFetched, setHasFetched] = useState(false);
   const [mainImg, setMainImg] = useState(""); // 新增主圖 state
   const [qty, setQty] = useState(1);
+  const [isWishlisted, setIsWishlisted] = useState(false); // 收藏狀態
   console.log(product);
 
   useEffect(() => {
@@ -36,6 +38,32 @@ export default function ProductDetail({ params }) {
       setMainImg(product.images[0].file); // 預設第一張為主圖
     }
   }, [product]);
+
+  // 檢查收藏狀態
+  useEffect(() => {
+    async function checkWishlistStatus() {
+      if (!user || !product?.id) return;
+
+      try {
+        const token = localStorage.getItem("reactLoginToken");
+        const res = await fetch(
+          `http://localhost:3007/api/users/wishlist-status/${product.id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        const result = await res.json();
+
+        if (result.status === "success") {
+          setIsWishlisted(result.isWishlisted);
+        }
+      } catch (error) {
+        console.error("檢查收藏狀態錯誤:", error);
+      }
+    }
+
+    checkWishlistStatus();
+  }, [user, product]);
 
   if (isLoading) {
     return <div className="loader container"></div>;
@@ -70,26 +98,60 @@ export default function ProductDetail({ params }) {
     alert("已加入購物車");
   }
 
-  // 追蹤商品 開始
-  async function handleAddToWishlist(productId) {
-    console.log("[Wishlist Debug] product:", product);
+  // 切換收藏狀態
+  async function handleToggleWishlist() {
     if (!user) {
       alert("請先登入");
       return;
     }
-    const token = localStorage.getItem("reactLoginToken");
-    const res = await fetch("http://localhost:3007/api/users/add-wishlist", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ productId }),
-    });
-    const result = await res.json();
-    alert(result.message);
+
+    try {
+      const token = localStorage.getItem("reactLoginToken");
+
+      if (isWishlisted) {
+        // 移除收藏
+        const res = await fetch(
+          `http://localhost:3007/api/users/wishlist/${product.id}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const result = await res.json();
+
+        if (result.status === "success") {
+          setIsWishlisted(false);
+        } else {
+          alert(result.message || "移除收藏失敗");
+        }
+      } else {
+        // 加入收藏
+        const res = await fetch(
+          "http://localhost:3007/api/users/add-wishlist",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ productId: product.id }),
+          }
+        );
+        const result = await res.json();
+
+        if (result.status === "success") {
+          setIsWishlisted(true);
+        } else {
+          alert(result.message || "加入收藏失敗");
+        }
+      }
+    } catch (error) {
+      console.error("收藏操作錯誤:", error);
+      alert("操作失敗，請稍後再試");
+    } 
   }
-  // 追蹤商品 結束
 
   return (
     <>
@@ -154,21 +216,23 @@ export default function ProductDetail({ params }) {
             <div className="d-flex gap-3 flex-wrap">
               <button
                 onClick={() => handleAddToCart(product)}
-                className="btn btn-primary CartBtn"
+                className="btn CartBtn"
               >
                 <FontAwesomeIcon icon={faCartShopping} />
                 　加入購物車
               </button>
-              <button className="btn btn-primary CheckoutBtn">
+              <button className="btn CheckoutBtn">
                 <FontAwesomeIcon icon={faCashRegister} />
                 　直接結帳
               </button>
               <button
-                onClick={() => handleAddToWishlist(product.id)}
-                className="btn btn-primary FollowBtn"
+                onClick={handleToggleWishlist}
+                className={`btn ${
+                  isWishlisted ? "btn-follow" : "btn-unfollow"
+                }`}
               >
-                <FontAwesomeIcon icon={faHeart} />
-                　收藏商品
+                <FontAwesomeIcon icon={isWishlisted ? faHeart : faHeartCirclePlus} />
+                {isWishlisted ? "　已收藏" : "　收藏商品"}
               </button>
             </div>
           </div>
