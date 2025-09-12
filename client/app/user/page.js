@@ -20,7 +20,7 @@ export default function UserEditPage() {
   // 沒有登入不能夠觀看1
   useEffect(() => {
     if (!isLoading && !user) {
-      router.replace("/user/login");
+      window.location.href = "/user/login";
     }
   }, [user, isLoading]);
 
