@@ -40,7 +40,7 @@ UPDATE coupon
 SET expires_at = '2024-01-01 00:00:00'
 WHERE code = 'C002';
 
-SELECT * FROM users WHERE id = 115;
+SELECT * FROM users WHERE id = 124;
 
 SELECT * 
 FROM user_coupons uc
