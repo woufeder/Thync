@@ -56,4 +56,5 @@ SELECT * FROM user_coupons WHERE user_id = 1;
 SELECT * FROM coupon WHERE id IN (4,5,6);
 
 // 查詢使用者可用的優惠券
-SELECT * FROM user_coupons WHERE user_id = 115;
+
+SELECT * FROM user_coupons WHERE user_id = 122;
