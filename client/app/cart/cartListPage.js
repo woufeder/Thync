@@ -65,7 +65,7 @@ export default function CartListPage({
               onRemove={onRemove}
             />
             <hr className="cart-line" />
-            <div className="cart-coupon-wrapper">
+          
               {/* 優惠券區塊 */}
               <CartCouponArea
                 userId={userId}
@@ -79,7 +79,7 @@ export default function CartListPage({
                   localStorage.setItem("couponCode", coupon.code);
                 }}
               />
-            </div>
+
           </div>
           <div className="cart-summary-wrapper">
           <CartSummary

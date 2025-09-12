@@ -25,7 +25,47 @@
 
 /* Coupon list */
 
-.cart-coupon-wrapper .cart-coupon-list {
+.cart-coupon-wrapper {
+  position: relative;
+}
+.scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  background: rgba(55, 81, 119, 0.8);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.scroll-btn:hover {
+  background: rgba(55, 81, 119, 1);
+}
+
+.scroll-btn.left {
+  left: -20px;
+}
+.scroll-btn.right {
+  right: -20px;
+}
+
+.cart-coupon-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px 0;
+}
+
+.coupon-scroll-list {
   display: flex;
   overflow-x: auto;
   gap: 16px;
@@ -33,45 +73,36 @@
   scroll-snap-type: x mandatory;
 }
 
-.cart-coupon-wrapper .cart-coupon-list::-webkit-scrollbar {
-  display: none;
-}
-
-.cart-coupon-wrapper .coupon-scroll-card {
-  flex: 0 0 auto;
-  min-width: 250px;
-  scroll-snap-align: start;
-}
-
-.coupon-scroll-list {
-  display: flex;
-  overflow-x: auto; /* 水平滑動 */
-  gap: 16px;
-  padding: 8px 0;
-  scroll-snap-type: x mandatory;
-}
-
-.coupon-scroll-list::-webkit-scrollbar {
-  display: none; /* 隱藏捲軸 */
-}
-
 .coupon-scroll-card {
-  flex: 0 0 auto;
-  min-width: 250px;
-  scroll-snap-align: start;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-/* Coupon card */
+.coupon-scroll-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.coupon-scroll-card.active {
+  border: 2px solid #375177;
+  box-shadow: 0 0 10px rgba(55, 81, 119, 0.7);
+}
+
+.coupon-scroll-card.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .coupon-scroll-card {
   background: #f7f6f2;
   border: 1px solid #88a2bf;
   border-radius: 12px;
   box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
   overflow: hidden;
-  width: 100%;
   min-width: 375px;
   gap: 15px;
-  flex: 1 0 0;
+  flex: 0 0 auto;
+  scroll-snap-align: start;
 }
 
 .coupon-scroll-card .top {
@@ -130,16 +161,6 @@
 
 .coupon-scroll-card .get-btn:hover {
   background: #556080;
-}
-
-.coupon-grid {
-  display: flex;
-  /* height: 836px; */
-  align-items: flex-start;
-  align-content: flex-start;
-  gap: 20px;
-  align-self: stretch;
-  flex-wrap: wrap;
 }
 
 /* Responsive design */
