@@ -219,7 +219,7 @@ router.post("/", upload.none(), async (req, res) => {
         INSERT INTO user_coupons (user_id, coupon_id, is_used, created_at, attr)
         SELECT ?, c.id, 0, NOW(), 'force'
         FROM coupon c
-        WHERE c.desc IN ('滿 300 打 85 折', '滿1000折200', '僅限超商使用', '滿500折150')
+        WHERE c.desc IN ('85 折', '滿1000折200', '僅限超商使用', '滿500折150')
       `,
       [newUserId]
     );
