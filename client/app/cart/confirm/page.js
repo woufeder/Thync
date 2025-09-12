@@ -68,6 +68,7 @@ async function handleSubmitOrder() {
       (sum, item) => sum + (item.price || 0) * (item.qty || 1),
       0
     );
+
     const shipping = form.shippingType === "宅配到府" ? 80 : 60;
     const total = subtotal + shipping;
     const finalAmount = total - discount;
@@ -225,7 +226,7 @@ export default function Page() {
               <div className="panel-body">
                 <ul className="summary-list">
                   <li className="row">
-                    <span className="label">小計</span>
+                    <span className="label">商品總額</span>
                     <span>${subtotal}</span>
                   </li>
                   <li className="row">
@@ -237,10 +238,10 @@ export default function Page() {
                     <span>-{discount}</span>
                   </li>
                   <li className="row total">
-                    <span className="label">總計</span>
+                    <span className="label">總付款額</span>
                     <div className="right">
                       <div>共 {count} 件</div>
-                      <div>總共 ${total}</div>
+                      <div>${total}</div>
                     </div>
                   </li>
                 </ul>

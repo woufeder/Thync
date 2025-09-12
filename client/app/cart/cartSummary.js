@@ -7,6 +7,7 @@ export default function CartSummary({
   coupon = null,
   onCheckout,
 }) {
+  console.log("coupon type:", coupon?.type, typeof coupon?.type);
   // 狀態管理
   const [payType, setPayType] = useState("取貨付款");
   const [shippingType, setShippingType] = useState("超商取貨");
@@ -22,21 +23,27 @@ export default function CartSummary({
   );
 
   // 預設運費
-  let shipping = shippingType === "宅配到府" ? 80 : 60;
+  let baseShipping = shippingType === "宅配到府" ? 80 : 60;
+  let shipping = baseShipping;
 
-  // 如果優惠券是免運券
-  if (coupon && coupon.type === 2) {
-    shipping = 0;
+  // 如果優惠券是免運券 → 不動運費顯示，但折扣多加運費
+  let finalDiscount = discount;
+  if (coupon?.type === "free_shipping") {
+    finalDiscount += baseShipping;
   }
 
-  // 計算總額
-  const total = subtotal + shipping - discount;
+  // 總額計算
+  const total = subtotal + baseShipping - finalDiscount;
 
   const handleCheckout = () => {
     const checkoutForm = {
       payType,
       shippingType,
     };
+
+    // ✅ 把 finalDiscount 存進 localStorage
+    localStorage.setItem("discount", finalDiscount);
+
     localStorage.setItem("checkoutForm", JSON.stringify(checkoutForm));
     if (onCheckout) onCheckout();
   };
@@ -129,14 +136,14 @@ export default function CartSummary({
             商品總額 <span>${subtotal}</span>
           </li>
           <li>
-            運費總額 <span>${shipping}</span>
+            運費總額 <span>${baseShipping}</span>
           </li>
           <li className="total">
             <span className="label">統計</span>
             <div className="right">
               <span>共 {count} 件</span>
               <div className="row">
-                <span>折扣 -${discount}</span>
+                <span>折扣 -${finalDiscount}</span>
               </div>
             </div>
           </li>

@@ -15,10 +15,11 @@ export default function CouponCard({
       }`}
       onClick={!isDisabled ? onClick : undefined}
     >
+      {isActive && <div className="coupon-stamp-circle">已選擇</div>}
       <div className="top">
         <div className="type">{type}</div>
-        <div className="name">{name}</div>
         <div className="desc">{description}</div>
+        <div className="name">{name}</div>
         <div className="amount">{amount}</div>
       </div>
 

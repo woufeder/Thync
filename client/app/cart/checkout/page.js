@@ -21,6 +21,66 @@ export default function CheckoutPage() {
     address: "",
   });
 
+  function validateForm(form, mobileCarrier) {
+    // 姓名：2~20 個中文字或英文
+    const nameRegex = /^[\u4e00-\u9fa5a-zA-Z\s]{2,20}$/;
+
+    // 手機號碼：台灣 09 開頭共 10 碼
+    const phoneRegex = /^09\d{8}$/;
+
+    // Email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    // 郵遞區號：3 或 5 碼數字
+    const zipRegex = /^\d{3,5}$/;
+
+    // 手機載具：/ 開頭 + 7 碼大寫英數字
+    const carrierRegex = /^\/[A-Z0-9]{7}$/;
+
+    if (!nameRegex.test(form.receiverName)) {
+      alert("收件人姓名格式錯誤，請輸入中文或英文 2~20 字。");
+      return false;
+    }
+    if (!phoneRegex.test(form.receiverPhone)) {
+      alert("收件人手機號碼格式錯誤，請輸入 09 開頭的 10 碼數字。");
+      return false;
+    }
+    if (!emailRegex.test(form.receiverEmail)) {
+      alert("收件人 Email 格式錯誤。");
+      return false;
+    }
+    if (form.shippingType === "宅配到府") {
+      if (!zipRegex.test(form.receiverZip)) {
+        alert("郵遞區號格式錯誤，請輸入 3~5 碼數字。");
+        return false;
+      }
+      if (!form.receiverAddress.trim()) {
+        alert("請填寫收件地址。");
+        return false;
+      }
+    }
+    if (!nameRegex.test(form.buyerName)) {
+      alert("購買人姓名格式錯誤，請輸入中文或英文 2~20 字。");
+      return false;
+    }
+    if (!phoneRegex.test(form.buyerPhone)) {
+      alert("購買人手機號碼格式錯誤，請輸入 09 開頭的 10 碼數字。");
+      return false;
+    }
+    if (!emailRegex.test(form.buyerEmail)) {
+      alert("購買人 Email 格式錯誤。");
+      return false;
+    }
+    if (form.invoiceType === "手機載具") {
+      if (!carrierRegex.test(mobileCarrier)) {
+        alert("手機載具格式錯誤，必須為 / 開頭 + 7 碼大寫英數字。");
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   // 同步訂購人資訊到會員資料
   const [syncMember, setSyncMember] = useState(false);
   // 預設值
@@ -951,6 +1011,10 @@ export default function CheckoutPage() {
       alert("請填寫門市名稱與地址！");
       return;
     }
+    if (!validateForm(form, mobileCarrier)) {
+      return; // 格式不符，阻止送出
+    }
+
     localStorage.setItem("checkoutForm", JSON.stringify(form));
     window.location.href = "/cart/confirm";
   }

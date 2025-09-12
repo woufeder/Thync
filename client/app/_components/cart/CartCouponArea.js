@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import CartCouponCard from "./CartCouponCard";
 import "./CartCoupon.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCaretLeft, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 
 export default function CartCouponArea({ userId, total, onApply }) {
   console.log("CartCouponArea rendered", userId, total);
@@ -74,28 +76,34 @@ export default function CartCouponArea({ userId, total, onApply }) {
 
   return (
     <div className="cart-coupon-wrapper">
+      <h3 className="coupon-title">可用的優惠券</h3>
+      <button className="scroll-btn left" onClick={() => scrollCoupons(-1)}>
+        {" "}
+        <FontAwesomeIcon icon={faCaretLeft} />
+      </button>
       <div className="cart-coupon-area">
-        <h3>可用的優惠券</h3>
-
-        <button className="scroll-btn left" onClick={() => scrollCoupons(-1)}>
-          ←
-        </button>
         <div className="coupon-scroll-list" ref={couponListRef}>
           {coupons.map((c) => {
-            const discountPreview =
-              c.type === "amount"
-                ? `折 $${c.value}`
-                : c.type === "percent"
-                ? `打 ${c.value}%`
-                : "免運";
+            let title = "";
+            let subtitle = "";
+
+            if (c.type === "amount") {
+              subtitle = ` ${c.code} `;
+              title = `滿${c.min}元 折${c.value}元`;
+            } else if (c.type === "percent") {
+              subtitle = ` ${c.code} `;
+              title = `滿${c.min}元 享${100 - c.value}折`;
+            } else if (c.type === "free_shipping") {
+              subtitle = ` ${c.code} `;
+              title = "不限金額免運";
+            }
 
             return (
               <CartCouponCard
                 key={c.id}
-                type={c.type}
-                name={c.desc}
-                description={`滿 ${c.min} 可用`}
-                amount={discountPreview}
+                description={subtitle}
+                name={title}
+                amount=""
                 expireDate={`到期日：${new Date(
                   c.expires_at
                 ).toLocaleDateString()}`}
@@ -106,10 +114,10 @@ export default function CartCouponArea({ userId, total, onApply }) {
             );
           })}
         </div>
-        <button className="scroll-btn right" onClick={() => scrollCoupons(1)}>
-          →
-        </button>
-      </div>
+      </div>{" "}
+      <button className="scroll-btn right" onClick={() => scrollCoupons(1)}>
+        <FontAwesomeIcon icon={faCaretRight} />
+      </button>
     </div>
   );
 }

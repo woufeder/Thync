@@ -25,18 +25,36 @@
 
 /* Coupon list */
 
+.coupon-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  background: linear-gradient(90deg, #375177, #88a2bf);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  display: inline-block;
+  letter-spacing: 1px;
+}
+
 .cart-coupon-wrapper {
   position: relative;
 }
+
+.scroll-btn svg {
+  width: 40px;
+  height: 40px;
+}
+
 .scroll-btn {
+  background: transparent;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   z-index: 10;
-  background: rgba(55, 81, 119, 0.8);
-  color: #fff;
+  color: #375177;
   border: none;
-  border-radius: 50%;
   width: 40px;
   height: 40px;
   cursor: pointer;
@@ -45,24 +63,30 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  opacity: 0.6; /* 預設半透明 */
+  transition: opacity 0.2s;
   transition: background 0.2s;
 }
 
 .scroll-btn:hover {
-  background: rgba(55, 81, 119, 1);
+  opacity: 1;
 }
 
 .scroll-btn.left {
-  left: -20px;
+  left: -10px;
 }
 .scroll-btn.right {
-  right: -20px;
+  right: -10px;
 }
 
 .cart-coupon-wrapper {
   max-width: 900px;
   margin: 0 auto;
-  padding: 24px 0;
+  padding: 24px 20px;
+}
+
+.cart-coupon-area {
+  padding: 0px 25px;
 }
 
 .coupon-scroll-list {
@@ -71,6 +95,57 @@
   gap: 16px;
   padding: 8px 0;
   scroll-snap-type: x mandatory;
+  /* 隱藏 scrollbar */
+  scrollbar-width: none; /* Firefox */
+}
+
+.coupon-scroll-card {
+  position: relative;
+  overflow: hidden;
+}
+
+/* 已選擇標章 */
+.coupon-stamp-circle {
+  position: absolute;
+  top: 50%;
+  left: 80%;
+  transform: translate(-50%, -50%) rotate(-10deg);
+  width: 150px;
+  height: 150px;
+  border: 4px solid #88a2bf;
+  border-radius: 50%;
+  color: #88a2bf;
+  font-size: 35px;
+  font-weight: 650;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none; /* 不擋點擊 */
+  background: rgba(255,255,255,0.3); 
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  animation: stamp-pop 0.3s ease-out;
+  z-index: 0; /* 在底層 */
+}
+
+/* 確保卡片內容在上層 */
+.coupon-scroll-card .top,
+.coupon-scroll-card .bottom {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes stamp-pop {
+  0% {
+    transform: translate(-50%, -50%) scale(2) rotate(-10deg);
+    opacity: 0;
+  }
+  60% {
+    transform: translate(-50%, -50%) scale(0.9) rotate(-10deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1) rotate(-10deg);
+  }
 }
 
 .coupon-scroll-card {
@@ -80,12 +155,10 @@
 
 .coupon-scroll-card:hover {
   transform: translateY(-4px);
-  box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.3);
 }
 
 .coupon-scroll-card.active {
   border: 2px solid #375177;
-  box-shadow: 0 0 10px rgba(55, 81, 119, 0.7);
 }
 
 .coupon-scroll-card.disabled {
@@ -99,7 +172,7 @@
   border-radius: 12px;
   box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
   overflow: hidden;
-  min-width: 375px;
+  min-width: 300px;
   gap: 15px;
   flex: 0 0 auto;
   scroll-snap-align: start;
