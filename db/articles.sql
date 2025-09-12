@@ -1,3 +1,4 @@
+-- Active: 1747618751654@@127.0.0.1@3306@restful
 -- phpMyAdmin SQL Dump
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
@@ -154,12 +155,12 @@ INSERT INTO `articles` (`id`, `title`, `content`, `cover_image`, `category_id`, 
 -- 資料表結構 `article_favorites`
 --
 
-CREATE TABLE `article_favorites` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `article_id` int(11) NOT NULL,
-  `created_at` datetime DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+-- CREATE TABLE `article_favorites` (
+--   `id` int(11) NOT NULL,
+--   `user_id` int(11) NOT NULL,
+--   `article_id` int(11) NOT NULL,
+--   `created_at` datetime DEFAULT current_timestamp()
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
