@@ -180,10 +180,7 @@ export default function ArticlePage() {
 
   return (
     <div className="article-page">
-      <div className="container header">
-        <Header />
-      </div>
-
+      <Header />
       <main className="main-content">
         <div className="container">
           {/* Breadcrumb */}
@@ -437,7 +434,6 @@ export default function ArticlePage() {
                   )}
 
                   {/* Engagement Actions */}
-
                 </div>
               </div>
 
@@ -460,9 +456,7 @@ export default function ArticlePage() {
         </div>
       </main>
 
-      <footer>
-        <Footer />
-      </footer>
+      <Footer />
 
       {/* Scroll to top button */}
       <div
