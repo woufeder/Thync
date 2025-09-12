@@ -1,64 +1,50 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHome, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import CouponCard from "./CouponCard";
 import "./CouponArea.css";
 
 export default function CouponArea() {
-  const [activeTab, setActiveTab] = useState("claimed");
-  const [activeFilter, setActiveFilter] = useState("all");
-  const [couponCode, setCouponCode] = useState("");
+  const [coupons, setCoupons] = useState([]);
 
-  const sampleCoupons = [
-    {
-      type: "折價券",
-      name: "會員專屬",
-      description: "購買限定活動商品即可使用",
-      amount: "NT$100",
-      expireDate: "領取期限 2025/8/31",
-    },
-    {
-      type: "新用戶獨享",
-      name: "註冊禮",
-      description: "新用戶首次下單即可使用",
-      amount: "NT$50",
-      expireDate: "領取期限 2025/12/31",
-    },
-  ];
-
-  // ⬇️ 在這裡定義 tabs
-  const tabs = [
-    { id: "claimed", label: "已領取" },
-    { id: "history", label: "歷史紀錄" },
-  ];
+  useEffect(() => {
+    async function fetchCoupons() {
+      try {
+        const res = await fetch("http://localhost:3007/api/coupon/available", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("reactLoginToken")}`,
+          },
+          credentials: "include",
+        });
+        const data = await res.json();
+        setCoupons(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error("讀取優惠券失敗:", err);
+        setCoupons([]); // 發生錯誤時也給空陣列
+      }
+    }
+    fetchCoupons();
+  }, []);
 
   return (
     <div className="coupon-area">
       <div className="title">我的優惠券</div>
-
-      <div className="tabs">
-        {tabs.map((tab) => (
-          <div
-            key={tab.id}
-            className={`tab ${activeTab === tab.id ? "active" : ""}`}
-            onClick={() => setActiveTab(tab.id)}
-          >
-            {tab.label}
-          </div>
-        ))}
-      </div>
       <div className="coupon-grid">
-        {sampleCoupons.map((coupon, index) => (
+        {coupons.map((coupon) => (
           <CouponCard
-            key={index}
-            type={coupon.type}
-            name={coupon.name}
-            description={coupon.description}
-            amount={coupon.amount}
-            expireDate={coupon.expireDate}
-            onClaim={() => console.log("Claimed", index)}
+            key={coupon.id}
+            type={coupon.type === 0 ? "折價券" : "百分比/免運"} // 可自行轉換
+            name={coupon.code}
+            description={coupon.desc}
+            amount={
+              coupon.type === 1 ? `${coupon.value}% OFF` : `NT$${coupon.value}`
+            }
+            expireDate={`使用期限 ${new Date(
+              coupon.expires_at
+            ).toLocaleDateString()}`}
+            onClaim={() => console.log("使用", coupon)}
           />
         ))}
       </div>

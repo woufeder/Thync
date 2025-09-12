@@ -1,4 +1,4 @@
--- Active: 1747618751654@@127.0.0.1@3306@restful
+-- Active: 1757401082402@@127.0.0.1@3306@restful
 use restful;
 
 CREATE table coupon (
@@ -55,12 +55,5 @@ SELECT * FROM user_coupons WHERE user_id = 1;
 
 SELECT * FROM coupon WHERE id IN (4,5,6);
 
-
-INSERT INTO coupon (code, `desc`, type, value, min, start_at, expires_at, is_valid, is_active)
-VALUES ('TEST01', '測試券', 0, 50, 100, '2025-09-01 00:00:00', '2025-12-31 00:00:00', 1, 1);
-
-
-INSERT INTO user_coupons (user_id, coupon_id, attr)
-VALUES (1,'77', 'manual');
-
-SELECT id FROM coupon WHERE code = 'TEST01';
+// 查詢使用者可用的優惠券
+SELECT * FROM user_coupons WHERE user_id = 115;

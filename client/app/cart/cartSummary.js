@@ -4,7 +4,7 @@ import { useState } from "react";
 export default function CartSummary({
   items,
   discount = 0,
-  couponCode = "",
+  coupon = null,
   onCheckout,
 }) {
   // 狀態管理
@@ -20,8 +20,16 @@ export default function CartSummary({
     (sum, item) => sum + (item.price || 0) * (item.qty || 1),
     0
   );
-  // 運費規則
-  const shipping = shippingType === "宅配到府" ? 80 : 60;
+
+  // 預設運費
+  let shipping = shippingType === "宅配到府" ? 80 : 60;
+
+  // 如果優惠券是免運券
+  if (coupon && coupon.type === 2) {
+    shipping = 0;
+  }
+
+  // 計算總額
   const total = subtotal + shipping - discount;
 
   const handleCheckout = () => {
