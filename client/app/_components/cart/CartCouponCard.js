@@ -1,7 +1,4 @@
-// app/_components/cart/CartCouponCard.js
-import "./CartCoupon.css";
-
-export default function CartCouponCard({
+export default function CouponCard({
   type,
   name,
   description,
@@ -13,18 +10,20 @@ export default function CartCouponCard({
 }) {
   return (
     <div
-      className={`cart-coupon-card 
-        ${isActive ? "active" : ""} 
-        ${isDisabled ? "disabled" : ""}`}
+      className={`coupon-scroll-card ${isActive ? "active" : ""} ${
+        isDisabled ? "disabled" : ""
+      }`}
       onClick={!isDisabled ? onClick : undefined}
     >
-      <div className="coupon-left">
-        <h4>{name}</h4>
-        <p>{description}</p>
-        <p>{expireDate}</p>
+      <div className="top">
+        <div className="type">{type}</div>
+        <div className="name">{name}</div>
+        <div className="desc">{description}</div>
+        <div className="amount">{amount}</div>
       </div>
-      <div className="coupon-right">
-        <span>{amount}</span>
+
+      <div className="bottom">
+        <div className="expire">{expireDate}</div>
       </div>
     </div>
   );

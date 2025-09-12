@@ -86,6 +86,100 @@ router.get("/search", (req, res) => {
   });
 });
 
+// 追蹤商品
+router.post("/add-wishlist", checkToken, async (req, res) => {
+  try {
+    const userId = req.decoded.id; // 👈 從 JWT 拿 userId
+    const { productId } = req.body;
+
+    if (!userId || !productId) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "缺少 userId 或 productId" });
+    }
+
+    const sql = "INSERT INTO wishlist (users_id, products_id) VALUES (?, ?)";
+    const [result] = await connection.execute(sql, [userId, productId]);
+
+    res.json({ status: "success", message: "收藏成功", result });
+  } catch (err) {
+    res.status(500).json({ status: "error", message: err.message });
+  }
+});
+
+// ✅ 取得收藏清單
+router.get("/wishlist", checkToken, async (req, res) => {
+  const userId = req.decoded.id;
+  try {
+    const [rows] = await connection.execute(
+      `
+  SELECT 
+    p.id, 
+    p.name, 
+    p.price, 
+    (
+      SELECT file 
+      FROM products_imgs 
+      WHERE product_id = p.id 
+      LIMIT 1
+    ) AS first_image
+  FROM wishlist w
+  JOIN products p ON w.products_id = p.id
+  WHERE w.users_id = ?
+  `,
+      [userId]
+    );
+
+    res.json({ status: "success", data: rows });
+  } catch (err) {
+    console.error("SQL error:", err);
+    res.status(500).json({ status: "error", message: err.message });
+  }
+});
+
+// ✅ 移除收藏
+router.delete("/wishlist/:productId", checkToken, async (req, res) => {
+  const { productId } = req.params;
+  const userId = req.decoded.id;
+
+  try {
+    const [result] = await connection.execute(
+      "DELETE FROM wishlist WHERE users_id=? AND products_id=?",
+      [userId, productId]
+    );
+
+    if (result.affectedRows === 0) {
+      return res
+        .status(404)
+        .json({ status: "error", message: "找不到該收藏商品" });
+    }
+
+    res.json({ status: "success", message: "已移除收藏" });
+  } catch (err) {
+    res.status(500).json({ status: "error", message: err.message });
+  }
+});
+
+// 檢查商品是否已收藏
+router.get("/wishlist-status/:productId", checkToken, async (req, res) => {
+  try {
+    const userId = req.decoded.id;
+    const { productId } = req.params;
+
+    const [rows] = await connection.execute(
+      "SELECT * FROM wishlist WHERE users_id = ? AND products_id = ?",
+      [userId, productId]
+    );
+
+    res.json({
+      status: "success",
+      isWishlisted: rows.length > 0,
+    });
+  } catch (err) {
+    res.status(500).json({ status: "error", message: err.message });
+  }
+});
+
 // 獲取特定 ID 使用者
 router.get("/:account", async (req, res) => {
   // 路由參數
@@ -196,7 +290,7 @@ router.post("/", upload.none(), async (req, res) => {
     }
 
     // 從 randomuser.me 取得預設使用者圖片
-    const img = await getRandomAvatar();
+    const img = "user.jpg";
 
     // 把密碼加密
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -204,7 +298,30 @@ router.post("/", upload.none(), async (req, res) => {
     // 建立 SQL 語法
     const sql =
       "INSERT INTO `users` (account, mail, password, img) VALUES (?, ?, ?, ?);";
-    await connection.execute(sql, [account, mail, hashedPassword, img]);
+    const [result] = await connection.execute(sql, [
+      account,
+      mail,
+      hashedPassword,
+      img,
+    ]);
+
+    const newUserId = result.insertId;
+
+    // 註冊成功 → 發放固定三張優惠券
+    await connection.query(
+      `
+        INSERT INTO user_coupons (user_id, coupon_id, is_used, created_at, attr)
+        SELECT ?, c.id, 0, NOW(), 'force'
+        FROM coupon c
+        WHERE c.desc IN ('滿 300 打 85 折', '滿1000折200', '僅限超商使用', '滿500折150')
+      `,
+      [newUserId]
+    );
+
+    // 產生 JWT token（一定要帶 id）
+    const token = jwt.sign({ id: newUserId, mail, account }, secretKey, {
+      expiresIn: "30m",
+    });
 
     res.status(201).json({
       status: "success",
@@ -247,7 +364,6 @@ router.put("/:account", upload.single("img"), async (req, res) => {
     let img = null;
     if (req.file) {
       img = req.file.filename; // 這裡現在會有正確的文件名
-      console.log("上傳的圖片文件名:", img);
     }
 
     // 執行更新
@@ -306,8 +422,6 @@ router.put("/:account", upload.single("img"), async (req, res) => {
       message: error.message || "更新失敗",
     });
   }
-  console.log("req.body:", req.body);
-  console.log("req.file:", req.file);
 });
 
 // 刪除(特定帳號的)使用者
@@ -339,7 +453,6 @@ router.delete("/:account", async (req, res) => {
 router.post("/login", upload.none(), async (req, res) => {
   try {
     const { mail, password } = req.body;
-    console.log(mail);
 
     const sqlCheck1 = "SELECT * FROM `users` WHERE `mail` = ? AND is_valid=1;";
     let user = await connection.execute(sqlCheck1, [mail]).then(([result]) => {
@@ -366,6 +479,7 @@ router.post("/login", upload.none(), async (req, res) => {
     const token = jwt.sign(
       // 加密進 token 的內容
       {
+        id: user.id,
         mail: user.mail,
         img: user.img,
       },
@@ -455,6 +569,7 @@ router.post("/status", checkToken, async (req, res) => {
 
     const token = jwt.sign(
       {
+        id: user.id,
         mail: user.mail,
         img: user.img,
       },
@@ -637,8 +752,6 @@ router.post("/verification-code", upload.none(), async (req, res) => {
 // Google 登入
 router.post("/google-login-simple", async (req, res) => {
   try {
-    console.log("請求資料:", req.body);
-
     const { email, name, picture, googleId } = req.body;
 
     // 基本驗證
@@ -713,6 +826,7 @@ router.post("/google-login-simple", async (req, res) => {
     // 產生 JWT token
     const token = jwt.sign(
       {
+        id: user.id,
         mail: user.mail,
         img: user.img,
       },
@@ -728,8 +842,6 @@ router.post("/google-login-simple", async (req, res) => {
       img: user.img,
     };
 
-    console.log("準備回傳的資料:", { token: "***", user: userData });
-
     res.status(200).json({
       success: true,
       message: "Google 登入成功",
@@ -739,7 +851,7 @@ router.post("/google-login-simple", async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("簡化版 Google 登入錯誤:", error);
+    console.error("Google 登入錯誤:", error);
     res.status(500).json({
       success: false,
       message: "Google 登入失敗：" + error.message,
@@ -749,7 +861,6 @@ router.post("/google-login-simple", async (req, res) => {
 
 // 變更密碼
 router.post("/change-password", checkToken, upload.none(), async (req, res) => {
-  console.log("進入 change-password");
   try {
     const { mail } = req.decoded; // 從 JWT token 取得使用者信箱
     const { oldPassword, newPassword, confirmPassword } = req.body;
@@ -835,7 +946,6 @@ router.post("/change-password", checkToken, upload.none(), async (req, res) => {
 function checkToken(req, res, next) {
   // 讀取前端送來的 token，從 HTTP Header 取得 Authorization 欄位
   let token = req.get("Authorization");
-  console.log(token);
   if (token && token.includes("Bearer ")) {
     // 純提取 Token 字串，去掉前面的 'Bearer '
     token = token.slice(7);
@@ -858,21 +968,20 @@ function checkToken(req, res, next) {
       message: "無登入驗證資料，請重新登入",
     });
   }
-  // console.log("收到的 token:", token);
 }
 
-async function getRandomAvatar() {
-  const API = "https://randomuser.me/api";
-  try {
-    const response = await fetch(API);
-    if (!response.ok)
-      throw new Error(`${response.status}: ${response.statusText}`);
-    const result = await response.json();
-    return result.results[0].picture.large;
-  } catch (error) {
-    console.log("getRandomAvatar", error.message);
-    return null;
-  }
-}
+// async function getRandomAvatar() {
+//   const API = "https://randomuser.me/api";
+//   try {
+//     const response = await fetch(API);
+//     if (!response.ok)
+//       throw new Error(`${response.status}: ${response.statusText}`);
+//     const result = await response.json();
+//     return result.results[0].picture.large;
+//   } catch (error) {
+//     console.log("getRandomAvatar", error.message);
+//     return null;
+//   }
+// }
 
 export default router;

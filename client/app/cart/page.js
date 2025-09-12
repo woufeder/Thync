@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
 import CartHeader from "@/app/_components/cart/cartHeader";
 import CartSteps from "@/app/_components/cart/cartSteps";
 import RecommendList from "@/app/_components/cart/recommendList";
@@ -13,9 +14,26 @@ export default function CartPage() {
   const [items, setItems] = useState([]);
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
-  // TODO: 取得登入會員 id，暫用假資料
-  const userId = 97;
 
+  const [userId, setUserId] = useState(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        // JWT payload 只有 { mail, img }，這裡用 mail 當 key
+        setUserId(decoded.mail);
+      } catch (err) {
+        console.error("Token 解碼失敗:", err);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     // 從 localStorage 取得購物車資料
@@ -30,7 +48,7 @@ export default function CartPage() {
     localStorage.setItem("cartItems", JSON.stringify(items));
   }, [items]);
 
-
+  if (!mounted) return null; // SSR 階段不輸出任何東西
 
   return (
     <>
@@ -58,7 +76,6 @@ export default function CartPage() {
       </main>
 
       <Footer />
-
     </>
   );
 }

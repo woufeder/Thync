@@ -14,11 +14,18 @@ export default function CartListPage({
   couponMsg,
   setCouponMsg,
 }) {
-  // 新增：自動從 localStorage 讀取 cart 資料
+  // 從 localStorage 讀取 cart 資料
   useEffect(() => {
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    if (!userId) return; // 沒有登入就不要讀
+    const cart = JSON.parse(localStorage.getItem(`cart_${userId}`) || "[]");
     if (cart.length) setItems(cart);
-  }, [setItems]);
+  }, [userId, setItems]);
+
+  useEffect(() => {
+    if (userId) {
+      localStorage.setItem(`cart_${userId}`, JSON.stringify(items));
+    }
+  }, [items, userId]);
 
   const { products } = useProduct();
   // 父層傳入 setItems
@@ -58,29 +65,32 @@ export default function CartListPage({
               onRemove={onRemove}
             />
             <hr className="cart-line" />
+          
+              {/* 優惠券區塊 */}
+              <CartCouponArea
+                userId={userId}
+                total={total}
+                onApply={(discount, coupon) => {
+                  setDiscount(discount);
+                  setCouponCode(coupon.code);
 
-            {/* 優惠券區塊 */}
-            <CartCouponArea
-              userId={userId}
-              total={total}
-              onApply={(discount, coupon) => {
-                setDiscount(discount);
-                setCouponCode(coupon.code);
+                  // 🔹 同步存入 localStorage，讓 Checkout / Confirm 頁能讀到
+                  localStorage.setItem("discount", discount);
+                  localStorage.setItem("couponCode", coupon.code);
+                }}
+              />
 
-                // 🔹 同步存入 localStorage，讓 Checkout / Confirm 頁能讀到
-                localStorage.setItem("discount", discount);
-                localStorage.setItem("couponCode", coupon.code);
-              }}
-            />
           </div>
+          <div className="cart-summary-wrapper">
           <CartSummary
             items={items}
             discount={discount}
-            couponCode={couponCode}
+            coupon={selectedCoupon}
             onCheckout={() => {
               window.location.href = "/cart/checkout";
             }}
           />
+          </div>
         </div>
       </main>
     </>
