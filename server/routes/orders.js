@@ -5,20 +5,17 @@ import jwt from "jsonwebtoken";
 const secretKey = process.env.JWT_SECRET_KEY;
 
 const router = express.Router();
-// JWT 驗證中介層
+// JWT 驗證中介層（精簡版）
 function checkToken(req, res, next) {
   let token = req.get("Authorization");
-  console.log("[order][checkToken] 收到的 Authorization header:", token);
   if (token && token.includes("Bearer ")) {
     token = token.slice(7);
     jwt.verify(token, secretKey, (error, decoded) => {
       if (error) {
-        console.log("[order][JWT 驗證錯誤]", error);
-        res.status(401).json({
+        return res.status(401).json({
           status: "error",
           message: "登入驗證失效，請重新登入",
         });
-        return;
       }
       req.decoded = decoded;
       req.userId = decoded.id;
