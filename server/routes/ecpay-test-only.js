@@ -46,7 +46,7 @@ router.get("/", function (req, res) {
   const ItemName = itemName; // String(400) 如果商品名稱有多筆，需在金流選擇頁一行一行顯示商品名稱的話，商品名稱請以符號#分隔。
 
   // 付款結果通知回傳網址(這網址可能需要網路上的真實網址或IP，才能正確接收回傳結果)
-  const ReturnURL = "https://www.ecpay.com.tw";
+  const ReturnURL = "http://localhost:3000/cart/success";
   const OrderResultURL = "http://localhost:3007/ecpay-callback";
   // const ClientBackURL = "http://localhost:3000/cart/success"; //前端成功頁面
   const ChoosePayment = "ALL";
