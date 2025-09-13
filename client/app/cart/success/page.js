@@ -16,6 +16,10 @@ const recommend = Array(6).fill({
 });
 
 export default function Page() {
+  // 結帳成功頁進入時清空購物車
+  useEffect(() => {
+    localStorage.removeItem("cartItems");
+  }, []);
   return (
     <>
       <header>

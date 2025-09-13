@@ -14,6 +14,11 @@ export default function SuccessPage() {
   const params = useParams();
   const router = useRouter();
   const orderNo = params?.orderNo;
+
+  // 結帳成功頁進入時清空購物車
+  useEffect(() => {
+    localStorage.removeItem("cartItems");
+  }, []);
   return (
     <>
       <Header />
