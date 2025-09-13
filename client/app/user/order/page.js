@@ -1,6 +1,6 @@
 "use client";
 
-import styles from "@/styles/order.css";
+import "@/styles/order.css";
 import { useAuth } from "@/hooks/use-auth";
 import Image from "next/image";
 import Link from "next/link";
@@ -16,6 +16,56 @@ export default function UserOrderPage() {
   // 編輯模式狀態
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  // 訂單資料狀態
+  const [orders, setOrders] = useState([]);
+  // 取得訂單資料
+  useEffect(() => {
+    if (!user) return;
+    const fetchOrders = async () => {
+      try {
+        const token = localStorage.getItem("reactLoginToken");
+        const res = await fetch("http://localhost:3007/api/orders", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const result = await res.json();
+        console.log("[訂單資料]", result);
+        if (Array.isArray(result.data)) {
+          setOrders(result.data);
+          result.data.forEach((order, idx) => {
+            console.log(`[訂單${idx}]`, order);
+          });
+        } else {
+          setOrders([]);
+        }
+      } catch (err) {
+        setOrders([]);
+        console.error("訂單資料獲取失敗", err);
+      }
+    };
+    fetchOrders();
+  }, [user]);
+
+  // 日期格式化工具
+function formatDate(dateStr) {
+  if (!dateStr) return "";
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return dateStr;
+  function pad(n) { return n.toString().padStart(2, "0"); }
+  return (
+    d.getFullYear() +
+    "-" +
+    pad(d.getMonth() + 1) +
+    "-" +
+    pad(d.getDate()) +
+    " " +
+    pad(d.getHours()) +
+    ":" +
+    pad(d.getMinutes()) +
+    ":" +
+    pad(d.getSeconds())
+  );
+}
 
   if (user) {
     return (
@@ -35,56 +85,62 @@ export default function UserOrderPage() {
                 <thead>
                   <tr>
                     <th>訂單編號</th>
-                    <th>購買日期</th>
-                    <th>出貨日期</th>
-                    <th>付款方式</th>
                     <th>訂單金額</th>
-                    <th>狀態</th>
+                    <th>訂購日期</th>
+                    <th>付款方式</th>
+                    <th>付款日期</th>
+                    <th>取貨方式</th>
+                    <th>訂單狀態</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>
-                      <a href="#" className="order-link">
-                        964591253761
-                      </a>
-                    </td>
-                    <td>2025-09-01</td>
-                    <td>2025-09-03</td>
-                    <td>線界付款</td>
-                    <td>NT$ 1,200</td>
-                    <td>
-                      <span className="status status-paid">已付款</span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <a href="#" className="order-link">
-                        964591253761
-                      </a>
-                    </td>
-                    <td>2025-09-01</td>
-                    <td>2025-09-03</td>
-                    <td>線界付款</td>
-                    <td>NT$ $1,200</td>
-                    <td>
-                      <span className="status status-unpaid">未付款</span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <a href="#" className="order-link">
-                        964591253761
-                      </a>
-                    </td>
-                    <td>2025-09-01</td>
-                    <td>2025-09-03</td>
-                    <td>線界付款</td>
-                    <td>NT$ $1,200</td>
-                    <td>
-                      <span className="status status-cancelled">已取貨</span>
-                    </td>
-                  </tr>
+                  {orders.map((order, idx) => (
+                    <tr key={idx}>
+                      <td>
+                        <a href={`/user/order/${order.numerical_order}`} className="order-link">
+                          {order.numerical_order}
+                        </a>
+                      </td>
+                      <td>
+                        <p>${Math.floor(order.total)}</p>
+                      </td>
+                      <td>
+                        <p>{formatDate(order.order_date)}</p>
+                      </td>
+                      <td>
+                        <p>
+                          {order.pay_method === "TWQR_OPAY"
+                            ? "信用卡"
+                            : order.pay_method}
+                        </p>
+                      </td>
+                      <td>
+                        <p>{order.paid_at ? formatDate(order.paid_at) : "未付款"}</p>
+                      </td>
+                      <td>
+                        <p> {order.delivery_method}</p>
+                      </td>
+                      <td>
+                        <p
+                          className={
+                            order.status_now === "paid"
+                              ? "status status-paid"
+                              : order.status_now === "pending"
+                              ? "status status-unpaid"
+                              : order.status_now === "cancelled"
+                              ? "status status-cancelled"
+                              : "status"
+                          }
+                        >
+                          {order.status_now === "paid"
+                            ? "已付款"
+                            : order.status_now === "pending"
+                            ? "未付款"
+                            : order.status_now}
+                        </p>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -98,14 +154,14 @@ export default function UserOrderPage() {
                 </div>
                 <div className="order-body">
                   <div className="product-section">
-                    <div className="product-image">
+                    {/* <div className="product-image">
                       <Image
                         src="/images/product-img.jpg"
                         alt=""
                         width={100}
                         height={100}
                       />
-                    </div>
+                    </div> */}
                   </div>
                   <div className="price-section">
                     <div className="price">NT$ 1,200</div>

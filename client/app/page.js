@@ -97,11 +97,15 @@ export default function Home() {
       ) : (
         // 桌機版結構
         <header>
-          <img
-            src="/images/index/header.png"
-            alt="header"
+          <video
+            src="/IwannaCRY.mp4"
             className="img-fluid"
             ref={topImgRef}
+            autoPlay
+            loop
+            muted
+            playsInline
+            style={{ width: "100%", height: "auto", objectFit: "cover", filter: "brightness(0.85)" }}
           />
           <div className={`${showHeader ? "showheader" : "fade"} `}>
             <Header />

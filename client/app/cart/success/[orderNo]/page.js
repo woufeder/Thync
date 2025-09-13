@@ -41,7 +41,7 @@ export default function SuccessPage() {
               <button
                 className="order"
                 type="button"
-                onClick={() => router.push(`/user/orders/${orderNo}`)}
+                onClick={() => router.push(`/user/order/${orderNo}`)}
               >
                 查看訂單狀態
               </button>

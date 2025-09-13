@@ -84,8 +84,10 @@ async function handleSubmitOrder() {
       },
       body: JSON.stringify({
         delivery_method: form.shippingType,
+        delivery_store: form.storeName,
         delivery_address: form.storeAddress,
         recipient: form.receiverName,
+        recipient_phone: form.receiverPhone,
         pay_method: "ecpay",
         subtotal,
         discount,

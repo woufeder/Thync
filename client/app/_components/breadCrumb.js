@@ -62,7 +62,7 @@ export default function Breadcrumb({ product }) {
   if (pathname.startsWith("/user")) {
     items.push({ label: "會員中心", href: "/user" })
     if (pathname.includes("edit")) items.push({ label: "會員資料管理", href: "/user/edit" })
-    if (pathname.includes("order")) items.push({ label: "我的訂單", href: "/user/order" })
+    if (pathname.includes("order")) items.push({ label: "訂單查詢", href: "/user/order" })
     if (pathname.includes("coupon")) items.push({ label: "我的優惠券", href: "/user/coupon" })
     if (pathname.includes("wishlist")) items.push({ label: "追蹤商品", href: "/user/wishlist" })
     if (pathname.includes("favorites")) items.push({ label: "已收藏文章", href: "/user/favorites" })
