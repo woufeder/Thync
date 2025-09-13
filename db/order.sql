@@ -37,7 +37,7 @@ CREATE TABLE order_items (
   price DECIMAL(10,2) NOT NULL DEFAULT 0.00 COMMENT '當下商品單價快照',
   -- 外鍵
   FOREIGN KEY (order_id) REFERENCES orders(id),
-  FOREIGN KEY (product_id) REFERENCES product(id)
+  FOREIGN KEY (product_id) REFERENCES products(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 

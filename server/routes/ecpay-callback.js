@@ -48,7 +48,7 @@ router.post("/", bodyParser.urlencoded({ extended: false }), async (req, res) =>
       MerchantTradeNo,
     ]);
 
-    res.send("1|OK"); // 綠界規範
+  res.redirect(302, `http://localhost:3000/cart/success/${MerchantTradeNo}`);
   } catch (err) {
     console.error("回呼處理失敗:", err);
     res.status(500).send("0|Error");

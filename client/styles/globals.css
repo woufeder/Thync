@@ -154,6 +154,7 @@ body {
 
 header {
   box-shadow: var(--card-shadow);
+  position: relative;
   z-index: 100;
 }
 

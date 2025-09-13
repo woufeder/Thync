@@ -62,7 +62,7 @@ export default function UserFavoritesPage() {
               <Breadcrumb />
             </div>
             <div className="a-cards">
-              <div className="row">
+              <div className="row userfavorites">
                 {wishlist.map((article) => (
                     <div key={article.id} className="col">
                   <Link
@@ -85,7 +85,7 @@ export default function UserFavoritesPage() {
                       />
                       <div className="content">
                         <div className="note">
-                          <p className="time">${article.created_at}</p>
+                          <p className="time">{article.created_at}</p>
                           <button
                             className="btn "
                             onClick={(e) => e.preventDefault()}
@@ -94,12 +94,12 @@ export default function UserFavoritesPage() {
                           </button>
                         </div>
                         <h5 className="title">{article.title}</h5>
-                        <p className="description">
+                        {/* <p className="description">
                           {article.content
                             ? article.content.substring(0, 150) + "..."
                             : "暫無內容"}
-                        </p>
-                        <div className="footer">
+                        </p> */}
+                        {/* <div className="footer">
                           <div className="admin">
                             <img
                               src="/images/admin.jpg"
@@ -109,7 +109,7 @@ export default function UserFavoritesPage() {
                             <p className="name">財神爺小編</p>
                           </div>
                           <span className="btn ">閱讀更多</span>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   </Link>

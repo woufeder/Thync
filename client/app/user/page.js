@@ -15,12 +15,12 @@ export default function UserEditPage() {
   const { user, isLoading } = useAuth();
   const router = useRouter();
 
-  console.log("UserEditPage - isLoading:", isLoading, "user:", user);
+  // console.log("UserEditPage - isLoading:", isLoading, "user:", user);
 
   // 沒有登入不能夠觀看1
   useEffect(() => {
     if (!isLoading && !user) {
-      router.replace("/user/login");
+      window.location.href = "/user/login";
     }
   }, [user, isLoading]);
 

@@ -82,7 +82,7 @@ export default function UserWishListPage() {
                       alt={p.name}
                     />
                     <button
-                      className="btn btn-del"
+                      className="btn trash"
                       onClick={async (e) => {
                         e.preventDefault(); // 阻止預設行為
                         e.stopPropagation(); // 阻止事件冒泡

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
 import { jwtDecode } from "jwt-decode";
 import CartHeader from "@/app/_components/cart/cartHeader";
 import CartSteps from "@/app/_components/cart/cartSteps";
@@ -11,6 +12,7 @@ import CartListPage from "./cartListPage";
 import EmptyCartPage from "./emptyCart";
 
 export default function CartPage() {
+  const { user, isLoading } = useAuth();
   const [items, setItems] = useState([]);
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
@@ -29,6 +31,7 @@ export default function CartPage() {
         const decoded = jwtDecode(token);
         // JWT payload 只有 { mail, img }，這裡用 mail 當 key
         setUserId(decoded.mail);
+        
       } catch (err) {
         console.error("Token 解碼失敗:", err);
       }
@@ -48,34 +51,45 @@ export default function CartPage() {
     localStorage.setItem("cartItems", JSON.stringify(items));
   }, [items]);
 
+  // 沒有登入不能夠觀看1
+  useEffect(() => {
+    if (!isLoading && !user) {
+      window.location.href = "/user/login";
+    }
+  }, [user, isLoading]);
+
   if (!mounted) return null; // SSR 階段不輸出任何東西
 
-  return (
-    <>
-      <header>
-        <Header />
-      </header>
-      <main>
-        <CartHeader />
-        <CartSteps active={0} />
-        {items.length === 0 ? (
-          <EmptyCartPage />
-        ) : (
-          <CartListPage
-            items={items}
-            setItems={setItems}
-            couponCode={couponCode}
-            setCouponCode={setCouponCode}
-            discount={discount}
-            setDiscount={setDiscount}
-            userId={userId}
-          />
-        )}
-        {/* 推薦商品區塊 */}
-        <RecommendList />
-      </main>
+  if (isLoading || !user) return null;
 
-      <Footer />
-    </>
-  );
+  if (user) {
+    return (
+      <>
+        <header>
+          <Header />
+        </header>
+        <main>
+          <CartHeader />
+          <CartSteps active={0} />
+          {items.length === 0 ? (
+            <EmptyCartPage />
+          ) : (
+            <CartListPage
+              items={items}
+              setItems={setItems}
+              couponCode={couponCode}
+              setCouponCode={setCouponCode}
+              discount={discount}
+              setDiscount={setDiscount}
+              userId={userId}
+            />
+          )}
+          {/* 推薦商品區塊 */}
+          <RecommendList />
+        </main>
+
+        <Footer />
+      </>
+    );
+  }
 }

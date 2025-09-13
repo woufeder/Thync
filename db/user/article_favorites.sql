@@ -1,3 +1,4 @@
+-- Active: 1747618801539@@127.0.0.1@3306@restful
 DROP TABLE `article_favorites`;
 USE restful;
 CREATE TABLE article_favorites (
@@ -8,3 +9,4 @@ CREATE TABLE article_favorites (
     FOREIGN KEY (articles_id) REFERENCES articles(id)
 );
 
+SHOW ENGINE INNODB STATUS\G

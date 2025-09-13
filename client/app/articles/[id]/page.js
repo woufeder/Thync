@@ -394,7 +394,7 @@ export default function ArticlePage() {
                 {/* Article Body */}
                 <div className="article-body">
                   <div className="content-wrapper">
-                    <div
+                    <pre
                       dangerouslySetInnerHTML={{ __html: article.content }}
                     />
                   </div>

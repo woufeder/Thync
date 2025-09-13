@@ -114,11 +114,11 @@ export default function AdminLoginPage() {
       try {
         localStorage.setItem('adminLoggedIn', 'true')
         localStorage.setItem('adminLoginTime', Date.now().toString())
-      } catch (err) {}
+      } catch (err) { }
 
       // 跳轉到後台管理頁面
       setTimeout(() => {
-        router.push("/admin");
+        window.location.href = "/admin";
       }, 300);
     } else {
       // 驗證失敗，顯示錯誤訊息
@@ -143,9 +143,9 @@ export default function AdminLoginPage() {
             <div className="header">
               <div className="d-flex align-items-center justify-content-between">
                 <img src="/images/LOGO.png" alt="LOGO" />
-                <a 
-                  onClick={() => (window.location.href = "/")} 
-                  className="home-link" 
+                <a
+                  onClick={() => (window.location.href = "/")}
+                  className="home-link"
                   aria-label="回到首頁"
                   style={{
                     textDecoration: "none",
@@ -167,7 +167,7 @@ export default function AdminLoginPage() {
                 </Link>
               </div>
             </div>
-            
+
             <main>
               <form
                 id="admin-login-form"
@@ -208,8 +208,8 @@ export default function AdminLoginPage() {
                       required
                       placeholder="請輸入管理員密碼"
                     />
-                    <FontAwesomeIcon 
-                      icon={faLock} 
+                    <FontAwesomeIcon
+                      icon={faLock}
                       className="fa-solid fa-lock"
                       style={{ color: '#666', marginRight: '10px' }}
                     />
@@ -233,8 +233,8 @@ export default function AdminLoginPage() {
                 )}
 
                 {/* 登入按鈕 */}
-                <button 
-                  className="btn-primary" 
+                <button
+                  className="btn-primary"
                   type="submit"
                   disabled={isLoading}
                   style={{
