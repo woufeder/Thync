@@ -1,12 +1,40 @@
+
 import express from "express";
 import connection from "../connect.js";
+import jwt from "jsonwebtoken";
+const secretKey = process.env.JWT_SECRET_KEY;
 
 const router = express.Router();
+// JWT 驗證中介層
+function checkToken(req, res, next) {
+  let token = req.get("Authorization");
+  console.log("[order][checkToken] 收到的 Authorization header:", token);
+  if (token && token.includes("Bearer ")) {
+    token = token.slice(7);
+    jwt.verify(token, secretKey, (error, decoded) => {
+      if (error) {
+        console.log("[order][JWT 驗證錯誤]", error);
+        res.status(401).json({
+          status: "error",
+          message: "登入驗證失效，請重新登入",
+        });
+        return;
+      }
+      req.decoded = decoded;
+      req.userId = decoded.id;
+      next();
+    });
+  } else {
+    res.status(401).json({
+      status: "error",
+      message: "無登入驗證資料，請重新登入",
+    });
+  }
+}
 
-router.post("/", async (req, res) => {
+router.post("/", checkToken, async (req, res) => {
   try {
     const {
-      user_id,
       delivery_method,
       delivery_address,
       recipient,
@@ -28,7 +56,7 @@ router.post("/", async (req, res) => {
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         numerical_order,
-        user_id || 97, // 先硬塞一個 user，等你有會員系統再改
+        req.userId,
         delivery_method || null,
         delivery_address || null,
         recipient || null,

@@ -73,11 +73,15 @@ async function handleSubmitOrder() {
     const finalAmount = total - discount;
 
     // 2. 建立訂單
+  // 取得 JWT token，key 要和 use-auth.js 一致
+  const token = localStorage.getItem("reactLoginToken");
     const resOrder = await fetch("http://localhost:3007/api/orders", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": token ? `Bearer ${token}` : "",
+      },
       body: JSON.stringify({
-        user_id: 1, // 先寫死，等會員系統好了再換
         delivery_method: form.shippingType,
         delivery_address: form.storeAddress,
         recipient: form.receiverName,

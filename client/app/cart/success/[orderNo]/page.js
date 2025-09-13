@@ -7,7 +7,7 @@ import CartSteps from "@/app/_components/cart/cartSteps";
 import RecommendList from "@/app/_components/cart/recommendList";
 import Header from "@/app/_components/header";
 import Footer from "@/app/_components/footer";
-import "../success.css";
+import "@/app/cart/success/success.css";
 
 
 // 推薦商品假資料（與 cartPage.js 統一格式）

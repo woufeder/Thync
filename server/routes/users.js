@@ -1041,6 +1041,7 @@ router.post("/change-password", checkToken, upload.none(), async (req, res) => {
 function checkToken(req, res, next) {
   // 讀取前端送來的 token，從 HTTP Header 取得 Authorization 欄位
   let token = req.get("Authorization");
+  console.log("checkToken 收到的 Authorization header:", token);
   if (token && token.includes("Bearer ")) {
     // 純提取 Token 字串，去掉前面的 'Bearer '
     token = token.slice(7);
@@ -1055,6 +1056,7 @@ function checkToken(req, res, next) {
       }
       // 將解碼後的 payload(加密的 token 內容) 存入 req 物件，之後路由才知道是誰要登出(執行動作)
       req.decoded = decoded;
+      
       next();
     });
   } else {
@@ -1079,4 +1081,5 @@ function checkToken(req, res, next) {
 //   }
 // }
 
+export { checkToken };
 export default router;

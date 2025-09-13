@@ -212,7 +212,13 @@ export function AuthProvider({ children }) {
         console.log("[checkToken] isLoading=false");
       }
     };
-    checkToken();
+    // 只有有 token 才呼叫 checkToken
+    if (localStorage.getItem(appKey)) {
+      checkToken();
+    } else {
+      setUser(null);
+      setIsLoading(false);
+    }
   }, []);
 
   // 路由保護
