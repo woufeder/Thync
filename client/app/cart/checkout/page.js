@@ -1067,9 +1067,9 @@ export default function CheckoutPage() {
 
   return (
     <>
-      <header>
+
         <Header />
-      </header>
+
       <main>
         <CartHeader />
         <CartSteps active={1} />

@@ -175,9 +175,7 @@ export default function Page() {
 
   return (
     <>
-      <header>
         <Header />
-      </header>
       <main>
         <CartHeader />
         <CartSteps active={2} />

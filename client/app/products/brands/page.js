@@ -11,9 +11,9 @@ export default function BrandsPage() {
 
   return (
     <>
-      <header>
+      
         <Header />
-      </header>
+      
 
       <div className="container">
         <Breadcrumb />

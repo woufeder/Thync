@@ -1,4 +1,9 @@
 import "./cart.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faPlus,
+  faMinus,
+} from "@fortawesome/free-solid-svg-icons";
 
 export default function CartTable({ items, onQtyChange, onRemove }) {
   return (
@@ -24,9 +29,11 @@ export default function CartTable({ items, onQtyChange, onRemove }) {
             </td>
             <td>${item.price || 0}</td>
             <td className="qty-control">
-              <button onClick={() => onQtyChange(item, -1)}>-</button>
-              <span>{item.qty || 1}</span>
-              <button onClick={() => onQtyChange(item, 1)}>+</button>
+              <div className="d-flex align-items-center gap-2">
+                <button onClick={() => onQtyChange(item, -1)} className="btn btn-outline-secondary"><FontAwesomeIcon icon={faMinus} /></button>
+                <span>{item.qty || 1}</span>
+                <button onClick={() => onQtyChange(item, 1)} className="btn btn-outline-secondary"><FontAwesomeIcon icon={faPlus} /></button>
+              </div>
             </td>
             <td>${(item.price || 0) * (item.qty || 1)}</td>
             <td>
