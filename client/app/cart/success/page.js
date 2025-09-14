@@ -7,6 +7,7 @@ import RecommendList from "@/app/_components/cart/recommendList";
 import Header from "@/app/_components/header";
 import Footer from "@/app/_components/footer";
 import "./success.css";
+import "@/app/_components/cart/cartShared.css";
 
 // 推薦商品假資料（與 cartPage.js 統一格式）
 const recommend = Array(6).fill({

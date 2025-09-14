@@ -241,7 +241,7 @@
   padding: 25px;
 }
 
-.row {
+.checkout-pagerow {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -372,100 +372,6 @@ label input::placeholder {
   justify-content: flex-end;
   gap: 50px;
   margin: 32px 32px;
-}
-
-/* ===== 推薦區 ===== */
-.recommend-section {
-  max-width: auto;
-  margin: 32px auto 0 auto;
-  background: #f7f6f2;
-  border-radius: 8px;
-  padding: 24px;
-  position: relative;
-  box-shadow: 0 4px 4px rgba(39, 74, 120, 0.4);
-}
-
-.recommend-section::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 5px;
-  width: 100%;
-  border-radius: 8px 8px 0 0;
-  background: linear-gradient(90deg, #88a2bf, #375177);
-}
-
-.recommend-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: #4a6fa5;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.recommend-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(167px, 1fr));
-  gap: 16px;
-  border-top: 4px solid #e8f4f8;
-  padding-top: 25px;
-}
-
-.recommend-item {
-  background: #f7f6f2;
-  border: 1px solid #e0e7ef;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
-  overflow: hidden;
-}
-
-.recommend-item img {
-  width: 100%;
-  aspect-ratio: 4/3;
-  object-fit: cover;
-  display: block;
-  border-radius: 0;
-  margin: 0 0 8px;
-  background: transparent;
-}
-
-.recommend-item-title {
-  font-weight: 600;
-  color: #333;
-  margin: 8px 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  min-height: 2.8em;
-}
-
-.recommend-price {
-  color: #4a6fa5;
-  font-weight: 700;
-  margin-bottom: 4px;
-}
-
-.recommend-item-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 4px 2px 8px;
-}
-
-.recommend-btn {
-  background: #6c7ba0;
-  color: #fff;
-  border: 0;
-  border-radius: 16px;
-  padding: 6px 12px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
 }
 
 /* ===== 中型斷點：縮側邊距 ===== */

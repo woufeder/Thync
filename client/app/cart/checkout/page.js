@@ -8,6 +8,7 @@ import Header from "@/app/_components/header";
 import Footer from "@/app/_components/footer";
 import { useShip711StoreOpener } from "@/hooks/use-ship-711-store";
 import "./checkout.css";
+import "@/app/_components/cart/cartShared.css";
 
 export default function CheckoutPage() {
   // 門市資訊顯示狀態
@@ -1073,7 +1074,7 @@ export default function CheckoutPage() {
       <main>
         <CartHeader />
         <CartSteps active={1} />
-        <div className="container">
+        <div className="container checkout-page">
           <section className="checkout">
             {/* 配送方式 */}
             <div className="panel">

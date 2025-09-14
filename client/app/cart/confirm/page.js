@@ -7,6 +7,7 @@ import RecommendList from "@/app/_components/cart/recommendList";
 import Header from "@/app/_components/header";
 import Footer from "@/app/_components/footer";
 import "./confirm.css";
+import "@/app/_components/cart/cartShared.css";
 
 
 // 這是原本串綠界測試 API 的程式碼

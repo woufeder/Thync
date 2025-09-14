@@ -56,7 +56,7 @@ export default function CartListPage({
 
   return (
     <>
-      <main className="container">
+      <main className="container ">
         <div className="cart-container">
           <div className="cart-main">
             <CartTable
