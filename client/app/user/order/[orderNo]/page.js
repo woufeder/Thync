@@ -2,8 +2,6 @@
 
 import "@/styles/order.css";
 import { useAuth } from "@/hooks/use-auth";
-import Image from "next/image";
-import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Header from "@/app/_components/header";
@@ -44,26 +42,26 @@ export default function UserOrderPage() {
     fetchOrder();
   }, [user, orderNo]);
 
-// 日期格式化工具
-const formatDate = (dateStr) => {
-  if (!dateStr) return "";
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return dateStr;
-  const pad = (n) => n.toString().padStart(2, "0");
-  return (
-    d.getFullYear() +
-    "-" +
-    pad(d.getMonth() + 1) +
-    "-" +
-    pad(d.getDate()) +
-    " " +
-    pad(d.getHours()) +
-    ":" +
-    pad(d.getMinutes()) +
-    ":" +
-    pad(d.getSeconds())
-  );
-};
+  // 日期格式化工具
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "";
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    const pad = (n) => n.toString().padStart(2, "0");
+    return (
+      d.getFullYear() +
+      "-" +
+      pad(d.getMonth() + 1) +
+      "-" +
+      pad(d.getDate()) +
+      " " +
+      pad(d.getHours()) +
+      ":" +
+      pad(d.getMinutes()) +
+      ":" +
+      pad(d.getSeconds())
+    );
+  };
 
   if (!user) {
     return (
@@ -77,6 +75,8 @@ const formatDate = (dateStr) => {
       <div>
         <Header />
         <div className="container mt-4 mb-4">
+
+
           <div className="main-content">
             <h2>訂單明細</h2>
             <div>載入中...</div>
@@ -89,57 +89,115 @@ const formatDate = (dateStr) => {
   }
   // 僅顯示必要欄位
   return (
-    <div>
+    <div className="order-detail-page">
       <Header />
-      <div className="container mt-4 mb-4">
-        <div className="main-content">
-          <h2>訂單明細</h2>
-          <div style={{ marginBottom: 24 }}>
-            <strong>訂單編號：</strong> {order.numerical_order}<br />
-            <strong>訂單狀態：</strong> {order.status_now === "paid" ? "已付款" : order.status_now === "pending" ? "未付款" : order.status_now}<br />
-            <strong>訂購日期：</strong> {formatDate(order.order_date)}<br />
-            <strong>付款方式：</strong> {order.pay_method === "TWQR_OPAY" ? "信用卡" : order.pay_method}<br />
+      <div className="d-flex container h-700 mt-4 mb-4">
+        <Sidebar />
+
+
+
+        <div className="container mt-4 mb-4">
+          <div className="breadcrumb">
+            <Breadcrumb />
           </div>
-          <h3>商品明細</h3>
-          <table style={{ width: "100%", marginBottom: 24 }}>
-            <thead>
-              <tr>
-                <th>商品名稱</th>
-                <th>數量</th>
-                <th>單價</th>
-                <th>小計</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(order.items || []).map((item, idx) => (
-                <tr key={idx}>
-                  <td>{item.product_name || item.product_id}</td>
-                  <td>{item.quantity}</td>
-                  <td>${item.price}</td>
-                  <td>${item.price * item.quantity}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <div style={{ textAlign: "right" }}>
-            <div>商品小計：${Math.floor(order.total)}</div>
-            <div style={{ fontWeight: "bold", color: "#c62828", fontSize: 20 }}>訂單金額：${Math.floor(order.final_amount || order.total)}</div>
+
+          <div className="status-info">
+            <div className="d-flex flex-row">
+              <p><strong>訂單狀態│</strong><span className="danger500"> {order.status_now === "paid" ? "已付款" : order.status_now === "pending" ? "未付款" : order.status_now}</span></p>
+              <p className="ms-auto"><strong>訂單編號│</strong> {order.numerical_order}</p>
+            </div>
+            <div className="d-flex flex-row">
+              <p><strong>訂購日期│</strong>
+                {formatDate(order.order_date)}
+              </p>
+            </div>
+          </div>
+          <div className="order-info mt-4">
+            <div className="list">
+              <table>
+                <thead>
+                  <tr>
+                    <th>商品明細</th>
+                    <th>單價</th>
+                    <th>數量</th>
+                    <th>小計</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(order.items || []).map((item, idx) => (
+                    <tr key={idx}>
+                      <td>{item.product_name || item.product_id}</td>
+                      <td>${Math.floor(item.price)}</td>
+                      <td>{item.quantity}</td>
+                      <td>${Math.floor(item.price * item.quantity)}</td>
+                    </tr>
+                  ))}
+                  <tr>
+                    <td></td>
+                    <td></td>
+                    <td>商品小計</td>
+                    <td>${Math.floor(order.total)}</td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <td></td>
+                    <td>運費</td>
+                    <td>$60</td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <td></td>
+                    <td>折扣</td>
+                    <td>-${(() => {
+                      if (!order.discount_info) return 0;
+                      if (typeof order.discount_info === 'number') return order.discount_info;
+                      if (typeof order.discount_info === 'string') {
+                        try {
+                          const obj = JSON.parse(order.discount_info);
+                          return obj.discount || 0;
+                        } catch {
+                          return order.discount_info;
+                        }
+                      }
+                      if (typeof order.discount_info === 'object' && order.discount_info !== null) {
+                        return order.discount_info.discount || 0;
+                      }
+                      return 0;
+                    })()}</td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <td></td>
+                    <td>訂單金額</td>
+                    <td className="price">${Math.floor(order.final_amount || order.total)}</td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <td></td>
+                    <td>付款方式</td>
+                    <td>{order.delivery_method}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
           {/* 收件資訊區塊 */}
-          <div style={{ marginTop: 40, border: "1px solid #ccc", borderRadius: 8, background: "#f9f9f9", padding: 24 }}>
-            <h3 style={{ borderBottom: "1px solid #ccc", paddingBottom: 8, marginBottom: 16 }}>收件資訊</h3>
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div className="delivery-info mt-4">
+            <div className="header">
+              <h6 className="w-100 text-center">收件資訊</h6>
+            </div>
+            <div className="info d-flex flex-column gap-3">
               <div>
-                <strong>收件姓名：</strong> {order.recipient || "-"}
+                <strong>收件姓名│</strong> {order.recipient || "-"}
               </div>
               <div>
-                <strong>收件手機：</strong> {order.recipient_phone || "-"}
+                <strong>收件手機│</strong> {order.recipient_phone || "-"}
               </div>
               <div>
-                <strong>收件門市：</strong> {order.delivery_store || "-"}
+                <strong>收件門市│</strong> {order.delivery_store || "-"}
               </div>
               <div>
-                <strong>收件地址：</strong> {order.delivery_address || "-"}
+                <strong>收件地址│</strong> {order.delivery_address || "-"}
               </div>
             </div>
           </div>
