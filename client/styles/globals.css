@@ -442,3 +442,14 @@ footer {
     transform: rotate(0.5turn);
   }
 }
+
+
+@media screen and (max-width: 768px) {
+  .logo {
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+  }
+
+}

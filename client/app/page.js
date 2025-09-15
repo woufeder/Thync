@@ -1,18 +1,18 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-
-import Image from "next/image";
 import styles from "@/styles/index.css";
-import Link from "next/link";
-
 import Header from "./_components/header";
 import Footer from "./_components/footer";
 import ArticleCard from "./_components/articleCard";
+
 import EventCard from "./_components/eventCard";
 
 export default function Home() {
   const [isMobile, setIsMobile] = useState(false);
   const [showHeader, setShowHeader] = useState(false);
+
+
+
   const topImgRef = useRef(null);
 
   useEffect(() => {
@@ -26,6 +26,27 @@ export default function Home() {
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+
+  // 文章資料 state
+  const [articles, setArticles] = useState([]);
+  const [articlesLoading, setArticlesLoading] = useState(true);
+  const [articlesError, setArticlesError] = useState(null);
+
+  useEffect(() => {
+    setArticlesLoading(true);
+    fetch("http://localhost:3007/api/articles?limit=6")
+      .then(res => res.json())
+      .then(data => {
+        setArticles(data?.data?.articles || []);
+        setArticlesLoading(false);
+      })
+      .catch(err => {
+        setArticlesError(err.message);
+        setArticlesLoading(false);
+      });
+  }, []);
+
 
   useEffect(() => {
     const handleResize = () => {
@@ -84,12 +105,6 @@ export default function Home() {
       {isMobile ? (
         // 手機版結構
         <header>
-          <img
-            src="/images/index/header.png"
-            alt="header"
-            className="img-fluid"
-            ref={topImgRef}
-          />
           <div className="showheader">
             <Header />
           </div>
@@ -97,6 +112,15 @@ export default function Home() {
       ) : (
         // 桌機版結構
         <header>
+          <div className="TOP">
+            <img
+              src="/images/LOGO.png"
+              alt="Large Logo"
+              className="img-fluid"
+            />
+            <h3>Think what hearts can see
+              Sync where minds run free</h3>
+          </div>
           <video
             src="/IwannaCRY.mp4"
             className="img-fluid"
@@ -105,7 +129,7 @@ export default function Home() {
             loop
             muted
             playsInline
-            style={{ width: "100%", height: "auto", objectFit: "cover", filter: "brightness(0.85)" }}
+            style={{ width: "100%", height: "auto", objectFit: "cover", filter: "brightness(0.)" }}
           />
           <div className={`${showHeader ? "showheader" : "fade"} `}>
             <Header />
@@ -172,24 +196,11 @@ export default function Home() {
         <div className="container ">
           <div className="a-cards">
             <div className="row">
-              <div className="col ">
-                <ArticleCard />
-              </div>
-              <div className="col">
-                <ArticleCard />
-              </div>
-              <div className="col">
-                <ArticleCard />
-              </div>
-              <div className="col">
-                <ArticleCard />
-              </div>
-              <div className="col">
-                <ArticleCard />
-              </div>
-              <div className="col">
-                <ArticleCard />
-              </div>
+              {articles.map(article => (
+                <div className="col" key={article.id}>
+                  <ArticleCard article={article} />
+                </div>
+              ))}
             </div>
           </div>
         </div>
