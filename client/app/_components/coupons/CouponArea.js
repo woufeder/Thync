@@ -1,8 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHome, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import CouponCard from "./CouponCard";
 import "./CouponArea.css";
 
@@ -35,16 +33,27 @@ export default function CouponArea() {
         {coupons.map((coupon) => (
           <CouponCard
             key={coupon.id}
-            type={coupon.type === 0 ? "折價券" : "百分比/免運"} // 可自行轉換
+            type={
+              coupon.type === 0
+                ? "折價券"
+                : coupon.type === 1
+                ? "折扣券"
+                : coupon.type === 2
+                ? "免運券"
+                : "其他"
+            }
             name={coupon.code}
             description={coupon.desc}
-            amount={
-              coupon.type === 1 ? `${coupon.value}% OFF` : `NT$${coupon.value}`
-            }
             expireDate={`使用期限 ${new Date(
               coupon.expires_at
             ).toLocaleDateString()}`}
-            onClaim={() => console.log("使用", coupon)}
+            status={
+              new Date(coupon.expires_at) < new Date()
+                ? "expired"
+                : coupon.is_used
+                ? "used"
+                : "usable"
+            }
           />
         ))}
       </div>

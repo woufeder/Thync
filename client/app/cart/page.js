@@ -6,6 +6,7 @@ import { jwtDecode } from "jwt-decode";
 import CartHeader from "@/app/_components/cart/cartHeader";
 import CartSteps from "@/app/_components/cart/cartSteps";
 import RecommendList from "@/app/_components/cart/recommendList";
+import "@/app/_components/cart/cartShared.css";
 import Header from "../_components/header";
 import Footer from "../_components/footer";
 import CartListPage from "./cartListPage";
@@ -31,7 +32,6 @@ export default function CartPage() {
         const decoded = jwtDecode(token);
         // JWT payload 只有 { mail, img }，這裡用 mail 當 key
         setUserId(decoded.mail);
-
       } catch (err) {
         console.error("Token 解碼失敗:", err);
       }
@@ -67,8 +67,28 @@ export default function CartPage() {
       <>
         <Header />
         <main>
-          <CartHeader />
-          <CartSteps active={0} />
+          <div className="cart-header-steps">
+            <div className="cartIcon">
+              <button
+                className="back-mobile"
+                onClick={() => window.history.back()}
+              >
+                <i className="fa-solid fa-arrow-left"></i>
+              </button>
+              <i className="fas fa-shopping-cart"></i> 購物車
+            </div>
+            <CartSteps active={0} />
+            <button
+              className="backtomain"
+              onClick={() => window.history.back()}
+            >
+              <i
+                className="fa-solid fa-turn-down"
+                style={{ transform: "rotate(90deg)" }}
+              ></i>
+              回上頁
+            </button>
+          </div>
           {items.length === 0 ? (
             <EmptyCartPage />
           ) : (
@@ -86,7 +106,6 @@ export default function CartPage() {
           <div className="container">
             <RecommendList />
           </div>
-
         </main>
 
         <Footer />

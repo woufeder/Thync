@@ -1,20 +1,20 @@
-:root {
-  --mobile-design-width: 430px;
-}
-
-/* ===== Base ===== */
-* {
-  box-sizing: border-box;
-}
-
-body {
-  background: var(--Secondary100);
-}
-
+/* ===== Base RWD 調整 ===== */
 main {
   font-family: "Noto Sans TC", sans-serif;
   margin: 0;
-  padding: 0 192px;
+  padding: 0 16px; /* 手機預設留白 */
+}
+
+@media (min-width: 768px) {
+  main {
+    padding: 0 40px;
+  }
+}
+
+@media (min-width: 1024px) {
+  main {
+    padding: 0 192px;
+  }
 }
 
 /* ===== Cart Header ===== */
@@ -22,7 +22,7 @@ main {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 50px;
+  margin: 20px;
   height: 44px;
   position: relative;
   z-index: 1;
@@ -35,7 +35,7 @@ main {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-left: 9%;
+  margin-left: 0;
 }
 
 .backtomain {
@@ -49,22 +49,75 @@ main {
   padding: 14px 20px;
   font-size: 16px;
   cursor: pointer;
-  margin-right: 9%;
+  margin-right: 0;
 }
-
 .backtomain i {
   font-size: 15px;
 }
+.cart-header-steps {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 20px; /* 手機 */
+}
 
-/* ===== Steps ===== */
+.back-mobile {
+  display: none; /* 預設隱藏 */
+}
+
+@media (max-width: 1024px) {
+  .back-mobile {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    font-size: 14px;
+    color: #274a78;
+    cursor: pointer;
+  }
+}
+
+/* 單一版本，讓它水平對齊 header */
 .cart-steps {
-  position: relative;
-  top: -44px;
-  margin: 0;
-  padding: 0 160px;
+  flex: 1; /* 撐開中間 */
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 0; /* 移除內距 */
+  position: static; /* 移掉舊的 top:-44px */
+}
+@media (max-width: 768px) {
+  .cart-steps {
+    display: none;
+  }
+}
+@media (min-width: 768px) {
+  .cart-header {
+    margin: 50px 60px;
+  }
+  .cartIcon {
+    margin-left: 1%;
+    font-size: 18px;
+  }
+}
+
+@media (min-width: 768px) {
+  .cart-header-steps {
+    margin: 50px 20px; /* 平板以上 */
+  }
+}
+
+@media (min-width: 768px) {
+  .cart-steps {
+    padding: 0 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .cart-steps {
+    padding: 0 10px;
+  }
 }
 
 .cart-step {
@@ -114,6 +167,10 @@ main {
   background: #d7e1ea;
 }
 
+.cart-step.active:not(:first-child)::before {
+  background: var(--Primary800);
+}
+
 .cart-step.active .cart-step-circle {
   border-color: var(--Primary800);
 }
@@ -150,12 +207,24 @@ main {
   background: var(--Primary800);
 }
 
+/* 預設隱藏 (手機、平板都不顯示) */
+.backtomain {
+  display: none;
+}
+
+/* 桌機以上才顯示 */
+@media (min-width: 1024px) {
+  .backtomain {
+    display: inline-flex;
+  }
+}
+
 /* ===== Recommend Section ===== */
 .recommend-section {
   margin: 32px 0px 64px;
   background: var(--Secondary100);
   border-radius: 8px;
-  padding: 45px;
+  padding: 24px;
   position: relative;
   box-shadow: 0 4px 4px rgba(39, 74, 120, 0.4);
 }
@@ -183,14 +252,26 @@ main {
 
 .recommend-list {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 5px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
   border-top: 4px solid #e8f4f8;
   padding-top: 25px;
 }
 
+@media (min-width: 768px) {
+  .recommend-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .recommend-list {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
 .recommend-item {
-  width: 95%;
+  width: 100%;
   background: var(--Secondary100);
   border: 1px solid #e0e7ef;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
@@ -206,14 +287,12 @@ main {
 }
 
 .recommend-item-title {
-  /* font-size: 14px; */
   overflow: hidden;
   color: var(--Black);
   text-overflow: ellipsis;
   font-weight: 500;
   display: -webkit-box;
   -webkit-line-clamp: 2;
-  /* 顯示兩行 */
   -webkit-box-orient: vertical;
   white-space: normal;
   padding: 0 10px;
@@ -223,7 +302,6 @@ main {
   color: var(--Primary800);
   font-size: 18px;
   font-weight: 800;
-  /* margin-bottom: 4px; */
   padding: 5px 10px;
 }
 
@@ -234,98 +312,37 @@ main {
   padding: 12px 2px 16px;
 }
 
-.recommend-btn{
-    position: relative;
-    display: flex;
-    padding: 0px 10px;
-    justify-content: center;
-    align-items: center;
-    gap: 2px;
-    align-self: stretch;
-    background-color: var(--Secondary800);
-    color: var(--White);
-    border-radius: 20px;
-    overflow: hidden;
-    margin-right: 10px;
-
-    &:hover {
-      background-color: var(--Secondary800);
-      color: var(--White);
-    }
-
-    &:before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, var(--Secondary100), transparent);
-      transition: left 0.5s;
-    }
-
-    &:hover:before {
-      left: 100%;
-    }
-  }
-
-
-  /* ===== Success card ===== */
-.section1 {
-  max-width: 360px;
-  margin: 40px auto;
-  border-radius: 8px;
-  padding: 50px 24px;
-  text-align: center;
+.recommend-btn {
+  position: relative;
+  display: flex;
+  padding: 0px 10px;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  align-self: stretch;
+  background-color: var(--Secondary800);
+  color: var(--White);
+  border-radius: 20px;
+  overflow: hidden;
+  margin-right: 10px;
 }
 
-.successMessage {
-  max-width: 360px;
-  margin: 40px auto;
-  background: #F7F6F2;
-  border: 1px solid #e6ebf1;
-  border-radius: 8px;
-  padding: 50px 24px;
-  text-align: center;
-  box-shadow: 0 4px 4px rgba(39, 74, 120, .4);
+.recommend-btn:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--Secondary100),
+    transparent
+  );
+  transition: left 0.5s;
 }
 
-.thanks {
-  font-size: 18px;
-  font-weight: 700;
-  color: #274a78;
-  margin-bottom: 8px;
-}
-
-.orderNumber {
-  font-size: 12px;
-  color: #8a96a3;
-  margin-bottom: 16px;
-}
-
-.successMessage button {
-  display: block;
-  width: 220px;
-  margin: 0 auto 12px;
-  padding: 10px 0;
-  border: 0;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: .15s;
-}
-
-.product {
-  background: #95AFCB;
-  color: #fff;
-  padding: 13px 55px;
-  font-size: 16px;
-}
-
-.order {
-  background: #274a78;
-  color: #fff;
-  padding: 13px 55px;
-  font-size: 16px;
+.recommend-btn:hover:before {
+  left: 100%;
 }

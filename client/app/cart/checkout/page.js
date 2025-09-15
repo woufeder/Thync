@@ -1068,12 +1068,28 @@ export default function CheckoutPage() {
 
   return (
     <>
-
-        <Header />
+      <Header />
 
       <main>
-        <CartHeader />
-        <CartSteps active={1} />
+        <div className="cart-header-steps">
+          <div className="cartIcon">
+            <button
+              className="back-mobile"
+              onClick={() => window.history.back()}
+            >
+              <i className="fa-solid fa-arrow-left"></i>
+            </button>
+            <i className="fas fa-shopping-cart"></i> 購物車
+          </div>
+          <CartSteps active={1} />
+          <button className="backtomain" onClick={() => window.history.back()}>
+            <i
+              className="fa-solid fa-turn-down"
+              style={{ transform: "rotate(90deg)" }}
+            ></i>
+            回上頁
+          </button>
+        </div>
         <div className="container checkout-page">
           <section className="checkout">
             {/* 配送方式 */}
