@@ -1,9 +1,53 @@
 import express from "express";
 import multer from "multer";
+import path from "path";
+import fs from "fs";
 import mysql from "mysql2/promise";
 import connection from "../connect.js";
+import { fileURLToPath } from "url";
 
-const upload = multer();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// 文章圖片上傳設定
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadPath = path.join(
+      __dirname,
+      "../../client/public/images/articles/"
+    );
+    
+    // 確保目錄存在
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
+    
+    cb(null, uploadPath);
+  },
+  filename: function (req, file, cb) {
+    // 生成唯一文件名：cover_時間戳_隨機數.副檔名
+    const timestamp = Date.now();
+    const randomNum = Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    const uniqueName = `cover_${timestamp}_${randomNum}${ext}`;
+    cb(null, uniqueName);
+  },
+});
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB 限制
+  },
+  fileFilter: function (req, file, cb) {
+    // 只允許圖片文件
+    if (file.mimetype.startsWith("image/")) {
+      cb(null, true);
+    } else {
+      cb(new Error("只允許上傳圖片文件"));
+    }
+  },
+});
 const router = express.Router();
 
 
@@ -490,8 +534,8 @@ router.post("/", upload.single('cover_image'), async (req, res) => {
     // 處理封面圖片
     let coverImage = null;
     if (req.file) {
-      // 這裡應該處理圖片上傳，暫時直接使用檔名
-      coverImage = req.file.originalname;
+      // 使用multer處理後的檔案名
+      coverImage = req.file.filename;
     }
 
     // 插入文章
@@ -569,7 +613,25 @@ router.put("/:id", upload.single('cover_image'), async (req, res) => {
     // 處理封面圖片
     let coverImage = null;
     if (req.file) {
-      coverImage = req.file.originalname;
+      coverImage = req.file.filename;
+      
+      // 如果上傳了新圖片且存在舊圖片，刪除舊圖片
+      if (current_cover_image) {
+        const oldImagePath = path.join(
+          __dirname,
+          "../../client/public/images/articles/",
+          current_cover_image
+        );
+        
+        if (fs.existsSync(oldImagePath)) {
+          try {
+            fs.unlinkSync(oldImagePath);
+            console.log(`已刪除舊圖片: ${current_cover_image}`);
+          } catch (error) {
+            console.error(`刪除舊圖片失敗: ${error.message}`);
+          }
+        }
+      }
     } else if (keep_current_image === 'true' && current_cover_image) {
       coverImage = current_cover_image;
     }

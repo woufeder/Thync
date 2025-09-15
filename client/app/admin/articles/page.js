@@ -359,32 +359,62 @@ export default function ArticlesAdminPage() {
 
                             {/* 分頁控制 */}
                             {totalPages > 1 && (
-                                <div className="admin-pagination">
+                                <div className="pagination">
                                     <button
-                                        onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                                        className="page-btn"
                                         disabled={currentPage === 1}
-                                        className="pagination-btn"
+                                        onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                                     >
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                            <polyline points="15,18 9,12 15,6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M15.1602 7.41L10.5802 12L15.1602 16.59L13.7502 18L7.75016 12L13.7502 6L15.1602 7.41Z" fill="#101C35" />
                                         </svg>
-                                        上一頁
                                     </button>
-                                    
-                                    <div className="pagination-info">
-                                        <span className="current-page">{currentPage}</span>
-                                        <span className="page-separator">/</span>
-                                        <span className="total-pages">{totalPages}</span>
-                                    </div>
-                                    
+
+                                    {(() => {
+                                        const pages = []
+                                        const totalPagesNum = totalPages
+
+                                        if (totalPagesNum <= 5) {
+                                            // 如果總頁數 <= 5，顯示所有頁碼
+                                            for (let i = 1; i <= totalPagesNum; i++) {
+                                                pages.push(i)
+                                            }
+                                        } else {
+                                            // 如果總頁數 > 5，智能顯示頁碼
+                                            if (currentPage <= 3) {
+                                                // 當前頁在前面，顯示 1, 2, 3, 4, 5
+                                                pages.push(1, 2, 3, 4, 5)
+                                            } else if (currentPage >= totalPagesNum - 2) {
+                                                // 當前頁在後面，顯示最後 5 頁
+                                                for (let i = totalPagesNum - 4; i <= totalPagesNum; i++) {
+                                                    pages.push(i)
+                                                }
+                                            } else {
+                                                // 當前頁在中間，顯示前後各 2 頁
+                                                for (let i = currentPage - 2; i <= currentPage + 2; i++) {
+                                                    pages.push(i)
+                                                }
+                                            }
+                                        }
+
+                                        return pages.map(pageNum => (
+                                            <button
+                                                key={pageNum}
+                                                className={`page-btn ${currentPage === pageNum ? 'active' : ''}`}
+                                                onClick={() => setCurrentPage(pageNum)}
+                                            >
+                                                {pageNum}
+                                            </button>
+                                        ))
+                                    })()}
+
                                     <button
-                                        onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                                        className="page-btn"
                                         disabled={currentPage === totalPages}
-                                        className="pagination-btn"
+                                        onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                                     >
-                                        下一頁
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                            <polyline points="9,18 15,12 9,6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M8.83984 7.41L13.4198 12L8.83984 16.59L10.2498 18L16.2498 12L10.2498 6L8.83984 7.41Z" fill="#101C35" />
                                         </svg>
                                     </button>
                                 </div>
