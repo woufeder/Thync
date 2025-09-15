@@ -239,27 +239,29 @@ export default function Page() {
             </div>
 
             {/* 訂單金額摘要 */}
-            <div className="panel">
+            <div className="panel summary">
               <h3 className="panel-title">訂單金額</h3>
               <div className="panel-body">
                 <ul className="summary-list">
-                  <li className="row">
+                  <li className="summary-item">
                     <span className="label">商品總額</span>
-                    <span>${subtotal}</span>
+                    <span className="value">${subtotal}</span>
                   </li>
-                  <li className="row">
+                  <li className="summary-item">
                     <span className="label">運費</span>
-                    <span>${shipping}</span>
+                    <span className="value">${shipping}</span>
                   </li>
-                  <li className="row">
+                  <li className="summary-item">
                     <span className="label">折扣</span>
-                    <span>-{discount}</span>
+                    <span className="value discount">-{discount}</span>
                   </li>
-                  <li className="row total">
-                    <span className="label">總付款額</span>
+                  <li className="summary-total">
+                    <div className="left">
+                      <strong>總付款額</strong>
+                      <small>共 {count} 件</small>
+                    </div>
                     <div className="right">
-                      <div>共 {count} 件</div>
-                      <div>${total}</div>
+                      <strong className="price">${total}</strong>
                     </div>
                   </li>
                 </ul>

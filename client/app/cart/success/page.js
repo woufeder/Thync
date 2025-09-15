@@ -27,8 +27,25 @@ export default function Page() {
         <Header />
       </header>
       <main>
-        <CartHeader />
-        <CartSteps active={3} />
+        <div className="cart-header-steps">
+          <div className="cartIcon">
+            <button
+              className="back-mobile"
+              onClick={() => window.history.back()}
+            >
+              <i className="fa-solid fa-arrow-left"></i>
+            </button>
+            <i className="fas fa-shopping-cart"></i> 購物車
+          </div>
+          <CartSteps active={3} />
+          <button className="backtomain" onClick={() => window.history.back()}>
+            <i
+              className="fa-solid fa-turn-down"
+              style={{ transform: "rotate(90deg)" }}
+            ></i>
+            回上頁
+          </button>
+        </div>
         <div className="container">
           {/* 頂部：購物車 + 回上頁 + 流程條 */}
 
@@ -42,14 +59,14 @@ export default function Page() {
               <button
                 className="product"
                 type="button"
-                onClick={() => window.location.href = "/products"}
+                onClick={() => (window.location.href = "/products")}
               >
                 繼續購物
               </button>
               <button
                 className="order"
                 type="button"
-                onClick={() => window.location.href = "/user/orders"}
+                onClick={() => (window.location.href = "/user/orders")}
               >
                 查看訂單狀態
               </button>
