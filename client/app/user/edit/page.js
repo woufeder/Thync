@@ -1,6 +1,7 @@
 "use client";
 
 import styles from "@/styles/user-profile.css";
+import "@/styles/loader.css";
 import { useAuth } from "@/hooks/use-auth";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,6 +14,7 @@ import Footer from "@/app/_components/footer";
 export default function UserEditPage() {
   const { user, setUser } = useAuth();
   const [formData, setFormData] = useState(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // 編輯模式狀態
   const [isEditing, setIsEditing] = useState(false);
@@ -21,7 +23,15 @@ export default function UserEditPage() {
 
   // 當 user 載入後，初始化 formData
   useEffect(() => {
-    if (user) {
+    if (!isInitialized) {
+      setIsInitialized(true);
+    }
+
+    if (user === null && isInitialized) {
+      window.location.href = "/user/login";
+    }
+
+    if (user && isInitialized) {
       console.log("初始化用戶資料:", user);
       setFormData({
         account: user.account ?? "",
@@ -37,11 +47,12 @@ export default function UserEditPage() {
         img: user.img ?? "",
       });
       console.log("初始化 formData:", user);
+      setIsInitialized(true);
     }
-  }, [user]);
+  }, [user, isInitialized]);
 
   // 等待 user 載入中
-  if (!formData) return <div className="loader"></div>;
+  if (!isInitialized || !formData) return <div className="loader"></div>;
 
   // 處理表單輸入變化
   const handleInputChange = (e) => {
