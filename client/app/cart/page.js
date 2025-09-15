@@ -31,7 +31,7 @@ export default function CartPage() {
         const decoded = jwtDecode(token);
         // JWT payload 只有 { mail, img }，這裡用 mail 當 key
         setUserId(decoded.mail);
-        
+
       } catch (err) {
         console.error("Token 解碼失敗:", err);
       }
@@ -65,9 +65,7 @@ export default function CartPage() {
   if (user) {
     return (
       <>
-        <header>
-          <Header />
-        </header>
+        <Header />
         <main>
           <CartHeader />
           <CartSteps active={0} />
@@ -85,7 +83,10 @@ export default function CartPage() {
             />
           )}
           {/* 推薦商品區塊 */}
-          <RecommendList />
+          <div className="container">
+            <RecommendList />
+          </div>
+
         </main>
 
         <Footer />

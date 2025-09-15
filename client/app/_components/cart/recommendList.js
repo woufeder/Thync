@@ -57,7 +57,36 @@ export default function RecommendList() {
               <p className="recommend-item-title">{p.name}</p>
               <div className="recommend-item-footer">
                 <div className="recommend-price">${p.price}</div>
-                <button className="btn recommend-btn" onClick={() => router.push(`/cart`)}>
+                <button
+                  className="btn recommend-btn"
+                  onClick={() => {
+                    // 統一加入購物車資料結構
+                    const cart = JSON.parse(localStorage.getItem("cartItems") || "[]");
+                    const exist = cart.find((i) => i.id === p.id);
+                    const cartProduct = {
+                      id: p.id,
+                      product_name: p.name || p.product_name || "",
+                      price: p.price,
+                      images: p.images || (p.first_image ? [{ file: p.first_image }] : []),
+                      intro: p.intro || "",
+                      introImages: p.introImages || [],
+                      brand_id: p.brand_id,
+                      brand_name: p.brand_name,
+                      model: p.model,
+                      qty: 1,
+                    };
+                    let newCart;
+                    if (exist) {
+                      newCart = cart.map((i) =>
+                        i.id === p.id ? { ...i, qty: i.qty + 1 } : i
+                      );
+                    } else {
+                      newCart = [...cart, cartProduct];
+                    }
+                    localStorage.setItem("cartItems", JSON.stringify(newCart));
+                    alert("已加入購物車");
+                  }}
+                >
                   <FontAwesomeIcon icon={faPlus} />
                   <FontAwesomeIcon icon={faCartShopping} />
                 </button>

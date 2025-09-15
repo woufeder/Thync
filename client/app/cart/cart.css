@@ -4,17 +4,21 @@
 }
 
 .cart-table-wrapper {
-  flex: 3; /* 表格佔比較多 */
+  flex: 3;
+  /* 表格佔比較多 */
 }
 
 .cart-coupon-wrapper {
-  flex: 2; /* 優惠券 */
+  flex: 2;
+  /* 優惠券 */
   overflow: hidden;
 }
 
 .cart-summary-wrapper {
-  flex: 1; /* Summary 保持最小比例 */
-  min-width: 300px; /* 不要太窄 */
+  flex: 1;
+  /* Summary 保持最小比例 */
+  min-width: 300px;
+  /* 不要太窄 */
 }
 
 .cart-container {
@@ -30,7 +34,7 @@
   flex: 3;
   background: var(--Secondary100);
   border-radius: 6px;
-  box-shadow: var(--card-shadow);
+  box-shadow: 0 4px 4px rgba(39, 74, 120, .4);
 }
 
 .cart-main::before {
@@ -84,6 +88,7 @@ thead {
 }
 
 .product-info span {
+  text-align: left;
   display: inline-block;
   font-size: 16px;
   font-weight: 600;
@@ -92,12 +97,9 @@ thead {
 }
 
 .qty-control button {
-  width: 40px;
-  height: 40px;
+  font-size: 10px;
   background-color: #f7f6f2;
-  border-style: none;
   color: var(--Primary800);
-  font-size: 15px !important;
   font-weight: 600;
   cursor: pointer;
 }
@@ -107,8 +109,28 @@ thead {
   color: #fff;
   border: none;
   padding: 10px 25px;
-  border-radius: 4px;
+  border-radius: 10px;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
+
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, var(--Secondary100), transparent);
+    transition: left 0.5s;
+  }
+
+  &:hover:before {
+    left: 100%;
+  }
+
+
 }
 
 .cart-line {
@@ -239,9 +261,27 @@ thead {
   margin: 45px auto 10px auto;
   padding: 12px 0;
   font-size: 16px;
-  border-radius: 6px;
+  border-radius: 10px;
   cursor: pointer;
   display: block;
+  position: relative;
+  overflow: hidden;
+
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, var(--Secondary100), transparent);
+    transition: left 0.5s;
+  }
+
+  &:hover:before {
+    left: 100%;
+  }
 }
 
 .summary-list .row {

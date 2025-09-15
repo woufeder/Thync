@@ -99,6 +99,7 @@ export function AuthProvider({ children }) {
         const token = result.data;
         setUser(null);
         localStorage.removeItem(appKey);
+        localStorage.removeItem("cartItems"); // 登出時清空購物車
       } else {
         throw new Error(result.message);
       }
@@ -108,6 +109,7 @@ export function AuthProvider({ children }) {
     } finally {
       setUser(null);
       localStorage.removeItem(appKey);
+      localStorage.removeItem("cartItems"); // 登出時清空購物車
       window.location.href = "/user/login";
     }
   };

@@ -7,25 +7,21 @@ import CartSteps from "@/app/_components/cart/cartSteps";
 import RecommendList from "@/app/_components/cart/recommendList";
 import Header from "@/app/_components/header";
 import Footer from "@/app/_components/footer";
-import "@/app/cart/success/success.css";
 
-
-// 推薦商品假資料（與 cartPage.js 統一格式）
-const recommend = Array(6).fill({
-  img: "https://picsum.photos/id/1058/600/400",
-  title: "A4tech 雙飛燕 Bloody S98",
-  price: "$2390",
-});
+import "@/app/_components/cart/cartShared.css";
 
 export default function SuccessPage() {
   const params = useParams();
   const router = useRouter();
   const orderNo = params?.orderNo;
+
+  // 結帳成功頁進入時清空購物車
+  useEffect(() => {
+    localStorage.removeItem("cartItems");
+  }, []);
   return (
     <>
-      <header>
-        <Header />
-      </header>
+      <Header />
       <main>
         <CartHeader />
         <CartSteps active={3} />
@@ -45,18 +41,16 @@ export default function SuccessPage() {
               <button
                 className="order"
                 type="button"
-                onClick={() => router.push(`/user/orders/${orderNo}`)}
+                onClick={() => router.push(`/user/order/${orderNo}`)}
               >
                 查看訂單狀態
               </button>
             </div>
           </div>
-          <RecommendList recommend={recommend} />
+          <RecommendList />
         </div>
       </main>
-      <footer>
-        <Footer />
-      </footer>
+      <Footer />
     </>
   );
 }
