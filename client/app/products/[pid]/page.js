@@ -183,7 +183,7 @@ export default function ProductDetail({ params }) {
             </div>
           </div>
           <div className="product-info">
-            <div className="d-flex align-items-center justify-content-between gap-3 mb-2">
+            <div className="d-flex align-items-center justify-content-between gap- mb-2">
               <Link
                 href={`/products?brand_id=${product.brand_id}`}
                 className="brand-link text-decoration-none"
@@ -197,7 +197,7 @@ export default function ProductDetail({ params }) {
 
             <div className="price">${product.price}</div>
 
-            <div className="d-flex align-items-center gap-2 mb-3">
+            <div className="d-flex align-items-center gap-2 mb-md3">
               <p className="mb-0 me-2">數量</p>
               <button
                 onClick={() => setQty((q) => Math.max(1, q - 1))}
@@ -213,7 +213,7 @@ export default function ProductDetail({ params }) {
                 <FontAwesomeIcon icon={faPlus} />
               </button>
             </div>
-            <div className="d-flex gap-3 flex-wrap">
+            <div className="d-flex gap-3 flex-wrap flex-column flex-md-row">
               <button
                 onClick={() => handleAddToCart(product)}
                 className="btn CartBtn"
