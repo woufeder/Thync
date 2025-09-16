@@ -98,9 +98,9 @@ export default function CheckoutPage() {
     buyerName: "",
     buyerPhone: "",
     buyerEmail: "",
-    shippingType: "7-11取貨", // 預設值
-    payType: "超商取貨付款", // 預設值
-    invoiceType: "手機載具", // 預設值
+    shippingType: "宅配到府", // 預設值
+    payType: "信用卡一次付清", // 預設值
+    invoiceType: "會員載具", // 預設值
     storeName: "",
     storeAddress: "",
   });
@@ -126,9 +126,9 @@ export default function CheckoutPage() {
         buyerName: "",
         buyerPhone: "",
         buyerEmail: "",
-        shippingType: "7-11取貨", // 預設值
-        payType: "貨到付款", // 預設值
-        invoiceType: "手機載具",
+        shippingType: "宅配到府", // 預設值
+        payType: "信用卡一次付清", // 預設值
+        invoiceType: "會員載具",
       });
     }
   }, []);

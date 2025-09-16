@@ -210,11 +210,25 @@ export default function Page() {
                 </div>
                 <div className="row">
                   <label className="radio">運送方式：{form.shippingType}</label>
-                  <label className="radio">門市名稱：{form.storeName}</label>
+                  {form.shippingType === "7-11取貨" && (
+                    <>
+                      <label className="radio">門市名稱：{form.storeName}</label>
+                    </>
+                  )}
                 </div>
-                <div className="row">
-                  <label className="radio">門市地址：{form.storeAddress}</label>
-                </div>
+
+                {form.shippingType === "7-11取貨" && (
+                  <div className="row">
+                    <label className="radio">門市地址：{form.storeAddress}</label>
+                  </div>
+                )}
+
+                {form.shippingType === "宅配到府" && (
+                  <div className="row">
+                    <label className="radio">收件地址：{form.receiverZip}{form.receiverCity}{form.receiverDistrict}{form.receiverAddress}</label>
+                  </div>
+                )}
+
               </div>
             </div>
 

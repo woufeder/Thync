@@ -2,7 +2,8 @@
 main {
   font-family: "Noto Sans TC", sans-serif;
   margin: 0;
-  padding: 0 16px; /* 手機預設留白 */
+  padding: 0 16px;
+  /* 手機預設留白 */
 }
 
 @media (min-width: 768px) {
@@ -51,18 +52,22 @@ main {
   cursor: pointer;
   margin-right: 0;
 }
+
 .backtomain i {
   font-size: 15px;
 }
+
 .cart-header-steps {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 20px; /* 手機 */
+  margin: 20px;
+  /* 手機 */
 }
 
 .back-mobile {
-  display: none; /* 預設隱藏 */
+  display: none;
+  /* 預設隱藏 */
 }
 
 @media (max-width: 1024px) {
@@ -80,22 +85,28 @@ main {
 
 /* 單一版本，讓它水平對齊 header */
 .cart-steps {
-  flex: 1; /* 撐開中間 */
+  flex: 1;
+  /* 撐開中間 */
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0; /* 移除內距 */
-  position: static; /* 移掉舊的 top:-44px */
+  padding: 0;
+  /* 移除內距 */
+  position: static;
+  /* 移掉舊的 top:-44px */
 }
+
 @media (max-width: 768px) {
   .cart-steps {
     display: none;
   }
 }
+
 @media (min-width: 768px) {
   .cart-header {
     margin: 50px 60px;
   }
+
   .cartIcon {
     margin-left: 1%;
     font-size: 18px;
@@ -104,7 +115,8 @@ main {
 
 @media (min-width: 768px) {
   .cart-header-steps {
-    margin: 50px 20px; /* 平板以上 */
+    margin: 50px 20px;
+    /* 平板以上 */
   }
 }
 
@@ -123,16 +135,21 @@ main {
 .cart-step {
   --circle: 28px;
   --r: 14px;
-  max-width: 380px; /* 最大寬度限制 */
-  margin: 0 auto; /* 水平置中 */
-  flex: 1;
+  flex: 1 1 0;
+  /* 平均分配 */
+  min-width: 120px;
+  /* 避免太小 */
+  margin: 0 auto;
+  /* 水平置中 */
   text-align: center;
   position: relative;
 }
 
 .cart-step {
-  flex: 1 1 0;   /* 平均分配，縮放時保持比例 */
-  min-width: 100px;  /* 避免太小 */
+  flex: 1 1 0;
+  /* 平均分配，縮放時保持比例 */
+  min-width: 100px;
+  /* 避免太小 */
 }
 
 .cart-step-label {
@@ -341,12 +358,10 @@ main {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    var(--Secondary100),
-    transparent
-  );
+  background: linear-gradient(90deg,
+      transparent,
+      var(--Secondary100),
+      transparent);
   transition: left 0.5s;
 }
 
