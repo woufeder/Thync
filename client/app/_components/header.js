@@ -41,23 +41,30 @@ export default function Header() {
         {isMobile ? (
           // 手機版結構
           <header>
+
+            <div className="logo d-flex justify-content-center">
+              <a className="navbar-brand" href="/">
+                <Image
+                  src="/images/LOGO.png"
+                  alt="Logo"
+                  width={129}
+                  height={40}
+                />
+              </a>
+            </div>
+
             <nav className="navbar ">
-              <div className="container-fluid">
-                <a className="navbar-brand" href="/">
-                  <Image
-                    src="/images/LOGO.png"
-                    alt="Logo"
-                    width={129}
-                    height={40}
-                  />
-                </a>
+              <div className="container d-flex justify-content-start">
+
                 <div className="d-flex align-items-center gap-2">
-                  <form className="d-flex" role="search">
+                  <form className="d-flex" role="search" onSubmit={handleSearch}>
                     <input
                       className="form-control me-2"
                       type="text"
-                      placeholder="Search"
+                      placeholder="搜尋商品......"
+                      value={keyword}
                       aria-label="Search"
+                      onChange={(e) => setKeyword(e.target.value)}
                     />
                     <button className="btn" type="submit">
                       <FontAwesomeIcon
@@ -66,12 +73,6 @@ export default function Header() {
                       />
                     </button>
                   </form>
-                  <a href="/cart" className="btn">
-                    <FontAwesomeIcon
-                      icon={faCartShopping}
-                      className="icon-cart"
-                    />
-                  </a>
                   <div className="user">
                     {user ? (
                       <HeaderUser />

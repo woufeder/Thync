@@ -57,7 +57,6 @@ export default function Breadcrumb({ product }) {
     items.push({ label: "所有品牌", href: "/products/brands" })
   }
 
-
   // 會員頁
   if (pathname.startsWith("/user")) {
     items.push({ label: "會員中心", href: "/user" })
@@ -66,6 +65,12 @@ export default function Breadcrumb({ product }) {
     if (pathname.includes("coupon")) items.push({ label: "我的優惠券", href: "/user/coupon" })
     if (pathname.includes("wishlist")) items.push({ label: "追蹤商品", href: "/user/wishlist" })
     if (pathname.includes("favorites")) items.push({ label: "已收藏文章", href: "/user/favorites" })
+
+    // 若為 /user/order/[orderNo]，自動加上訂單號
+    const orderDetailMatch = pathname.match(/^\/user\/order\/(od\d+)/);
+    if (orderDetailMatch) {
+      items.push({ label: orderDetailMatch[1], href: `/user/order/${orderDetailMatch[1]}` })
+    }
   }
 
   const [iconReady, setIconReady] = useState(false);
