@@ -123,7 +123,7 @@ main {
 .cart-step {
   --circle: 28px;
   --r: 14px;
-  max-width: 340px; /* 最大寬度限制 */
+  max-width: 380px; /* 最大寬度限制 */
   margin: 0 auto; /* 水平置中 */
   flex: 1;
   text-align: center;
