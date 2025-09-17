@@ -1,6 +1,6 @@
 "use client";
 
-// import "@/styles/wishlist.css";
+import "@/styles/wishlist.css";
 import "@/styles/articles.css";
 import { useAuth } from "@/hooks/use-auth";
 import Image from "next/image";
@@ -64,42 +64,82 @@ export default function UserFavoritesPage() {
             <div className="a-cards">
               <div className="row userfavorites">
                 {wishlist.map((article) => (
-                    <div key={article.id} className="col">
-                  <Link
+                  <div
                     key={article.id}
-                    href={`/articles/${article.id}`}
-                    className="article-card-link"
+                    className="col"
+                    style={{ position: "relative" }}
                   >
-                    <div>
-                      <img
-                        src={
-                          article.cover_image
-                            ? `/images/articles/${article.cover_image}`
-                            : "/images/articleSample.jpg"
+                    <button
+                      className="btn trash"
+                      onClick={async (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        if (!confirm("確定要移除此文章的收藏嗎？")) {
+                          return;
                         }
-                        alt={article.title}
-                        className="image"
-                        onError={(e) => {
-                          e.target.src = "/images/articleSample.jpg";
-                        }}
-                      />
-                      <div className="content">
-                        <div className="note">
-                          <p className="time">{article.created_at}</p>
-                          <button
-                            className="btn "
-                            onClick={(e) => e.preventDefault()}
-                          >
-                            {article.category_name || "未分類"}
-                          </button>
-                        </div>
-                        <h5 className="title">{article.title}</h5>
-                        {/* <p className="description">
+
+                        try {
+                          const token = localStorage.getItem("reactLoginToken");
+                          const res = await fetch(
+                            `http://localhost:3007/api/users/favorites/${article.id}`,
+                            {
+                              method: "DELETE",
+                              headers: { Authorization: `Bearer ${token}` },
+                            }
+                          );
+
+                          const result = await res.json();
+                          if (result.status === "success") {
+                            setWishlist(
+                              wishlist.filter((item) => item.id !== article.id) 
+                            );
+                          } else {
+                            alert(result.message || "移除失敗");
+                          }
+                        } catch (error) {
+                          console.error("移除收藏錯誤:", error);
+                          alert("移除失敗，請稍後再試");
+                        }
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </button>
+                    <Link
+                      key={article.id}
+                      href={`/articles/${article.id}`}
+                      className="article-card-link"
+                    >
+                      <div>
+                        <img
+                          src={
+                            article.cover_image
+                              ? `/images/articles/${article.cover_image}`
+                              : "/images/articleSample.jpg"
+                          }
+                          alt={article.title}
+                          className="image"
+                          onError={(e) => {
+                            e.target.src = "/images/articleSample.jpg";
+                          }}
+                        />
+                        <div className="content">
+                          <div className="note">
+                            <p className="time">{article.created_at}</p>
+                            <button
+                              className="btn "
+                              onClick={(e) => e.preventDefault()}
+                            >
+                              {article.category_name || "未分類"}
+                            </button>
+                          </div>
+                          <h5 className="title">{article.title}</h5>
+                          {/* <p className="description">
                           {article.content
                             ? article.content.substring(0, 150) + "..."
                             : "暫無內容"}
                         </p> */}
-                        {/* <div className="footer">
+                          {/* <div className="footer">
                           <div className="admin">
                             <img
                               src="/images/admin.jpg"
@@ -110,9 +150,9 @@ export default function UserFavoritesPage() {
                           </div>
                           <span className="btn ">閱讀更多</span>
                         </div> */}
+                        </div>
                       </div>
-                    </div>
-                  </Link>
+                    </Link>
                   </div>
                 ))}
               </div>

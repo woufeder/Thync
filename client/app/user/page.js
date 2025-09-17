@@ -12,10 +12,8 @@ import Sidebar from "@/app/_components/user/sidebar";
 import Footer from "@/app/_components/footer";
 
 export default function UserEditPage() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, logout } = useAuth();
   const router = useRouter();
-
-  // console.log("UserEditPage - isLoading:", isLoading, "user:", user);
 
   // 沒有登入不能夠觀看1
   useEffect(() => {
@@ -30,36 +28,44 @@ export default function UserEditPage() {
     return (
       <div>
         <Header />
-        <div className="d-flex container mt-4 mb-4">
+        <div className="d-md-flex flex-md-row flex-column container mt-md-4 mb-4">
+          {/* 電腦版 */}
           <Sidebar />
 
           <div className="main-content">
             <div className="breadcrumb">
               <Breadcrumb />
             </div>
-
-            <div className="hidden">
-              <div className="d-flex flex-row justify-content-between">
-                <div className="profile">
-                  <div className="avatar-wrapper">
-                    <div className="avatar">
-                      <img src="./images/user-photo.jpg" alt="avatar" />
-                      <div className="camera">
-                        <i className="fa-solid fa-camera"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="greet">
-                    <div className="greet-word">您好！</div>
-                    <div className="user-name">sally123</div>
+            {/* 手機版 */}
+            <div className="d-md-none d-flex flex-row justify-content-between">
+              <div className="profile">
+                <div className="avatar-wrapper">
+                  <div className="avatar">
+                    <img
+                      src={
+                        user?.img
+                          ? user.img.startsWith("data:")
+                            ? user.img
+                            : user.img.startsWith("http")
+                            ? user.img
+                            : `/images/users/user-photo/${user.img}`
+                          : "/images/users/user-photo/user.jpg"
+                      }
+                      alt="avatar"
+                    />
                   </div>
                 </div>
-                <button className="logout">
-                  <i className="fa-solid fa-right-to-bracket"></i>登出
-                </button>
+                <div className="greet">
+                  <div className="greet-word">您好！</div>
+                  <div className="user-name">{user?.account}</div>
+                </div>
               </div>
-              <hr />
+              <button className="logout" onClick={logout}>
+                <i className="fa-solid fa-right-to-bracket"></i>登出
+              </button>
             </div>
+
+            <hr />
 
             <div className="middle-content">
               <h1>會員中心</h1>

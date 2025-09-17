@@ -10,7 +10,7 @@ export default function Sidebar() {
 
   return (
     <>
-      <div className="sidebar me-4">
+      <div className="sidebar me-4 d-md-flex d-none">
         <div className="upper">
           <div className="profile">
             <div className="avatar-wrapper">

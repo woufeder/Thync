@@ -12,14 +12,24 @@ import Sidebar from "@/app/_components/user/sidebar";
 import Footer from "@/app/_components/footer";
 
 export default function UserEditPage() {
-  const { user, setUser } = useAuth();
+  const { user, setUser, isLoading } = useAuth();
   const [formData, setFormData] = useState(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
   // 編輯模式狀態
   const [isEditing, setIsEditing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    if (!isLoading) {
+      if (!user) {
+        window.location.href = "/user/login";
+      } else {
+        setIsInitialized(true);
+      }
+    }
+  }, [user, isLoading]);
 
   // 當 user 載入後，初始化 formData
   useEffect(() => {
@@ -27,9 +37,9 @@ export default function UserEditPage() {
       setIsInitialized(true);
     }
 
-    if (user === null && isInitialized) {
-      window.location.href = "/user/login";
-    }
+    // if (user === null && isInitialized) {
+    //   window.location.href = "/user/login";
+    // }
 
     if (user && isInitialized) {
       console.log("初始化用戶資料:", user);

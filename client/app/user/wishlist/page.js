@@ -65,7 +65,7 @@ export default function UserWishListPage() {
               <Breadcrumb />
             </div>
             <div className="product-list">
-              {wishlist.length === 0 && <p>目前沒有收藏商品</p>}
+              {wishlist.length === 0 && <p>目前沒有追蹤商品</p>}
               {wishlist.map((p, index) => (
                 <div key={p.id} className="product-card">
                   <div
@@ -87,7 +87,7 @@ export default function UserWishListPage() {
                         e.preventDefault(); // 阻止預設行為
                         e.stopPropagation(); // 阻止事件冒泡
 
-                        if (!confirm("確定要移除此商品的收藏嗎？")) {
+                        if (!confirm("確定要移除此商品的追蹤嗎？")) {
                           return;
                         }
 
@@ -111,7 +111,7 @@ export default function UserWishListPage() {
                             alert(result.message || "移除失敗");
                           }
                         } catch (error) {
-                          console.error("移除收藏錯誤:", error);
+                          console.error("移除追蹤錯誤:", error);
                           alert("移除失敗，請稍後再試");
                         }
                       }}
