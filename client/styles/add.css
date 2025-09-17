@@ -261,19 +261,13 @@ form {
     display: flex;
     gap: 20px;
   }
-  .toggle-link:link,
-  .toggle-link:visited,
-  .toggle-link:hover,
-  .toggle-link:active {
+  .toggle-link {
     font-weight: 600;
     color: var(--primary-300);
     text-decoration: none;
   }
 
-  .toggle-active:link,
-  .toggle-active:visited,
-  .toggle-active:hover,
-  .toggle-active:active {
+  .toggle-active {
     font-weight: 600;
     background: linear-gradient(92deg, #304a6f 0%, #94afca 100%);
     background-clip: text;

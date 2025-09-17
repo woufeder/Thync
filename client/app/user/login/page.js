@@ -253,7 +253,7 @@ export default function UserLoginPage() {
   }
 
   return (
-    <div>
+    <div className="position-relative">
       {/* 載入 Lottie 腳本 */}
       <Script
         src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"
@@ -288,12 +288,18 @@ export default function UserLoginPage() {
 
               <h1 className="register-title">會員登入</h1>
               <div className="toggle">
-                <Link href="/user/login" className="toggle-active">
+                <a
+                  className="toggle-active"
+                  onClick={() => (window.location.href = "/user/login")}
+                >
                   登入
-                </Link>
-                <Link href="/user/add" className="toggle-link">
+                </a>
+                <a
+                  className="toggle-link"
+                  onClick={() => (window.location.href = "/user/add")}
+                >
                   註冊
-                </Link>
+                </a>
               </div>
             </div>
             <main>
@@ -386,11 +392,6 @@ export default function UserLoginPage() {
               </form>
             </main>
           </div>
-          <div className="bottom">
-            <a href="/admin/login" className="secret-block">
-              <FontAwesomeIcon icon={faUserSecret} className="faUserSecret" />
-            </a>
-          </div>
         </div>
 
         <div className="hidden">
@@ -419,6 +420,11 @@ export default function UserLoginPage() {
       </div>
 
       <div className="round"></div>
+      <div className="bottom">
+        <a href="/admin/login" className="secret-block">
+          <FontAwesomeIcon icon={faUserSecret} className="faUserSecret" />
+        </a>
+      </div>
     </div>
   );
 }

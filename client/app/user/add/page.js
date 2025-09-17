@@ -323,12 +323,18 @@ export default function UserAddPage() {
               </div>
               <h1 className="register-title">會員註冊</h1>
               <div className="toggle">
-                <Link href="/user/login" className="toggle-link">
+                <a
+                  className="toggle-link"
+                  onClick={() => (window.location.href = "/user/login")}
+                >
                   登入
-                </Link>
-                <Link href="/user/add" className="toggle-active">
+                </a>
+                <a
+                  className="toggle-active"
+                  onClick={() => (window.location.href = "/user/add")}
+                >
                   註冊
-                </Link>
+                </a>
               </div>
             </div>
             <main>

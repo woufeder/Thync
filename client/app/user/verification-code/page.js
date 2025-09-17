@@ -7,6 +7,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Script from "next/script";
 import styles from "@/styles/verification-code.css";
+import "@/styles/loader.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRightToBracket } from "@fortawesome/free-solid-svg-icons";
 
@@ -24,6 +25,7 @@ export default function VerificationPage() {
   const { user, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const [lottieLoaded, setLottieLoaded] = useState(false);
+  const [animationReady, setAnimationReady] = useState(false);
   const animationRef = useRef(null);
 
   useEffect(() => {
@@ -50,6 +52,7 @@ export default function VerificationPage() {
       // 動畫載入完成後設定遮罩
       animationRef.current.addEventListener("DOMLoaded", function () {
         setupMask();
+        setAnimationReady(true);
       });
     }
   };
@@ -209,7 +212,7 @@ export default function VerificationPage() {
     }
 
     if (password !== confirmPassword) {
-      setMessage("密碼確認不一致");
+      setMessage("兩次密碼輸入不一致");
 
       setMessageType("error");
 
@@ -217,7 +220,7 @@ export default function VerificationPage() {
     }
 
     if (password.length < 6) {
-      setMessage("密碼至少需要6個字符");
+      setMessage("密碼至少需要6個字元");
 
       setMessageType("error");
 
@@ -258,7 +261,7 @@ export default function VerificationPage() {
         // 3秒後跳轉到登入頁面
 
         setTimeout(() => {
-          router.push("/user/login");
+          window.location.href = "/user/login";
         }, 3000);
       } else {
         setMessage(data.message || "密碼重設失敗");
@@ -299,12 +302,18 @@ export default function VerificationPage() {
               <img src="/images/LOGO.png" alt="" />
               <h1 className="register-title">忘記密碼</h1>
               <div className="toggle">
-                <Link href="/user/login" className="toggle-active">
+                <a
+                  className="toggle-link"
+                  onClick={() => (window.location.href = "/user/login")}
+                >
                   登入
-                </Link>
-                <Link href="/user/add" className="toggle-link">
+                </a>
+                <a
+                  className="toggle-link"
+                  onClick={() => (window.location.href = "/user/add")}
+                >
                   註冊
-                </Link>
+                </a>
               </div>
             </div>
             <main>
@@ -452,7 +461,7 @@ export default function VerificationPage() {
 
                 <p className="signin">
                   <a href="/user/login" className="link2">
-                  <FontAwesomeIcon icon={faRightToBracket} className="me-1" />
+                    <FontAwesomeIcon icon={faRightToBracket} className="me-1" />
                     返回登入
                   </a>
                 </p>
@@ -463,7 +472,10 @@ export default function VerificationPage() {
 
         <div className="hidden">
           {/* 背景圖片 */}
-          <div className="background-image"></div>
+          <div
+            className="background-image"
+            style={{ display: animationReady ? "block" : "none" }}
+          ></div>
 
           {/* 隱藏的 SVG 用於遮罩定義 */}
           <svg style={{ position: "absolute", width: 0, height: 0 }}>
