@@ -47,25 +47,27 @@ export default function UserOrderPage() {
   }, [user]);
 
   // 日期格式化工具
-function formatDate(dateStr) {
-  if (!dateStr) return "";
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return dateStr;
-  function pad(n) { return n.toString().padStart(2, "0"); }
-  return (
-    d.getFullYear() +
-    "-" +
-    pad(d.getMonth() + 1) +
-    "-" +
-    pad(d.getDate()) +
-    " " +
-    pad(d.getHours()) +
-    ":" +
-    pad(d.getMinutes()) +
-    ":" +
-    pad(d.getSeconds())
-  );
-}
+  function formatDate(dateStr) {
+    if (!dateStr) return "";
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    function pad(n) {
+      return n.toString().padStart(2, "0");
+    }
+    return (
+      d.getFullYear() +
+      "-" +
+      pad(d.getMonth() + 1) +
+      "-" +
+      pad(d.getDate()) +
+      " " +
+      pad(d.getHours()) +
+      ":" +
+      pad(d.getMinutes()) +
+      ":" +
+      pad(d.getSeconds())
+    );
+  }
 
   if (user) {
     return (
@@ -97,7 +99,10 @@ function formatDate(dateStr) {
                   {orders.map((order, idx) => (
                     <tr key={idx}>
                       <td>
-                        <a href={`/user/order/${order.numerical_order}`} className="order-link">
+                        <a
+                          href={`/user/order/${order.numerical_order}`}
+                          className="order-link"
+                        >
                           {order.numerical_order}
                         </a>
                       </td>
@@ -115,7 +120,11 @@ function formatDate(dateStr) {
                         </p>
                       </td>
                       <td>
-                        <p>{order.paid_at ? formatDate(order.paid_at) : "無付款資訊"}</p>
+                        <p>
+                          {order.paid_at
+                            ? formatDate(order.paid_at)
+                            : "無付款資訊"}
+                        </p>
                       </td>
                       <td>
                         <p> {order.delivery_method}</p>
@@ -146,79 +155,63 @@ function formatDate(dateStr) {
                 </tbody>
               </table>
             </div>
+
             {/* 手機版 */}
             <div className="orders-container hidden-pc">
-              {/* 訂單卡片 1 */}
-              <div className="order-card">
-                <div className="order-header">
-                  <span className="order-number">訂單編號：964591253761</span>
-                  <span className="order-status">已付款</span>
-                </div>
-                <div className="order-body">
-                  <div className="product-section">
-                    {/* <div className="product-image">
-                      <Image
-                        src="/images/product-img.jpg"
-                        alt=""
-                        width={100}
-                        height={100}
-                      />
-                    </div> */}
-                  </div>
-                  <div className="price-section">
-                    <div className="price">NT$ 1,200</div>
-                    <button className="detail-button">詳情</button>
-                  </div>
-                </div>
-              </div>
+              {orders.length > 0 ? (
+                orders.map((order, idx) => (
+                  <div key={idx} className="order-card">
+                    <div className="order-header">
+                      <span className="order-number">
+                        訂單編號：
+                        <a
+                          href={`/user/order/${order.numerical_order}`}
+                          className="order-link"
+                        >
+                          {order.numerical_order}
+                        </a>
+                      </span>
+                      <span
+                        className={`order-status ${
+                          order.status_now === "paid"
+                            ? "status-paid"
+                            : order.status_now === "pending"
+                            ? "status-unpaid"
+                            : order.status_now === "failed"
+                            ? "status-cancelled"
+                            : ""
+                        }`}
+                      >
+                        {order.status_now === "paid"
+                          ? "已付款"
+                          : order.status_now === "pending"
+                          ? "未付款"
+                          : order.status_now === "failed"
+                          ? "訂單失敗"
+                          : order.status_now}
+                      </span>
+                    </div>
 
-              {/* 訂單卡片 2 */}
-              <div className="order-card">
-                <div className="order-header">
-                  <span className="order-number">訂單編號：964591253761</span>
-                  <span className="order-status">已付款</span>
-                </div>
-                <div className="order-body">
-                  <div className="product-section">
-                    <div className="product-image">
-                      <Image
-                        src="/images/product-img2.jpg"
-                        alt=""
-                        width={100}
-                        height={100}
-                      />
+                    <div className="order-body">
+                      <div className="price-section w-100 d-flex justify-content-between align-items-center">
+                        <div className="price">
+                          NT$ {Math.floor(order.total).toLocaleString()}
+                        </div>
+                        <a
+                          href={`/user/order/${order.numerical_order}`}
+                          className="detail-button"
+                        >
+                          詳情
+                        </a>
+                      </div>
                     </div>
                   </div>
-                  <div className="price-section">
-                    <div className="price">NT$ 1,200</div>
-                    <button className="detail-button">詳情</button>
-                  </div>
+                ))
+              ) : (
+                <div className="no-orders">
+                  <p>目前沒有訂單資料</p>
                 </div>
-              </div>
-
-              {/* 訂單卡片 3 */}
-              <div className="order-card">
-                <div className="order-header">
-                  <span className="order-number">訂單編號：964591253761</span>
-                  <span className="order-status">已付款</span>
-                </div>
-                <div className="order-body">
-                  <div className="product-section">
-                    <div className="product-image">
-                      <Image
-                        src="/images/product-img3.jpg"
-                        alt=""
-                        width={100}
-                        height={100}
-                      />
-                    </div>
-                  </div>
-                  <div className="price-section">
-                    <div className="price">NT$ 1,200</div>
-                    <button className="detail-button">詳情</button>
-                  </div>
-                </div>
-              </div>
+              )}
             </div>
           </div>
         </div>

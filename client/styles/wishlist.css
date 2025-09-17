@@ -503,4 +503,7 @@ td {
     background-color: var(--primary-800);
     color: var(--primary-100);
   }
+  .product-list {
+    justify-content: center;
+  }
 }

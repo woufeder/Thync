@@ -740,7 +740,7 @@ router.post("/forgot-password", async (req, res) => {
       // 發送驗證碼郵件
       await sendEmail({
         email: mail,
-        subject: "密碼重設驗證碼",
+        subject: "重設密碼驗證碼",
         message: `您的驗證碼是：${verificationCode}`,
         html: `
           <div
@@ -753,9 +753,6 @@ router.post("/forgot-password", async (req, res) => {
     background-color: #D8E2EC;
   "
 >
-  <div style="text-align: center; margin-bottom: 40px">
-    <img src="http://localhost:3000/images/LOGO.png" alt="ThynC Logo" style="width: 10rem;" />
-  </div>
 
   <div
     style="

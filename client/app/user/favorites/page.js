@@ -13,6 +13,7 @@ import Footer from "@/app/_components/footer";
 import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { swalError, swalSuccess, swalConfirm } from "@/utils/swal";
 
 export default function UserFavoritesPage() {
   const { user, setUser, isLoading } = useAuth();
@@ -75,9 +76,19 @@ export default function UserFavoritesPage() {
                         e.preventDefault();
                         e.stopPropagation();
 
-                        if (!confirm("確定要移除此文章的收藏嗎？")) {
-                          return;
-                        }
+                        const result = await swalConfirm(
+                          "文章收藏",
+                          "是否確定要取消此文章的收藏嗎？",
+                          {
+                            confirmButtonText: "確定",
+                            cancelButtonText: "取消",
+                            confirmButtonColor: "var(--Danger500)",
+                            cancelButtonColor: "#4d4d4d",
+                          }
+                        );
+
+                        // 如果用戶取消，直接返回
+                        if (!result.isConfirmed) return;
 
                         try {
                           const token = localStorage.getItem("reactLoginToken");
@@ -92,14 +103,20 @@ export default function UserFavoritesPage() {
                           const result = await res.json();
                           if (result.status === "success") {
                             setWishlist(
-                              wishlist.filter((item) => item.id !== article.id) 
+                              wishlist.filter((item) => item.id !== article.id)
                             );
+                            await swalSuccess("取消", "已取消該收藏文章");
                           } else {
-                            alert(result.message || "移除失敗");
+                            // alert(result.message || "移除失敗");
+                            await swalError(
+                              "取消",
+                              result.message || "取消失敗"
+                            );
                           }
                         } catch (error) {
-                          console.error("移除收藏錯誤:", error);
-                          alert("移除失敗，請稍後再試");
+                          console.error("取消收藏錯誤:", error);
+                          // alert("移除失敗，請稍後再試");
+                          await swalError("系統錯誤", "取消失敗，請稍後再試");
                         }
                       }}
                     >

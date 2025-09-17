@@ -1,6 +1,7 @@
 "use client";
 
 import styles from "@/styles/change-password.css";
+import "@/styles/loader.css";
 import { useAuth } from "@/hooks/use-auth";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,6 +10,7 @@ import Header from "@/app/_components/header";
 import Breadcrumb from "@/app/_components/breadCrumb";
 import Sidebar from "@/app/_components/user/sidebar";
 import Footer from "@/app/_components/footer";
+import { swalError, swalSuccess } from "@/utils/swal";
 
 export default function ResetPasswordPage() {
   const { user, setUser } = useAuth();
@@ -22,19 +24,22 @@ export default function ResetPasswordPage() {
   const handleChangePassword = async () => {
     // 前端驗證
     if (!oldPassword || !newPassword || !confirmPassword) {
-      alert("請填寫所有欄位");
+      // alert("請填寫所有欄位");
+      await swalError("再次確認", "請填寫所有欄位");
       return;
     }
 
     // 檢查新密碼和舊密碼是否相同
     if (newPassword === oldPassword) {
-      alert("新密碼不能與舊密碼相同");
+      // alert("新密碼不能與舊密碼相同");
+      await swalError("密碼錯誤", "新密碼不能與舊密碼相同");
       return;
     }
 
     // 檢查新密碼和確認密碼是否相同
     if (newPassword !== confirmPassword) {
-      alert("新密碼與確認密碼不一致");
+      // alert("新密碼與確認密碼不一致");
+      await swalError("密碼錯誤", "新密碼與確認密碼不一致");
       return;
     }
 
@@ -49,7 +54,8 @@ export default function ResetPasswordPage() {
 
       // 檢查 token 是否存在
       if (!token) {
-        alert("請先登入");
+        // alert("請先登入會員");
+        await swalError("未登入", "請先登入會員");
         return;
       }
 
@@ -57,7 +63,8 @@ export default function ResetPasswordPage() {
       const tokenParts = token.split(".");
       if (tokenParts.length !== 3) {
         console.error("Token 格式錯誤:", token);
-        alert("登入狀態異常，請重新登入");
+        // alert("登入狀態異常，請重新登入");
+        await swalError("登入異常", "登入狀態異常，請重新登入");
         return;
       }
 
@@ -81,18 +88,21 @@ export default function ResetPasswordPage() {
       console.log("API 回應:", result);
 
       if (result.success) {
-        alert("密碼變更成功");
+        // alert("密碼變更成功");
+        await swalSuccess("變更", "密碼變更成功");
         // 清空表單
         setOldPassword("");
         setNewPassword("");
         setConfirmPassword("");
         window.location.href = "/user/edit";
       } else {
-        alert(result.message || "密碼變更失敗");
+        // alert(result.message || "密碼變更失敗");
+        await swalError("變更", result.message || "密碼變更失敗");
       }
     } catch (error) {
       console.error("變更密碼錯誤:", error);
-      alert("系統錯誤，請稍後再試");
+      // alert("系統錯誤，請稍後再試");
+      await swalError("系統錯誤", "請稍後再試");
     } finally {
       setIsLoading(false);
     }
@@ -102,7 +112,7 @@ export default function ResetPasswordPage() {
     return (
       <div>
         <Header />
-        <div className="d-flex container mt-4 mb-4">
+        <div className="d-flex container mt-4 mb-4 vh75">
           <Sidebar />
 
           <div className="main-content">
@@ -110,7 +120,7 @@ export default function ResetPasswordPage() {
               <Breadcrumb />
             </div>
 
-            <div id="profile-form" className="form-middle">
+            <div id="profile-form" className="form-change-pass">
               <h1 className="mb-0">會員資料管理</h1>
               <form id="change-password-form" autoComplete="on">
                 {/* 舊密碼 */}

@@ -1,5 +1,7 @@
 "use client";
 import style from "@/styles/products.css";
+// 我偷偷放我弄的 loader css 進來
+import "@/styles/loader.css";
 import { useProduct } from "@/hooks/use-product";
 import { use, useEffect, useState } from "react";
 import Breadcrumb from "@/app/_components/breadCrumb";

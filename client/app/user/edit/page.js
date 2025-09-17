@@ -10,6 +10,7 @@ import Header from "@/app/_components/header";
 import Breadcrumb from "@/app/_components/breadCrumb";
 import Sidebar from "@/app/_components/user/sidebar";
 import Footer from "@/app/_components/footer";
+import { swalError, swalSuccess, swalConfirm } from "@/utils/swal";
 
 export default function UserEditPage() {
   const { user, setUser, isLoading } = useAuth();
@@ -18,7 +19,7 @@ export default function UserEditPage() {
 
   // 編輯模式狀態
   const [isEditing, setIsEditing] = useState(false);
-  // const [isLoading, setIsLoading] = useState(false);
+
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -120,7 +121,6 @@ export default function UserEditPage() {
   // 確認更新 - 提交到後端
   const handleUpdate = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
 
     try {
       const token = localStorage.getItem("reactLoginToken");
@@ -178,20 +178,34 @@ export default function UserEditPage() {
         });
 
         setIsEditing(false);
-        alert("個人資料更新成功！");
+        // alert("個人資料更新成功！");
+        await swalSuccess("更新", "個人資料更新成功！");
       } else {
-        alert(result.message || "更新失敗");
+        // alert(result.message || "更新失敗");
+        await swalError("更新", result.message || "更新失敗");
       }
     } catch (err) {
-      alert(`更新失敗: ${err.message}`);
-    } finally {
-      setIsLoading(false);
+      // alert(`更新失敗: ${err.message}`);
+      await swalError("更新", `更新失敗: ${err.message}`);
     }
   };
 
   // 刪除帳號
   const handleDeleteAccount = async () => {
-    if (!window.confirm("確定要刪除帳號嗎？此操作無法復原！")) return;
+    // if (!window.confirm("確定要刪除帳號嗎？此操作無法復原！")) return;
+    const result = await swalConfirm(
+      "刪除帳號",
+      "是否確認要刪除帳號？提醒您此操作無法復原！",
+      {
+        confirmButtonText: "確認",
+        cancelButtonText: "取消",
+        confirmButtonColor: "var(--Danger500)",
+        cancelButtonColor: "#4d4d4d",
+      }
+    );
+
+    // 如果用戶取消，直接返回
+    if (!result.isConfirmed) return;
 
     try {
       const token = localStorage.getItem("reactLoginToken");
@@ -206,15 +220,18 @@ export default function UserEditPage() {
 
       const result = await res.json();
       if (result.status === "success") {
-        alert("帳號已刪除");
+        // alert("帳號已刪除");
+        await swalSuccess("刪除帳號", "已成功刪除帳號");
         localStorage.removeItem("reactLoginToken");
         setUser(null);
         window.location.href = "/user/login";
       } else {
-        alert(result.message || "刪除失敗");
+        // alert(result.message || "刪除失敗");
+        await swalError("刪除帳號", result.message || "刪除失敗");
       }
     } catch (err) {
-      alert(`刪除失敗: ${err.message}`);
+      // alert(`刪除失敗: ${err.message}`);
+      await swalError("刪除帳號", `刪除失敗: ${err.message}`);
     }
   };
 

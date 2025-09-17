@@ -1,4 +1,4 @@
--- Active: 1747618801539@@127.0.0.1@3306@restful
+-- Active: 1747620417947@@localhost@3306@restful
 DROP TABLE `article_favorites`;
 USE restful;
 CREATE TABLE article_favorites (

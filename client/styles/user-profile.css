@@ -203,7 +203,7 @@ button.logout:active {
 }
 .btn-password:hover,
 .btn-password:active {
-  color: var(--primary-800);
+  color: var(--primary-800) !important;
   background: linear-gradient(107deg, #FCCA53 0%, #FCCA53 100%);
   box-shadow: 0 4px 10px 0 rgba(48, 74, 111, 0.25);
 }
@@ -215,20 +215,20 @@ button.logout:active {
 }
 .btn-edit:hover,
 .btn-edit:active {
-  color: var(--bg);
+  color: var(--bg) !important;
   background: linear-gradient(107deg, #304a6f 0%, #304a6f 100%);
   box-shadow: 0 4px 10px 0 rgba(48, 74, 111, 0.25);
 }
 .btn-del {
   border: none;
   color: var(--bg);
-  background: linear-gradient(107deg, #f5d2d2 0%, #db5f5f 100%);
+  background: linear-gradient(107deg, #ECACAC 0%, #F24E1E 100%);
   box-shadow: 0 4px 10px 0 rgba(48, 74, 111, 0.25);
 }
 .btn-del:hover,
 .btn-del:active {
-  color: var(--bg);
-  background: linear-gradient(107deg, #db5f5f 0%, #db5f5f 100%);
+  color: var(--bg) !important;
+  background: linear-gradient(107deg, #F24E1E 0%, #F24E1E 100%);
   box-shadow: 0 4px 10px 0 rgba(48, 74, 111, 0.25);
 }
 .btn-success {
