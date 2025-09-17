@@ -115,7 +115,7 @@ function formatDate(dateStr) {
                         </p>
                       </td>
                       <td>
-                        <p>{order.paid_at ? formatDate(order.paid_at) : "未付款"}</p>
+                        <p>{order.paid_at ? formatDate(order.paid_at) : "無付款資訊"}</p>
                       </td>
                       <td>
                         <p> {order.delivery_method}</p>
@@ -127,7 +127,7 @@ function formatDate(dateStr) {
                               ? "status status-paid"
                               : order.status_now === "pending"
                               ? "status status-unpaid"
-                              : order.status_now === "cancelled"
+                              : order.status_now === "failed"
                               ? "status status-cancelled"
                               : "status"
                           }
@@ -136,6 +136,8 @@ function formatDate(dateStr) {
                             ? "已付款"
                             : order.status_now === "pending"
                             ? "未付款"
+                            : order.status_now === "failed"
+                            ? "訂單失敗"
                             : order.status_now}
                         </p>
                       </td>

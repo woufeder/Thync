@@ -29,24 +29,28 @@ export default function CartTable({ items, onQtyChange, onRemove }) {
                   src={`/images/products/uploads/${item.images[0]?.file}`}
                   alt={item.product_name}
                 />
-                <p className="name">{item.product_name}</p>
               </div>
 
               {/* 右側：價錢 + 數量控制 + 刪除 */}
               <div className="right">
-                <div className="price">${item.price || 0}</div>
-                <div className="qty-control">
-                  <button onClick={() => onQtyChange(item, -1)} >
-                    <FontAwesomeIcon icon={faMinus} />
-                  </button>
-                  <span>{item.qty || 1}</span>
-                  <button onClick={() => onQtyChange(item, 1)}>
-                    <FontAwesomeIcon icon={faPlus} />
+                <p className="name">{item.product_name}</p>
+                <div className="d-flex align-items-center w-100">
+                  <div className="d-flex align-items-center flex-column gap-2">
+                    <div className="price">${item.price || 0}</div>
+                    <div className="qty-control">
+                      <button onClick={() => onQtyChange(item, -1)}>
+                        <FontAwesomeIcon icon={faMinus} />
+                      </button>
+                      <span>{item.qty || 1}</span>
+                      <button onClick={() => onQtyChange(item, 1)}>
+                        <FontAwesomeIcon icon={faPlus} />
+                      </button>
+                    </div>
+                  </div>
+                  <button className="btn-remove ms-auto" onClick={() => onRemove(item)}>
+                    <FontAwesomeIcon icon={fas.faTrash} />
                   </button>
                 </div>
-                <button className="btn-remove" onClick={() => onRemove(item)}>
-                  <FontAwesomeIcon icon={fas.faTrash} />
-                </button>
               </div>
             </div>
           </div>

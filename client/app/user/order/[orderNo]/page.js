@@ -103,7 +103,13 @@ export default function UserOrderPage() {
 
           <div className="status-info">
             <div className="d-flex flex-row">
-              <p><strong>訂單狀態│</strong><span className="danger500"> {order.status_now === "paid" ? "已付款" : order.status_now === "pending" ? "未付款" : order.status_now}</span></p>
+              <p><strong>訂單狀態│</strong><span className="danger500"> {order.status_now === "paid"
+                            ? "已付款"
+                            : order.status_now === "pending"
+                            ? "未付款"
+                            : order.status_now === "failed"
+                            ? "訂單失敗"
+                            : order.status_now}</span></p>
               <p className="ms-auto"><strong>訂單編號│</strong> {order.numerical_order}</p>
             </div>
             <div className="d-flex flex-row">
