@@ -184,7 +184,7 @@ export default function ProductPage() {
   return (
     <>
       <Header />
-      <div className="container p-page">
+      <div className="container p-page d-md-flex flex-md-row flex-column">
         <Sidebar
           categories={categories}
           filteredSubs={filteredSubs}

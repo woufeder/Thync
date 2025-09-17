@@ -1,3 +1,5 @@
+@media (max-width: 768px) {}
+
 /* // @import "bootstrap/scss/bootstrap" */
 :root {
   --Primary800: #304A6F;
@@ -161,10 +163,22 @@ header {
 
 .header {
 
+  .search-input {
+    border: 2px solid var(--Primary300);
+    border-radius: 10px;
+    padding: 5px 12px;
+    transition: border-color 0.3s ease;
 
+    &:focus {
+
+      box-shadow: 0 0 0 .15rem rgba(39, 74, 120, 0.3);
+      outline: none;
+    }
+  }
 
   .btn {
     padding: 6px;
+    line-height: 1;
   }
 
   .icon-search {
@@ -441,4 +455,63 @@ footer {
   100% {
     transform: rotate(0.5turn);
   }
+}
+
+
+@media screen and (max-width: 768px) {
+  .logo {
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+  }
+
+  .icon-nav,
+  .icon-user {
+    width: 26px;
+    height: 24px;
+    color: var(--Primary800);
+
+  }
+
+  .dropdown-item {
+    font-weight: 700;
+    color: var(--Primary800);
+  }
+
+  .dropdown-menu-user {
+    min-height: unset !important;
+  }
+
+  .dropdown-toggle:after {
+    display: none;
+  }
+
+  .a-cards,
+  .e-cards {
+    display: flex;
+    justify-content: center;
+
+
+  }
+
+  footer {
+    .row {
+      width: 100%;
+      max-width: 1440px;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .row.mobile-hide {
+      display: none !important;
+    }
+
+    .copyright {
+      border-top: none;
+      margin: 0;
+      padding: 0;
+    }
+  }
+
 }

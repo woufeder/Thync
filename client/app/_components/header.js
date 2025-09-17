@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import HeaderUser from "./headerUser";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMagnifyingGlass, faCartShopping } from "@fortawesome/free-solid-svg-icons";
+import { faMagnifyingGlass, faCartShopping, faBars, faUser } from "@fortawesome/free-solid-svg-icons";
 
 export default function Header() {
   const router = useRouter()
@@ -40,24 +40,92 @@ export default function Header() {
       <header >
         {isMobile ? (
           // 手機版結構
-          <header>
-            <nav className="navbar ">
-              <div className="container-fluid">
-                <a className="navbar-brand" href="/">
-                  <Image
-                    src="/images/LOGO.png"
-                    alt="Logo"
-                    width={129}
-                    height={40}
-                  />
-                </a>
+          <div className="container header pb-2">
+
+            <div className="logo d-flex justify-content-center">
+              <a className="navbar-brand" href="/">
+                <Image
+                  src="/images/LOGO.png"
+                  alt="Logo"
+                  width={129}
+                  height={40}
+                />
+              </a>
+            </div>
+
+            <div className="navbar ">
+              <div className="container d-flex justify-content-start flex-nowrap gap-1 align-items-center">
+
+                {/* 漢堡改 dropdown */}
+                <div className="dropdown">
+                  <button
+                    className="btn dropdown-toggle"
+                    type="button"
+                    id="mobileMenuDropdown"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    <span className="">
+                      <FontAwesomeIcon
+                        icon={faBars}
+                        className="icon-nav"
+                      /></span>
+                  </button>
+                  <ul className="dropdown-menu w-100" aria-labelledby="mobileMenuDropdown">
+                    <li>
+                      <Link
+                        href="/products"
+                        className={`dropdown-item${pathname === "/products" ? " active" : ""}`}
+                      >
+                        所有商品
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        href="/products/brands"
+                        className={`dropdown-item${pathname === "/products/brands" ? " active" : ""
+                          }`}
+                      >
+                        所有品牌
+                      </Link>
+                    </li>
+                    <li>
+                      <a className="dropdown-item" aria-current="page" href="/#events">
+                        活動消息
+                      </a>
+                    </li>
+                    <li>
+                      <Link
+                        href="/products/sales"
+                        className={`dropdown-item${pathname === "/products/sales" ? " active" : ""
+                          }`}
+                      >
+                        限時出清
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        href="/articles"
+                        className={`dropdown-item${pathname === "/articles" ? " active" : ""
+                          }`}
+                      >
+                        文章分享
+                      </Link>
+                    </li>
+
+                  </ul>
+                </div>
+
+                {/* 搜尋欄 */}
                 <div className="d-flex align-items-center gap-2">
-                  <form className="d-flex" role="search">
+                  <form className="d-flex" role="search" onSubmit={handleSearch}>
                     <input
-                      className="form-control me-2"
+                      className="form-control search-input"
                       type="text"
-                      placeholder="Search"
+                      placeholder="搜尋商品......"
+                      value={keyword}
                       aria-label="Search"
+                      onChange={(e) => setKeyword(e.target.value)}
                     />
                     <button className="btn" type="submit">
                       <FontAwesomeIcon
@@ -66,104 +134,59 @@ export default function Header() {
                       />
                     </button>
                   </form>
-                  <a href="/cart" className="btn">
+
+                  {/* 購物車按鈕 */}
+                  <a href="/cart" className="btn line-height-1">
                     <FontAwesomeIcon
                       icon={faCartShopping}
                       className="icon-cart"
                     />
                   </a>
+
+                  {/* 登入 */}
                   <div className="user">
                     {user ? (
                       <HeaderUser />
                     ) : (
-                      <>
-                        {" "}
+                      <div className="dropdown">
+                        <button
+                          className="btn dropdown-toggle"
+                          type="button"
+                          id="mobileMenuDropdown"
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"
+                        >
+                          <span className="">
+                            <FontAwesomeIcon
+                              icon={faUser}
+                              className="icon-user"
+                            /></span>
+                        </button>
+
+                        <div className="dropdown-menu dropdown-menu-end dropdown-menu-user">
+                          <Link href="/user/login" className="dropdown-item">
+                            登入
+                          </Link>
+                          <Link href="/user/add" className="dropdown-item">
+                            註冊
+                          </Link>
+                        </div>
+
+                        {/* {" "}
                         <Link href="/user/login" className="btn link">
                           登入
                         </Link>{" "}
-                        <Link href="/user/register" className="btn link">
+                        <Link href="/user/add" className="btn link">
                           註冊
-                        </Link>{" "}
-                      </>
+                        </Link>{" "} */}
+                      </div>
                     )}
                   </div>
                 </div>
               </div>
-            </nav>
+            </div>
 
-            <nav className="navbar navbar-expand-lg ">
-              <div className="container-fluid">
-                <button
-                  className="navbar-toggler"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#navbarSupportedContent"
-                  aria-controls="navbarSupportedContent"
-                  aria-expanded="false"
-                  aria-label="Toggle navigation"
-                >
-                  <span className="navbar-toggler-icon"></span>
-                </button>
-                <div
-                  className="collapse navbar-collapse"
-                  id="navbarSupportedContent"
-                >
-                  <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li className="nav-item">
-                      <a
-                        className="nav-link active"
-                        aria-current="page"
-                        href="#"
-                      >
-                        Home
-                      </a>
-                    </li>
-                    <li className="nav-item">
-                      <a className="nav-link" href="#">
-                        Link
-                      </a>
-                    </li>
-                    <li className="nav-item dropdown">
-                      <a
-                        className="nav-link dropdown-toggle"
-                        href="#"
-                        role="button"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                      >
-                        Dropdown
-                      </a>
-                      <ul className="dropdown-menu">
-                        <li>
-                          <a className="dropdown-item" href="#">
-                            Action
-                          </a>
-                        </li>
-                        <li>
-                          <a className="dropdown-item" href="#">
-                            Another action
-                          </a>
-                        </li>
-                        <li>
-                          <hr className="dropdown-divider" />
-                        </li>
-                        <li>
-                          <a className="dropdown-item" href="#">
-                            Something else here
-                          </a>
-                        </li>
-                      </ul>
-                    </li>
-                    <li className="nav-item">
-                      <a className="nav-link disabled" aria-disabled="true">
-                        Disabled
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </nav>
-          </header>
+          </div>
         ) : (
           // 桌機版結構
           <div className="container header">
@@ -180,7 +203,7 @@ export default function Header() {
                 <div className="d-flex align-items-center gap-2">
                   <form className="d-flex" role="search" onSubmit={handleSearch}>
                     <input
-                      className="form-control me-2"
+                      className="form-control search-input me-2"
                       type="text"
                       placeholder="搜尋商品......"
                       value={keyword}
