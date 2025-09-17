@@ -263,37 +263,58 @@ export default function UserEditPage() {
                   <div className="col-12 col-md-6 d-flex flex-column">
                     <div className="mb-3 mb-md-2">
                       <label className="form-label">帳號</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        name="account"
-                        value={formData.account}
-                        disabled
-                        readOnly
-                      />
+                      {isEditing ? (
+                        <input
+                          type="text"
+                          className="form-control"
+                          name="account"
+                          value={formData.account}
+                          disabled
+                          readOnly
+                        />
+                      ) : (
+                        <div className="input-disabled">
+                          {formData.account || ""}
+                        </div>
+                      )}
                     </div>
                     <div className="mb-3 mb-md-2">
                       <label className="form-label">信箱</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        name="mail"
-                        value={formData.mail}
-                        disabled
-                        readOnly
-                      />
+                      {isEditing ? (
+                        <input
+                          type="text"
+                          className="form-control"
+                          name="mail"
+                          value={formData.mail}
+                          disabled
+                          readOnly
+                        />
+                      ) : (
+                        <div className="input-disabled">
+                          {formData.mail || ""}
+                        </div>
+                      )}
                     </div>
                     <div>
                       <label className="form-label">使用者名稱</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        name="name"
-                        placeholder="請輸入使用者名稱"
-                        value={formData.name ?? ""}
-                        onChange={handleInputChange}
-                        readOnly={!isEditing}
-                      />
+                      {isEditing ? (
+                        <input
+                          type="text"
+                          className="form-control"
+                          name="name"
+                          placeholder="請輸入使用者名稱"
+                          value={formData.name ?? ""}
+                          onChange={handleInputChange}
+                        />
+                      ) : (
+                        <div className="input">
+                          {formData.name || (
+                            <span style={{ color: "#999" }}>
+                              請輸入使用者名稱
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -301,15 +322,23 @@ export default function UserEditPage() {
                 <div className="row mb-4 mb-md-5">
                   <div className="col-12 col-md-3">
                     <label className="form-label">電話</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="phone"
-                      placeholder="0912-345678"
-                      value={formData.phone ?? ""}
-                      onChange={handleInputChange}
-                      readOnly={!isEditing}
-                    />
+                    {isEditing ? (
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="phone"
+                        placeholder="0912-345678"
+                        value={formData.phone ?? ""}
+                        onChange={handleInputChange}
+                        readOnly={!isEditing}
+                      />
+                    ) : (
+                      <div className="input">
+                        {formData.phone || (
+                          <span style={{ color: "#999" }}>0912-345678</span>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   <div className="col-12 col-md-3">
@@ -362,11 +391,13 @@ export default function UserEditPage() {
                         </div>
                       </div>
                     ) : (
-                      <div>
+                      <div className="input">
                         {formData.gender_id === "1" && "男性"}
                         {formData.gender_id === "2" && "女性"}
                         {formData.gender_id === "3" && "其他"}
-                        {!["1", "2", "3"].includes(formData.gender_id) && ""}
+                        {!["1", "2", "3"].includes(formData.gender_id) && (
+                          <span style={{ color: "#999" }}>請選擇</span>
+                        )}
                       </div>
                     )}
                   </div>
@@ -377,44 +408,68 @@ export default function UserEditPage() {
                     </label>
                     <div className="row">
                       <div className="col-4">
-                        <input
-                          type="number"
-                          className="form-control"
-                          id="input-birthday"
-                          name="year"
-                          placeholder="西元年份"
-                          min="1900"
-                          max="2025"
-                          value={formData.year ?? ""}
-                          onChange={handleInputChange}
-                          readOnly={!isEditing}
-                        />
+                        {isEditing ? (
+                          <input
+                            type="number"
+                            className="form-control"
+                            id="input-birthday"
+                            name="year"
+                            placeholder="西元年份"
+                            min="1900"
+                            max="2025"
+                            value={formData.year ?? ""}
+                            onChange={handleInputChange}
+                            readOnly={!isEditing}
+                          />
+                        ) : (
+                          <div className="input">
+                            {formData.year || (
+                              <span style={{ color: "#999" }}>西元年份</span>
+                            )}
+                          </div>
+                        )}
                       </div>
                       <div className="col-4">
-                        <input
-                          type="number"
-                          className="form-control"
-                          name="month"
-                          placeholder="月份"
-                          min="1"
-                          max="12"
-                          value={formData.month ?? ""}
-                          onChange={handleInputChange}
-                          readOnly={!isEditing}
-                        />
+                        {isEditing ? (
+                          <input
+                            type="number"
+                            className="form-control"
+                            name="month"
+                            placeholder="月份"
+                            min="1"
+                            max="12"
+                            value={formData.month ?? ""}
+                            onChange={handleInputChange}
+                            readOnly={!isEditing}
+                          />
+                        ) : (
+                          <div className="input">
+                            {formData.month || (
+                              <span style={{ color: "#999" }}>月份</span>
+                            )}
+                          </div>
+                        )}
                       </div>
                       <div className="col-4">
-                        <input
-                          type="number"
-                          className="form-control"
-                          name="date"
-                          placeholder="日期"
-                          min="1"
-                          max="31"
-                          value={formData.date ?? ""}
-                          onChange={handleInputChange}
-                          readOnly={!isEditing}
-                        />
+                        {isEditing ? (
+                          <input
+                            type="number"
+                            className="form-control"
+                            name="date"
+                            placeholder="日期"
+                            min="1"
+                            max="31"
+                            value={formData.date ?? ""}
+                            onChange={handleInputChange}
+                            readOnly={!isEditing}
+                          />
+                        ) : (
+                          <div className="input">
+                            {formData.date || (
+                              <span style={{ color: "#999" }}>日期</span>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -457,7 +512,7 @@ export default function UserEditPage() {
                         <option value="22">連江縣</option>
                       </select>
                     ) : (
-                      <div>
+                      <div className="input">
                         {(() => {
                           const cityMap = {
                             1: "台北市",
@@ -483,22 +538,34 @@ export default function UserEditPage() {
                             21: "金門縣",
                             22: "連江縣",
                           };
-                          return cityMap[formData.city_id] || "";
+                          return (
+                            cityMap[formData.city_id] || (
+                              <span style={{ color: "#999" }}>請選擇</span>
+                            )
+                          );
                         })()}
                       </div>
                     )}
                   </div>
                   <div className="col-12 col-md-10">
                     <label className="form-label">地址</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="address"
-                      placeholder="請輸入地址"
-                      value={formData.address ?? ""}
-                      onChange={handleInputChange}
-                      readOnly={!isEditing}
-                    />
+                    {isEditing ? (
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="address"
+                        placeholder="請輸入地址"
+                        value={formData.address ?? ""}
+                        onChange={handleInputChange}
+                        readOnly={!isEditing}
+                      />
+                    ) : (
+                      <div className="input">
+                        {formData.address || (
+                          <span style={{ color: "#999" }}>請輸入地址</span>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
 

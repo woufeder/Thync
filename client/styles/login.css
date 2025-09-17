@@ -107,7 +107,7 @@ form {
   background: transparent;
   padding: 10px 44px 12px 0;
   font-size: 18px;
-  color: var(--ink);
+  color: var(--black);
 }
 .fa-eye-slash {
   color: var(--black);

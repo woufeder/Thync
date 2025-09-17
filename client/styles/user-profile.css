@@ -191,7 +191,8 @@ button.logout:active {
   display: none;
 }
 .form-label {
-  color: var(--grey-500);
+  font-size: 14px;
+  color: var(--secondary);
 }
 
 .btn-password {
@@ -233,13 +234,13 @@ button.logout:active {
 .btn-success {
   border: none;
   color: var(--bg);
-  background: linear-gradient(107deg, #a9c449 0%, #90b01d 100%);
+  background: linear-gradient(107deg, #fddb8a 0%, #fcca53 100%);
   box-shadow: 0 4px 10px 0 rgba(48, 74, 111, 0.25);
 }
 .btn-success:hover,
 .btn-success:active {
   color: var(--bg);
-  background: linear-gradient(107deg, #90b01d 0%, #90b01d 100%);
+  background: linear-gradient(107deg, #fcca53 0%, #fcca53 100%);
   box-shadow: 0 4px 10px 0 rgba(48, 74, 111, 0.25);
 }
 .btn-secondary {
@@ -262,6 +263,31 @@ button.logout:active {
 }
 .w-70 {
   width: 70% !important;
+}
+.input {
+  width: 100%;
+  appearance: none;
+  outline: none;
+  border: none;
+  border-bottom: 1.5px solid var(--grey-300);
+  border-radius: 5px 5px 0 0;
+  background: white;
+  font-size: 16px;
+  color: var(--black);
+  min-height: 38px;
+  padding: 6px 12px;
+}
+.input-disabled {
+  width: 100%;
+  appearance: none;
+  outline: none;
+  border: none;
+  border-bottom: 1.5px solid var(--grey-300);
+  border-radius: 5px 5px 0 0;
+  background: #e9ecef;
+  padding: 6px 12px;
+  font-size: 16px;
+  color: var(--black);
 }
 
 @media (max-width: 768px) {
