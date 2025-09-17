@@ -7,7 +7,7 @@ import RecommendList from "@/app/_components/cart/recommendList";
 import Header from "@/app/_components/header";
 import Footer from "@/app/_components/footer";
 import "./confirm.css";
-
+import "@/app/_components/cart/cartShared.css";
 
 // 這是原本串綠界測試 API 的程式碼
 // async function handleSubmitOrder() {
@@ -74,13 +74,13 @@ async function handleSubmitOrder() {
     const finalAmount = total - discount;
 
     // 2. 建立訂單
-  // 取得 JWT token，key 要和 use-auth.js 一致
-  const token = localStorage.getItem("reactLoginToken");
+    // 取得 JWT token，key 要和 use-auth.js 一致
+    const token = localStorage.getItem("reactLoginToken");
     const resOrder = await fetch("http://localhost:3007/api/orders", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": token ? `Bearer ${token}` : "",
+        Authorization: token ? `Bearer ${token}` : "",
       },
       body: JSON.stringify({
         delivery_method: form.shippingType,
@@ -136,8 +136,6 @@ async function handleSubmitOrder() {
   }
 }
 
-
-
 // 推薦商品假資料（與 cartPage.js 統一格式）
 const recommend = Array(6).fill({
   img: "https://picsum.photos/id/1058/600/400",
@@ -177,10 +175,27 @@ export default function Page() {
 
   return (
     <>
-        <Header />
+      <Header />
       <main>
-        <CartHeader />
-        <CartSteps active={2} />
+        <div className="cart-header-steps">
+          <div className="cartIcon">
+            <button
+              className="back-mobile"
+              onClick={() => window.history.back()}
+            >
+              <i className="fa-solid fa-arrow-left"></i>
+            </button>
+            <i className="fas fa-shopping-cart"></i> 購物車
+          </div>
+          <CartSteps active={2} />
+          <button className="backtomain" onClick={() => window.history.back()}>
+            <i
+              className="fa-solid fa-turn-down"
+              style={{ transform: "rotate(90deg)" }}
+            ></i>
+            回上頁
+          </button>
+        </div>
         <div className="container">
           {/* 收件與運送摘要 */}
           <section className="checkout">
@@ -188,7 +203,6 @@ export default function Page() {
               <h3 className="panel-title">寄送與付款</h3>
               <div className="panel-body">
                 <div className="row">
-                  <label className="radio">7-11 取貨付款</label>
                   <label className="radio">收貨人：{form.receiverName}</label>
                   <label className="radio">
                     手機號碼：{form.receiverPhone}
@@ -196,11 +210,25 @@ export default function Page() {
                 </div>
                 <div className="row">
                   <label className="radio">運送方式：{form.shippingType}</label>
-                  <label className="radio">門市名稱：{form.storeName}</label>
+                  {form.shippingType === "7-11取貨" && (
+                    <>
+                      <label className="radio">門市名稱：{form.storeName}</label>
+                    </>
+                  )}
                 </div>
-                <div className="row">
-                  <label className="radio">門市地址：{form.storeAddress}</label>
-                </div>
+
+                {form.shippingType === "7-11取貨" && (
+                  <div className="row">
+                    <label className="radio">門市地址：{form.storeAddress}</label>
+                  </div>
+                )}
+
+                {form.shippingType === "宅配到府" && (
+                  <div className="row">
+                    <label className="radio">收件地址：{form.receiverZip}{form.receiverCity}{form.receiverDistrict}{form.receiverAddress}</label>
+                  </div>
+                )}
+
               </div>
             </div>
 
@@ -217,7 +245,7 @@ export default function Page() {
                 <div className="row">
                   <label className="radio">Email：{form.receiverEmail}</label>
                 </div>
-                <div className="row wrap">
+                <div className="row-receipt">
                   <span className="bill">發票類型：</span>
                   <label className="radio">{form.invoiceType}</label>
                 </div>
@@ -225,27 +253,29 @@ export default function Page() {
             </div>
 
             {/* 訂單金額摘要 */}
-            <div className="panel">
+            <div className="panel summary">
               <h3 className="panel-title">訂單金額</h3>
               <div className="panel-body">
                 <ul className="summary-list">
-                  <li className="row">
+                  <li className="summary-item">
                     <span className="label">商品總額</span>
-                    <span>${subtotal}</span>
+                    <span className="value">${subtotal}</span>
                   </li>
-                  <li className="row">
+                  <li className="summary-item">
                     <span className="label">運費</span>
-                    <span>${shipping}</span>
+                    <span className="value">${shipping}</span>
                   </li>
-                  <li className="row">
+                  <li className="summary-item">
                     <span className="label">折扣</span>
-                    <span>-{discount}</span>
+                    <span className="value discount">-{discount}</span>
                   </li>
-                  <li className="row total">
-                    <span className="label">總付款額</span>
+                  <li className="summary-total">
+                    <div className="left">
+                      <strong>總付款額</strong>
+                      <small>共 {count} 件</small>
+                    </div>
                     <div className="right">
-                      <div>共 {count} 件</div>
-                      <div>${total}</div>
+                      <strong className="price">${total}</strong>
                     </div>
                   </li>
                 </ul>

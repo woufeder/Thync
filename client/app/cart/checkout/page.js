@@ -8,6 +8,7 @@ import Header from "@/app/_components/header";
 import Footer from "@/app/_components/footer";
 import { useShip711StoreOpener } from "@/hooks/use-ship-711-store";
 import "./checkout.css";
+import "@/app/_components/cart/cartShared.css";
 
 export default function CheckoutPage() {
   // 門市資訊顯示狀態
@@ -97,9 +98,9 @@ export default function CheckoutPage() {
     buyerName: "",
     buyerPhone: "",
     buyerEmail: "",
-    shippingType: "7-11取貨", // 預設值
-    payType: "超商取貨付款", // 預設值
-    invoiceType: "手機載具", // 預設值
+    shippingType: "宅配到府", // 預設值
+    payType: "信用卡一次付清", // 預設值
+    invoiceType: "會員載具", // 預設值
     storeName: "",
     storeAddress: "",
   });
@@ -125,9 +126,9 @@ export default function CheckoutPage() {
         buyerName: "",
         buyerPhone: "",
         buyerEmail: "",
-        shippingType: "7-11取貨", // 預設值
-        payType: "貨到付款", // 預設值
-        invoiceType: "手機載具",
+        shippingType: "宅配到府", // 預設值
+        payType: "信用卡一次付清", // 預設值
+        invoiceType: "會員載具",
       });
     }
   }, []);
@@ -1067,13 +1068,29 @@ export default function CheckoutPage() {
 
   return (
     <>
-
-        <Header />
+      <Header />
 
       <main>
-        <CartHeader />
-        <CartSteps active={1} />
-        <div className="container">
+        <div className="cart-header-steps">
+          <div className="cartIcon">
+            <button
+              className="back-mobile"
+              onClick={() => window.history.back()}
+            >
+              <i className="fa-solid fa-arrow-left"></i>
+            </button>
+            <i className="fas fa-shopping-cart"></i> 購物車
+          </div>
+          <CartSteps active={1} />
+          <button className="backtomain" onClick={() => window.history.back()}>
+            <i
+              className="fa-solid fa-turn-down"
+              style={{ transform: "rotate(90deg)" }}
+            ></i>
+            回上頁
+          </button>
+        </div>
+        <div className="container checkout-page">
           <section className="checkout">
             {/* 配送方式 */}
             <div className="panel">

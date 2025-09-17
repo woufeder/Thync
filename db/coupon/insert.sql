@@ -1,3 +1,4 @@
+-- Active: 1749901667218@@127.0.0.1@3306@restful
 INSERT INTO
     coupon (
         code,
@@ -9,7 +10,6 @@ INSERT INTO
         expires_at,
         created_at,
         updated_at
-
     )
 VALUES (
         'C490',
@@ -818,7 +818,7 @@ VALUES (
     ),
     (
         '免運優惠',
-        '僅限超商使用',
+        '不限運送方式皆可使用',
         2,
         0,
         0,
@@ -839,3 +839,26 @@ VALUES (
         NOW()
     );
 
+INSERT INTO
+    coupon (
+        code,
+        `desc`,
+        type,
+        value,
+        min,
+        start_at,
+        expires_at,
+        created_at,
+        updated_at
+    )
+VALUES (
+        '免運優惠',
+        '不限運送方式皆可使用',
+        2,
+        0,
+        0,
+        '2025-08-01 00:00:00',
+        '2025-12-31 00:00:00',
+        NOW(),
+        NOW()
+    );

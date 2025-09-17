@@ -4,7 +4,7 @@
 /* Base styles */
 .coupon-area {
   font-family: "Noto Sans TC", sans-serif;
-  background: #f7f6f2;
+  background: var(--Secondary100);
   /* min-height: 100vh; */
   padding: 40px;
   max-width: 1200px;
@@ -15,7 +15,7 @@
   font-size: 36px;
   font-weight: 700;
   margin-bottom: 16px;
-  background: linear-gradient(90deg, #375177, #88a2bf);
+  background: linear-gradient(90deg,  var(--Primary800), var(--Primary300));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -23,152 +23,18 @@
   display: inline-block;
 }
 
-/* Tabs */
-.tabs {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  border-bottom: 2px solid #e3e8f0;
-  margin-bottom: 24px;
-}
-
-.tab {
-  text-align: center;
-  line-height: normal;
-  padding-bottom: 8px;
-  cursor: pointer;
-  color: #888;
-  font-weight: 500;
-  border-bottom: 2px solid transparent;
-  transition: all 0.2s ease;
-}
-
-.tab:hover {
-  color: #e74c3c;
-  border-bottom: 2px solid #e74c3c;
-}
-
-.tab.active {
-  color: #e74c3c;
-  border-bottom: 2px solid #e74c3c;
-}
-
-/* Filter row */
-.filter-row {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.filter-top {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  justify-content: space-between;
-}
-
-.chips {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.chip {
-  appearance: none;
-  border: 0;
-  cursor: pointer;
-  transition: 0.2s;
-  background: #4f4e4a;
-  color: #fff;
-  border-radius: 10px;
-  padding: 6px 12px;
-  font-weight: 600;
-  font-family: "Noto Sans TC", sans-serif;
-}
-
-.chip:hover,
-.chip.active {
-  background: #c2b2a3;
-  color: #fff;
-}
-
-.filter-toggle {
-  appearance: none;
-  background: transparent;
-  border: 0;
-  cursor: pointer;
-  color: #4f4e4a;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-family: "Noto Sans TC", sans-serif;
-}
-
-.filter-toggle:hover {
-  color: #333;
-}
-
-.filter-toggle svg {
-  width: 16px;
-  height: 16px;
-}
-
-/* Filter bottom */
-.filter-bottom {
-  display: flex;
-  gap: 8px;
-  max-width: 420px;
-}
-
-.filter-bottom input {
-  flex: 1;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  padding: 12px;
-  font-family: "Noto Sans TC", sans-serif;
-}
-
-.filter-bottom input:focus {
-  outline: none;
-  border-color: #88a2bf;
-}
-
-.redeem-btn {
-  background: #db6161;
-  border: none;
-  outline: none;
-  color: #fff;
-  border-radius: 6px;
-  padding: 6px 16px;
-  cursor: pointer;
-  font-family: "Noto Sans TC", sans-serif;
-  font-weight: 600;
-  transition: background 0.2s;
-}
-
-.redeem-btn:hover {
-  background: #ce5e5e;
-}
-
-/* Coupon list */
-.coupon-list {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-}
 
 /* Coupon card */
 .coupon-card {
-  background: #f7f6f2;
-  border: 1px solid #88a2bf;
+  background: var(--Secondary100);
+  border: 1px solid var(--Primary300);
   border-radius: 12px;
   box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
   overflow: hidden;
   width: 100%;
   min-width: 375px;
   gap: 15px;
-  flex: 1 0 0;
+  flex: 1 1 280px; /* 彈性卡片，保證 RWD */
 }
 
 .coupon-card .top {
@@ -176,7 +42,7 @@
 }
 
 .coupon-card .type {
-  color: #aaa;
+  color: var(--Secondary500);
   font-size: 16px;
   margin-bottom: 6px;
 }
@@ -184,24 +50,20 @@
 .coupon-card .name {
   font-size: 26px;
   font-weight: 700;
-  color: #375177;
+  color: var(--Primary800);
   margin-bottom: 6px;
 }
 
 .coupon-card .desc {
-  color: #555;
-  font-size: 0.95rem;
+  color: var(--Primary500);
+  font-size: 20px;
+  font-weight: 500;
   margin-bottom: 12px;
 }
 
-.coupon-card .amount {
-  font-size: 1.4rem;
-  font-weight: 600;
-  color: #375177;
-}
 
 .coupon-card .bottom {
-  border-top: 1px dashed #bbb;
+  border-top: 1px dashed var(--Primary300);
   padding: 12px 24px;
   display: flex;
   align-items: center;
@@ -209,24 +71,9 @@
 }
 
 .coupon-card .expire {
-  color: #555;
+  color: var(--Primary800);
   font-size: 0.9rem;
-}
-
-.coupon-card .get-btn {
-  background: #6c7ba0;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 6px 16px;
-  cursor: pointer;
-  transition: background 0.2s;
-  font-family: "Noto Sans TC", sans-serif;
-  font-weight: 600;
-}
-
-.coupon-card .get-btn:hover {
-  background: #556080;
+  font-weight: 500;
 }
 
 .coupon-grid {
@@ -237,6 +84,29 @@
   gap: 20px;
   align-self: stretch;
   flex-wrap: wrap;
+}
+
+.status-label {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-family: "Noto Sans TC", sans-serif;
+}
+
+.status-label.usable {
+  background: var(--Primary500);
+  color: var(--White);
+}
+
+.status-label.expired {
+  background: var(--Primary300);
+  color: var(--White);
+}
+
+.status-label.used {
+  background: var(--Danger5001);
+  color: var(--White);
 }
 
 /* Responsive design */
@@ -255,13 +125,9 @@
     max-width: none;
     width: 100%;
   }
-
-  .coupon-list {
-    grid-template-columns: 1fr;
-  }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
   .title {
     font-size: 24px;
   }

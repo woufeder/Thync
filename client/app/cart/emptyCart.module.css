@@ -1,8 +1,9 @@
 .cartEmpty {
   position: relative;
-  padding: 200px 10px 220px;
+  padding: 120px 20px 140px;
   text-align: center;
-  margin: 10px 100px;
+  margin: 20px auto;
+  max-width: 480px;
 }
 
 .cartEmpty::before {
@@ -17,7 +18,7 @@
 }
 
 .cartEmptyTitle {
-  font-size: 20px;
+  font-size: 18px;
   color: #375177;
   font-weight: 700;
   margin-bottom: 12px;
@@ -25,7 +26,7 @@
 
 .cartEmptyDesc {
   color: #888;
-  font-size: 15px;
+  font-size: 14px;
   margin-bottom: 24px;
 }
 
@@ -34,7 +35,60 @@
   color: #fff;
   border: none;
   border-radius: 10px;
-  padding: 13px 60px;
-  font-size: 16px;
+  padding: 12px 40px;
+  font-size: 14px;
   cursor: pointer;
+}
+
+/* 平板以上 */
+@media (max-width: 768px) {
+  .cartEmpty {
+    padding: 160px 40px 180px;
+    margin: 40px auto;
+    max-width: 720px;
+  }
+
+  .cartEmptyTitle {
+    font-size: 20px;
+  }
+
+  .cartEmptyDesc {
+    font-size: 15px;
+  }
+
+  .cartEmptyBtn {
+    padding: 13px 50px;
+    font-size: 15px;
+  }
+
+  /* 空購物車文字大小 */
+  .cartEmptyTitle {
+    font-size: 20px;
+  }
+
+  .cartEmptyDesc {
+    font-size: 15px;
+  }
+}
+
+/* 桌機以上 */
+@media (min-width: 1024px) {
+  .cartEmpty {
+    padding: 200px 10px 220px;
+    margin: 10px 100px;
+    max-width: none;
+  }
+
+  .cartEmptyTitle {
+    font-size: 22px;
+  }
+
+  .cartEmptyDesc {
+    font-size: 16px;
+  }
+
+  .cartEmptyBtn {
+    padding: 13px 60px;
+    font-size: 16px;
+  }
 }

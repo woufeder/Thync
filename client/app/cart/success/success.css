@@ -2,147 +2,6 @@
   --mobile-design-width: 430px;
 }
 
-.cart-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 50px;
-  margin-bottom: 16px;
-  height: 44px;
-  position: relative;
-  z-index: 1;
-}
-
-.cartIcon {
-  color: #274a78;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.backtomain {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #89a2bf;
-  color: #fff;
-  border: 0;
-  border-radius: 12px;
-  padding: 14px 20px;
-  font-size: 15px;
-  cursor: pointer;
-}
-
-.backtomain i {
-  font-size: 15px;
-}
-
-.cart-steps {
-  position: relative;
-  top: -44px;
-  margin: 0;
-  padding: 0 160px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0;
-}
-
-.cart-step {
-  --circle: 28px;
-  --r: 14px;
-  flex: 1;
-  text-align: center;
-  position: relative;
-}
-
-.cart-step-label {
-  margin-top: 8px;
-  font-size: 12px;
-  color: #9aa6b2;
-}
-
-.cart-step-circle {
-  width: var(--circle);
-  height: var(--circle);
-  border-radius: 50%;
-  border: 2px solid #cfd7df;
-  background: #fff;
-  margin: 0 auto;
-  position: relative;
-  z-index: 1;
-  box-sizing: border-box;
-}
-
-.cart-step-circle::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  margin: auto;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #274a78;
-  display: none;
-}
-
-.cart-step:not(:first-child)::before {
-  content: "";
-  position: absolute;
-  top: var(--r);
-  left: calc(-50% + var(--r) - 1px);
-  width: calc(100% - var(--circle) + 2px);
-  height: 2px;
-  background: #d7e1ea;
-  z-index: 0;
-}
-
-.cart-step.active .cart-step-circle {
-  border-color: #274a78;
-}
-
-.cart-step.active .cart-step-circle::after {
-  display: block;
-}
-
-.cart-step.active::before {
-  background: #274a78;
-}
-
-.cart-step.active .cart-step-label {
-  color: #274a78;
-  font-weight: 700;
-}
-
-.cart-step.done .cart-step-circle {
-  background: #274a78;
-  border-color: #274a78;
-}
-
-.cart-step.done .cart-step-circle::after {
-  content: "✔";
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: 14px;
-  font-weight: bold;
-}
-
-.cart-step.done .cart-step-label {
-  color: #274a78;
-  font-weight: 700;
-}
-
-.progressLine {
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(to right, #95AFCB, #375177);
-  margin: 0 auto 24px;
-  border-radius: 2px;
-}
-
 /* ===== Success card ===== */
 .section1 {
   max-width: 360px;
@@ -226,7 +85,7 @@
 }
 
 /* ===== Mobile 430 ===== */
-@media (max-width:480px) {
+@media (max-width:768px) {
 
   html,
   body {
@@ -265,29 +124,7 @@
     font-size: .95rem;
   }
 
-  /* 流程條回歸自然流，不覆蓋 */
-  .cart-header {
-    margin-top: 12px;
-    height: auto;
-  }
-
-  .cart-steps {
-    position: static;
-    top: auto;
-    margin: 12px 0 8px;
-    padding: 0 12px;
-    gap: 12px;
-  }
-
-  .cart-step {
-    flex: unset;
-    width: 25%;
-  }
-
-  .cart-step-label {
-    font-size: 11px;
-  }
-
+  
   /* 成功卡片間距收斂，按鈕滿寬 */
   .section1 {
     margin: 16px auto;
@@ -301,27 +138,5 @@
 
   .successMessage button {
     width: 100%;
-  }
-
-  /* 推薦一欄 */
-  .recommend-section {
-    padding: 16px;
-    max-width: 100%;
-  }
-
-  .recommend-list {
-    grid-template-columns: 1fr;
-  }
-
-  .recommend-item img {
-    aspect-ratio: 16/9;
-  }
-
-  /* footer 直排 */
-  .footer-content {
-    flex-direction: column;
-    gap: 12px;
-    max-width: 100%;
-    padding: 0 12px;
   }
 }

@@ -1,6 +1,6 @@
 
 use restful;
-
+SET FOREIGN_KEY_CHECKS = 1;
 DROP TABLE `coupon`;
 
 CREATE table coupon (

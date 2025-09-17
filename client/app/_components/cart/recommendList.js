@@ -34,7 +34,7 @@ export default function RecommendList() {
   const recommend = useMemo(() => {
     if (products.length === 0) return [];
     const shuffled = [...products].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, 5);
+    return shuffled.slice(0, 10);
   }, [products]);
   console.log(recommend)
   if (isLoading) return <div>載入中...</div>;
