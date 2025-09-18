@@ -2,6 +2,8 @@
   --mobile-design-width: 430px;
 }
 
+
+
 /* ===== Success card ===== */
 .section1 {
   max-width: 360px;
@@ -87,15 +89,13 @@
 /* ===== Mobile 430 ===== */
 @media (max-width:768px) {
 
+  
   html,
   body {
     width: 100%;
   }
 
-  body {
-    margin: 0 auto;
-    max-width: var(--mobile-design-width);
-  }
+
 
   main {
     padding: 0 12px;

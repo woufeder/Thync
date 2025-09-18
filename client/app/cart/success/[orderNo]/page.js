@@ -46,7 +46,7 @@ export default function SuccessPage() {
             回上頁
           </button>
         </div>
-        <div className="container">
+        <div className="contarine">
           <hr className="progressLine" />
           <div className="section1">
             <div className="successMessage">
