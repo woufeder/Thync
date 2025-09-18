@@ -525,6 +525,10 @@ section {
 		padding: 16px;
 	}
 
+	.a-cards .col .content .footer {
+		padding-top: 10px;
+	}
+
 	.e-cards .col img {
 		height: 150px;
 	}
@@ -533,7 +537,9 @@ section {
 		padding: 16px;
 		gap: 10px;
 	}
-	#articles,#events {
-    padding-bottom: 32px;
-}
+
+	#articles,
+	#events {
+		padding-bottom: 32px;
+	}
 }
