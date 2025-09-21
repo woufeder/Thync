@@ -1006,7 +1006,7 @@ export default function CheckoutPage() {
       }
     }
     if (
-      form.shippingType === "7-11取貨" &&
+      form.shippingType === "超商取貨" &&
       (!form.storeName?.trim() || !form.storeAddress?.trim())
     ) {
       alert("請填寫門市名稱與地址！");
@@ -1101,8 +1101,8 @@ export default function CheckoutPage() {
                     <input
                       type="radio"
                       name="shippingType"
-                      value="7-11取貨"
-                      checked={form.shippingType === "7-11取貨"}
+                      value="超商取貨"
+                      checked={form.shippingType === "超商取貨"}
                       onChange={handleChange}
                     />
                     <span></span>
@@ -1121,7 +1121,7 @@ export default function CheckoutPage() {
                   </label>
                 </div>
                 {/* 門市資訊（僅 7-11 取貨時顯示） */}
-                {form.shippingType === "7-11取貨" && (
+                {form.shippingType === "超商取貨" && (
                   <>
                     <div className="row mb-md-3 mb-0">
                       <label className="d-flex align-items-center">
@@ -1292,8 +1292,8 @@ export default function CheckoutPage() {
                     <input
                       type="radio"
                       name="payType"
-                      value="7-11取貨付款"
-                      checked={form.payType === "7-11取貨付款"}
+                      value="取貨付款"
+                      checked={form.payType === "取貨付款"}
                       onChange={handleChange}
                     />
                     <span></span>
@@ -1303,12 +1303,12 @@ export default function CheckoutPage() {
                     <input
                       type="radio"
                       name="payType"
-                      value="信用卡"
-                      checked={form.payType === "信用卡"}
+                      value="ECPay付款"
+                      checked={form.payType === "ECPay付款"}
                       onChange={handleChange}
                     />
                     <span></span>
-                    信用卡一次付清
+                    ECPay付款
                   </label>
                 </div>
               </div>

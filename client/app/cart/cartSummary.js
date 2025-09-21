@@ -77,14 +77,14 @@ export default function CartSummary({
                 </li>
                 <li
                   className={`cs-option${
-                    payType === "信用卡" ? " is-selected" : ""
+                    payType === "ECPay付款" ? " is-selected" : ""
                   }`}
                   onClick={() => {
-                    setPayType("信用卡");
+                    setPayType("ECPay付款");
                     setPayOpen(false);
                   }}
                 >
-                  信用卡
+                  ECPay付款
                 </li>
 
                 {/* 寫不完就刪掉

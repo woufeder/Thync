@@ -148,7 +148,7 @@ export default function UserOrderPage() {
                     <td></td>
                     <td></td>
                     <td>運費</td>
-                    <td>$60</td>
+                    <td>$80</td>
                   </tr>
                   <tr>
                     <td></td>
