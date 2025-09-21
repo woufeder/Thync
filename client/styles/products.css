@@ -782,6 +782,37 @@ aside {
     width: 100%;
   }
 
+  .p-page main {
+    flex: 1;
+    padding: 16px 16px;
+  }
+
+  .p-page .product-list {
+    justify-content: space-between;
+  }
+
+  .product-card {
+    min-width: 180px;
+    max-width: 180px;
+    height: auto;
+  }
+
+  .product-card .card-img img {
+    object-fit: cover;
+    width: 180px;
+    height: 180px;
+
+  }
+
+  .product-card .card-img {
+    height: 180px;
+  }
+
+  .product-card .card-img:before {
+    width: 180px;
+    height: 180px;
+  }
+
   .P-detail {
     padding: 32px 24px;
     display: flex;
