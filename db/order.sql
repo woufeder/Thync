@@ -7,10 +7,12 @@ CREATE TABLE orders (
   user_id INT NOT NULL COMMENT '下單者',
   -- 收/配送
   delivery_method VARCHAR(20) DEFAULT NULL COMMENT 'home, store_pickup...（可為空）',
+  delivery_store VARCHAR(50) DEFAULT NULL COMMENT '取貨門市',
   delivery_address VARCHAR(255) DEFAULT NULL,
   recipient VARCHAR(50) DEFAULT NULL COMMENT '收件人',
  -- 付款
   pay_method VARCHAR(20) NOT NULL COMMENT 'credit_card, linepay, atm 等',
+  recipient_phone VARCHAR(10) DEFAULT NULL COMMENT '收件人電話',
   pay_info VARCHAR(100) DEFAULT NULL COMMENT '金流交易編號/回傳代碼等；不存卡號與CVV',
   status_now VARCHAR(16) NOT NULL COMMENT 'pending | paid | failed',
   order_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -26,7 +28,7 @@ CREATE TABLE orders (
   KEY idx_status_now (status_now),
   -- 外鍵
   FOREIGN KEY (user_id) REFERENCES users(id),
-  FOREIGN KEY (coupons_id) REFERENCES coupon(id)
+  -- FOREIGN KEY (coupons_id) REFERENCES coupon(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
