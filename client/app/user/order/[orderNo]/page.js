@@ -148,7 +148,7 @@ export default function UserOrderPage() {
                     <td></td>
                     <td></td>
                     <td>運費</td>
-                    <td>$80</td>
+                    <td>$60</td>
                   </tr>
                   <tr>
                     <td></td>
@@ -180,7 +180,7 @@ export default function UserOrderPage() {
                   <tr>
                     <td></td>
                     <td></td>
-                    <td>付款方式</td>
+                    <td>運送方式</td>
                     <td>{order.delivery_method}</td>
                   </tr>
                 </tbody>

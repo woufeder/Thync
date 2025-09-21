@@ -210,14 +210,14 @@ export default function Page() {
                 </div>
                 <div className="row">
                   <label className="radio">運送方式：{form.shippingType}</label>
-                  {form.shippingType === "7-11取貨" && (
+                  {form.shippingType === "超商取貨" && (
                     <>
                       <label className="radio">門市名稱：{form.storeName}</label>
                     </>
                   )}
                 </div>
 
-                {form.shippingType === "7-11取貨" && (
+                {form.shippingType === "超商取貨" && (
                   <div className="row">
                     <label className="radio">門市地址：{form.storeAddress}</label>
                   </div>
