@@ -1,6 +1,6 @@
 "use client";
 
-// import "@/styles/wishlist.css";
+import "@/styles/wishlist.css";
 import "@/styles/articles.css";
 import { useAuth } from "@/hooks/use-auth";
 import Image from "next/image";
@@ -13,6 +13,7 @@ import Footer from "@/app/_components/footer";
 import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { swalError, swalSuccess, swalConfirm } from "@/utils/swal";
 
 export default function UserFavoritesPage() {
   const { user, setUser, isLoading } = useAuth();
@@ -64,42 +65,98 @@ export default function UserFavoritesPage() {
             <div className="a-cards">
               <div className="row userfavorites">
                 {wishlist.map((article) => (
-                    <div key={article.id} className="col">
-                  <Link
+                  <div
                     key={article.id}
-                    href={`/articles/${article.id}`}
-                    className="article-card-link"
+                    className="col"
+                    style={{ position: "relative" }}
                   >
-                    <div>
-                      <img
-                        src={
-                          article.cover_image
-                            ? `/images/articles/${article.cover_image}`
-                            : "/images/articleSample.jpg"
+                    <button
+                      className="btn trash"
+                      onClick={async (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        const result = await swalConfirm(
+                          "文章收藏",
+                          "是否確定要取消此文章的收藏嗎？",
+                          {
+                            confirmButtonText: "確定",
+                            cancelButtonText: "取消",
+                            confirmButtonColor: "var(--Danger500)",
+                            cancelButtonColor: "#4d4d4d",
+                          }
+                        );
+
+                        // 如果用戶取消，直接返回
+                        if (!result.isConfirmed) return;
+
+                        try {
+                          const token = localStorage.getItem("reactLoginToken");
+                          const res = await fetch(
+                            `http://localhost:3007/api/users/favorites/${article.id}`,
+                            {
+                              method: "DELETE",
+                              headers: { Authorization: `Bearer ${token}` },
+                            }
+                          );
+
+                          const result = await res.json();
+                          if (result.status === "success") {
+                            setWishlist(
+                              wishlist.filter((item) => item.id !== article.id)
+                            );
+                            await swalSuccess("取消", "已取消該收藏文章");
+                          } else {
+                            // alert(result.message || "移除失敗");
+                            await swalError(
+                              "取消",
+                              result.message || "取消失敗"
+                            );
+                          }
+                        } catch (error) {
+                          console.error("取消收藏錯誤:", error);
+                          // alert("移除失敗，請稍後再試");
+                          await swalError("系統錯誤", "取消失敗，請稍後再試");
                         }
-                        alt={article.title}
-                        className="image"
-                        onError={(e) => {
-                          e.target.src = "/images/articleSample.jpg";
-                        }}
-                      />
-                      <div className="content">
-                        <div className="note">
-                          <p className="time">{article.created_at}</p>
-                          <button
-                            className="btn "
-                            onClick={(e) => e.preventDefault()}
-                          >
-                            {article.category_name || "未分類"}
-                          </button>
-                        </div>
-                        <h5 className="title">{article.title}</h5>
-                        {/* <p className="description">
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </button>
+                    <Link
+                      key={article.id}
+                      href={`/articles/${article.id}`}
+                      className="article-card-link"
+                    >
+                      <div>
+                        <img
+                          src={
+                            article.cover_image
+                              ? `/images/articles/${article.cover_image}`
+                              : "/images/articleSample.jpg"
+                          }
+                          alt={article.title}
+                          className="image"
+                          onError={(e) => {
+                            e.target.src = "/images/articleSample.jpg";
+                          }}
+                        />
+                        <div className="content">
+                          <div className="note">
+                            <p className="time">{article.created_at}</p>
+                            <button
+                              className="btn "
+                              onClick={(e) => e.preventDefault()}
+                            >
+                              {article.category_name || "未分類"}
+                            </button>
+                          </div>
+                          <h5 className="title">{article.title}</h5>
+                          {/* <p className="description">
                           {article.content
                             ? article.content.substring(0, 150) + "..."
                             : "暫無內容"}
                         </p> */}
-                        {/* <div className="footer">
+                          {/* <div className="footer">
                           <div className="admin">
                             <img
                               src="/images/admin.jpg"
@@ -110,9 +167,9 @@ export default function UserFavoritesPage() {
                           </div>
                           <span className="btn ">閱讀更多</span>
                         </div> */}
+                        </div>
                       </div>
-                    </div>
-                  </Link>
+                    </Link>
                   </div>
                 ))}
               </div>

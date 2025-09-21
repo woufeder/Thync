@@ -292,52 +292,55 @@
 }
 
 /* ======================================
-   Pagination
+   Pagination (前台樣式)
    ====================================== */
 
-.admin-pagination {
+.pagination {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 16px;
-    background: transparent;
-    padding: 20px 0;
-}
-
-.pagination-btn {
-    display: flex;
-    align-items: center;
     gap: 8px;
-    padding: 10px 16px;
-    background: white;
-    color: #374151;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 500;
+    padding: 32px 0;
+}
+
+.page-btn {
+    display: flex;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    border: 1px solid #DFE3E8;
+    background: var(--White);
+    color: #212B36;
     font-size: 14px;
-    transition: all 0.2s ease;
+    font-weight: 700;
+    cursor: pointer;
+    transition: border-color 0.2s;
 }
 
-.pagination-btn:hover:not(:disabled) {
-    background: #f9fafb;
-    border-color: #9ca3af;
-    transform: translateY(-1px);
+.page-btn:hover:not(:disabled) {
+    border-color: var(--Primary800);
 }
 
-.pagination-btn:disabled {
-    opacity: 0.5;
+.page-btn.active {
+    border-color: var(--Primary800);
+    color: var(--Primary800);
+}
+
+.page-btn:disabled {
+    background: #A3A3A1;
     cursor: not-allowed;
 }
 
-.pagination-info {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    color: #374151;
-    font-weight: 500;
+.page-btn svg {
+    width: 24px;
+    height: 24px;
 }
+
+/* ======================================
+   Pagination (舊版樣式 - 保留備用)
+   ====================================== */
 
 .current-page {
     font-weight: 700;
@@ -1150,6 +1153,12 @@
     background: var(--Primary100);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(148, 175, 202, 0.15);
+}
+
+.admin-action-buttons {
+    display: flex;
+    gap: 12px;
+    align-items: center;
 }
 
 .admin-stat-value {

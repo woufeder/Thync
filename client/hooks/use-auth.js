@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import jwt from "jsonwebtoken";
 import { usePathname, useRouter } from "next/navigation";
+import { swalSuccess, swalError } from "@/utils/swal";
 
 const AuthContext = createContext(null);
 AuthContext.displayName = "AuthContext";
@@ -44,7 +45,8 @@ export function AuthProvider({ children }) {
       console.log("login result:", result);
       if (result.status === "success") {
         console.log("登入成功");
-        alert(result.message);
+        // alert(result.message);
+        await swalSuccess("登入成功", "歡迎回來");
 
         const token = result.data.token;
         const basicUser = result.data.user;
@@ -67,13 +69,14 @@ export function AuthProvider({ children }) {
           setUser(basicUser); // fallback
         }
 
-        router.replace("/user");
+        window.location.href = "/user";
       } else {
-        console.log("登入失敗");
-        alert(result.message);
+        // console.log("登入失敗");
+        await swalError("登入失敗", result.message || "請檢查帳號密碼");
       }
     } catch (error) {
       console.error("login error:", error);
+      await swalError("登入錯誤", error.message || "伺服器錯誤");
     }
   };
 
@@ -126,11 +129,11 @@ export function AuthProvider({ children }) {
       if (result.status === "success") {
         console.log("註冊成功");
 
-        alert(result.message);
-        router.replace("/user/login");
+        await swalSuccess("註冊成功", result.message || "歡迎來到我們的網站");
+        window.location.href = "/user/login";
       } else {
         console.log("註冊失敗");
-        alert(result.message);
+        await swalError("註冊失敗", result.message || "請檢查輸入的資料");
       }
     } catch (error) {
       console.log("註冊失敗");
@@ -227,7 +230,7 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const token = localStorage.getItem(appKey);
     if (!isLoading && !user && !token && protectedRoutes.includes(pathname)) {
-      router.replace(loginRoute);
+      window.location.href = "/user/login";
     }
   }, [isLoading, user, pathname]);
 
@@ -237,7 +240,6 @@ export function AuthProvider({ children }) {
       // 直接設定 token 和 user，不需要再呼叫 API
       localStorage.setItem(appKey, token);
       setUser(user);
-      router.replace("/user");
     } catch (error) {
       console.error("loginWithToken error:", error);
     }

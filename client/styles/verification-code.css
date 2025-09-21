@@ -109,11 +109,17 @@ form {
 }
 .link2:link,
 .link2:visited {
-  color: var(--secondary);
+  text-decoration: none;
+  font-size: 16px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  color: var(--bg);
+  background-color: var(--secondary);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
 }
 .link2:hover,
 .link2:active {
-  color: var(--secondary);
+  background: var(--Secondary500);
   text-decoration: none;
 }
 .btn-primary {
@@ -126,13 +132,13 @@ form {
   margin-top: 20px;
   padding: 10px;
   border-radius: 10px;
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15) inset;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
 }
 .btn-primary:link,
 .btn-primary:visited,
 .btn-primary:hover,
 .btn-primary:active {
-  background: var(--secondary);
+  background: var(--Secondary500);
 }
 .divider {
   margin-top: 20px;
@@ -178,44 +184,21 @@ form {
   visibility: hidden;
   z-index: -1;
 }
-.loader {
-  width: 40px;
-  aspect-ratio: 1;
-  position: relative;
-}
-.loader:before,
-.loader:after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  margin: -8px 0 0 -8px;
-  width: 16px;
-  aspect-ratio: 1;
-  background: #3fb8af;
-  animation: l1-1 2s infinite, l1-2 0.5s infinite;
-}
-.loader:after {
-  background: #ff3d7f;
-  animation-delay: -1s, 0s;
-}
 .message {
   padding: 10px;
-  border-radius: 5px;
-  margin: 10px 0;
+  border-radius: 8px;
+  margin: 20px 0 0 0;
   text-align: center;
 }
 
 .message.success {
-  background-color: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
+  background-color: var(--Primary100);
+  color: var(--Primary800);
 }
 
 .message.error {
-  background-color: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
+  background-color: var(--Danger100);
+  color: var(--Danger500);
 }
 
 button:disabled {
@@ -280,24 +263,18 @@ input:disabled {
     background-color: white;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.25);
     align-self: center;
-    margin-top: 40px;
+    margin-top: 20px;
     padding: 5px 20px;
     display: flex;
     gap: 20px;
   }
-  .toggle-link:link,
-  .toggle-link:visited,
-  .toggle-link:hover,
-  .toggle-link:active {
+  .toggle-link {
     font-weight: 600;
     color: var(--primary-300);
     text-decoration: none;
   }
 
-  .toggle-active:link,
-  .toggle-active:visited,
-  .toggle-active:hover,
-  .toggle-active:active {
+  .toggle-active{
     font-weight: 600;
     background: linear-gradient(92deg, #304a6f 0%, #94afca 100%);
     background-clip: text;
@@ -307,7 +284,7 @@ input:disabled {
     text-decoration-color: #304a6f;
   }
   main {
-    margin-top: 50px;
+    margin-top: 20px;
   }
   form {
     gap: 0;
@@ -322,8 +299,8 @@ input:disabled {
     display: none;
   }
   .btn-primary {
-    font-size: 20px;
-    margin-top: 40px;
+    font-size: 16px;
+    margin-top: 20px;
   }
   .round {
     position: absolute;
@@ -338,12 +315,14 @@ input:disabled {
   }
   .link2:link,
   .link2:visited {
-    color: var(--bg);
+    color: var(--secondary);
+    background-color: var(--bg);
+    border: 2px solid var(--secondary);
   }
   .link2:hover,
   .link2:active {
-    color: var(--bg);
-    text-decoration: none;
+    color: var(--Secondary500);
+    border: 2px solid var(--Secondary500);
   }
   .signin {
     font-size: 20px;

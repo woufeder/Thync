@@ -150,13 +150,14 @@ form {
   margin-top: 20px;
   padding: 10px;
   border-radius: 10px;
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15) inset;
 }
 .btn-primary:link,
-.btn-primary:visited,
+.btn-primary:visited {
+  background: var(--secondary);
+}
 .btn-primary:hover,
 .btn-primary:active {
-  background: var(--secondary);
+  background: var(--Secondary500);
 }
 .divider {
   margin-top: 20px;
@@ -189,8 +190,10 @@ form {
   padding: 10px 14px;
   border-radius: 10px;
   font-size: 16px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
   cursor: pointer;
+}
+.btn-google:hover,.btn-google:active {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
 }
 .btn-google img {
   width: 22px;
@@ -228,58 +231,6 @@ form {
   overflow: hidden;
 }
 
-/* CSS Loaders */
-/* HTML: <div class="loader"></div> */
-.loader {
-  width: 40px;
-  aspect-ratio: 1;
-  position: relative;
-}
-.loader:before,
-.loader:after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  margin: -8px 0 0 -8px;
-  width: 16px;
-  aspect-ratio: 1;
-  background: #3fb8af;
-  animation: l1-1 2s infinite, l1-2 0.5s infinite;
-}
-.loader:after {
-  background: #ff3d7f;
-  animation-delay: -1s, 0s;
-}
-@keyframes l1-1 {
-  0% {
-    top: 0;
-    left: 0;
-  }
-  25% {
-    top: 100%;
-    left: 0;
-  }
-  50% {
-    top: 100%;
-    left: 100%;
-  }
-  75% {
-    top: 0;
-    left: 100%;
-  }
-  100% {
-    top: 0;
-    left: 0;
-  }
-}
-@keyframes l1-2 {
-  80%,
-  100% {
-    transform: rotate(0.5turn);
-  }
-}
-
 @media (max-width: 768px) {
   .left {
     width: 100%;
@@ -305,24 +256,18 @@ form {
     background-color: white;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.25);
     align-self: center;
-    margin-top: 40px;
+    margin-top: 20px;
     padding: 5px 20px;
     display: flex;
     gap: 20px;
   }
-  .toggle-link:link,
-  .toggle-link:visited,
-  .toggle-link:hover,
-  .toggle-link:active {
+  .toggle-link {
     font-weight: 600;
     color: var(--primary-300);
     text-decoration: none;
   }
 
-  .toggle-active:link,
-  .toggle-active:visited,
-  .toggle-active:hover,
-  .toggle-active:active {
+  .toggle-active {
     font-weight: 600;
     background: linear-gradient(92deg, #304a6f 0%, #94afca 100%);
     background-clip: text;
@@ -346,14 +291,14 @@ form {
   .statement {
     font-size: 16px;
     align-self: flex-start;
-    margin-top: 50px;
+    margin-top: 30px;
   }
   .divider {
     display: none;
   }
   .btn-primary {
     font-size: 20px;
-    margin-top: 50px;
+    margin-top: 30px;
   }
   .round {
     position: absolute;
@@ -378,7 +323,7 @@ form {
   .signin {
     font-size: 18px;
     position: absolute;
-    bottom: 60px;
+    bottom: 80px;
     left: 50%;
     transform: translateX(-50%);
   }

@@ -636,6 +636,53 @@
     }
 }
 
+
+
+/* Large screen optimizations */
+@media (min-width: 1200px) {
+    .articles-filter-header {
+        padding: 32px;
+    }
+
+    .search-input input {
+        font-size: 18px;
+        padding: 18px 24px 18px 56px;
+    }
+
+    .search-input .search-icon {
+        left: 20px;
+        width: 24px;
+        height: 24px;
+    }
+
+    .filter-content {
+        padding: 40px 32px;
+    }
+
+    .filter-tags {
+        gap: 16px;
+    }
+
+    .filter-tag {
+        padding: 12px 20px;
+        font-size: 15px;
+    }
+}
+
+/* 中等螢幕 - 2欄佈局 */
+@media (max-width: 1200px) {
+    .a-cards .row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* 大螢幕優化 */
+@media (min-width: 1400px) {
+    .a-cards .col {
+        max-width: 461px;
+    }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .articles-page .main-content {
@@ -704,50 +751,5 @@
     .a-cards .col {
         min-width: 280px;
         max-width: 100%;
-    }
-}
-
-/* Large screen optimizations */
-@media (min-width: 1200px) {
-    .articles-filter-header {
-        padding: 32px;
-    }
-
-    .search-input input {
-        font-size: 18px;
-        padding: 18px 24px 18px 56px;
-    }
-
-    .search-input .search-icon {
-        left: 20px;
-        width: 24px;
-        height: 24px;
-    }
-
-    .filter-content {
-        padding: 40px 32px;
-    }
-
-    .filter-tags {
-        gap: 16px;
-    }
-
-    .filter-tag {
-        padding: 12px 20px;
-        font-size: 15px;
-    }
-}
-
-/* 中等螢幕 - 2欄佈局 */
-@media (max-width: 1200px) {
-    .a-cards .row {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-/* 大螢幕優化 */
-@media (min-width: 1400px) {
-    .a-cards .col {
-        max-width: 461px;
     }
 }

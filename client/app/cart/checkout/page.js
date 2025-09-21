@@ -1096,7 +1096,7 @@ export default function CheckoutPage() {
             <div className="panel">
               <h3 className="panel-title">選擇配送方式</h3>
               <div className="panel-body">
-                <div className="radio-group">
+                <div className="radio-group mb-md-3 mb-0">
                   <label className="radio">
                     <input
                       type="radio"
@@ -1123,8 +1123,8 @@ export default function CheckoutPage() {
                 {/* 門市資訊（僅 7-11 取貨時顯示） */}
                 {form.shippingType === "7-11取貨" && (
                   <>
-                    <div className="row">
-                      <label>
+                    <div className="row mb-md-3 mb-0">
+                      <label className="d-flex align-items-center">
                         取貨門市
                         <button
                           className="checkout-btn checkout-btn-light"
@@ -1138,10 +1138,10 @@ export default function CheckoutPage() {
                     <div className="row">
                       <div className="store-info-text">
                         {store711.storename && (
-                          <div>
-                            <p>門市名稱：{store711.storename}</p>
-                            <p>門市地址：{store711.storeaddress}</p>
-                          </div>
+                          <>
+                            <p className="mb-0">門市名稱：{store711.storename}</p>
+                            <p className="mb-0">門市地址：{store711.storeaddress}</p>
+                          </>
                         )}
                       </div>
                     </div>
@@ -1350,9 +1350,9 @@ export default function CheckoutPage() {
                     onChange={handleChange}
                   />
                 </div>
-                <div className="radio-group">
+                <div className="radio-group ">
                   <span className="bill">發票類型</span>
-                  <div className="radio-group">
+                  <div className="radio-group flex-column flex-md-row receipt">
                     <label className="radio">
                       <input
                         type="radio"

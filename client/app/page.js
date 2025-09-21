@@ -105,9 +105,7 @@ export default function Home() {
       {isMobile ? (
         // 手機版結構
         <header>
-          <div className="showheader">
             <Header />
-          </div>
         </header>
       ) : (
         // 桌機版結構

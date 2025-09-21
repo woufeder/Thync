@@ -61,6 +61,7 @@
   @media (max-width: 768px) {
     padding: 10px;
     box-sizing: border-box;
+    border-right: none;
   }
 }
 
@@ -88,7 +89,7 @@
   /* 每個品牌間距 */
   @media (max-width: 768px) {
     /* gap: 5px; */
-    justify-content: space-evenly;
+    border-left: 1px solid var(--Primary300);
   }
 }
 

@@ -951,6 +951,11 @@
         justify-content: center;
         padding: 60px 20px;
         text-align: center;
+        /* height: 600px; */
+    }
+
+    .main-content.error{
+        height: 50vh;
     }
 
     .loading-spinner {

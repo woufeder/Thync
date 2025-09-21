@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Script from "next/script";
 import styles from "@/styles/forgot-password.css";
+import "@/styles/loader.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRightToBracket } from "@fortawesome/free-solid-svg-icons";
 
@@ -17,6 +18,7 @@ export default function ForgotPasswordPage() {
   const { user, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const [lottieLoaded, setLottieLoaded] = useState(false);
+  const [animationReady, setAnimationReady] = useState(false);
   const animationRef = useRef(null);
 
   useEffect(() => {
@@ -92,6 +94,7 @@ export default function ForgotPasswordPage() {
       // 動畫載入完成後設定遮罩
       animationRef.current.addEventListener("DOMLoaded", function () {
         setupMask();
+        setAnimationReady(true);
       });
     }
   };
@@ -205,12 +208,18 @@ export default function ForgotPasswordPage() {
               <img src="/images/LOGO.png" alt="" />
               <h1 className="register-title">忘記密碼</h1>
               <div className="toggle">
-                <Link href="/user/login" className="toggle-active">
+                <a
+                  className="toggle-link"
+                  onClick={() => (window.location.href = "/user/login")}
+                >
                   登入
-                </Link>
-                <Link href="/user/add" className="toggle-link">
+                </a>
+                <a
+                  className="toggle-link"
+                  onClick={() => (window.location.href = "/user/add")}
+                >
                   註冊
-                </Link>
+                </a>
               </div>
             </div>
             <main>
@@ -260,7 +269,10 @@ export default function ForgotPasswordPage() {
 
         <div className="hidden">
           {/* 背景圖片 */}
-          <div className="background-image"></div>
+          <div
+            className="background-image"
+            style={{ display: animationReady ? "block" : "none" }}
+          ></div>
 
           {/* 隱藏的 SVG 用於遮罩定義 */}
           <svg style={{ position: "absolute", width: 0, height: 0 }}>

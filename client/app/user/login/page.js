@@ -6,28 +6,32 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Script from "next/script";
 import styles from "@/styles/login.css";
+import "@/styles/loader.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHouseChimney,
   faUserSecret,
 } from "@fortawesome/free-solid-svg-icons";
+import { swalError, swalSuccess } from "@/utils/swal";
 
 export default function UserLoginPage() {
   const [mail, setMail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isGoogleLoaded, setIsGoogleLoaded] = useState(true);
+  const [isProcessingGoogleLogin, setIsProcessingGoogleLogin] = useState(false);
   const { login, loginWithToken, user, logout, isLoading } = useAuth();
   const router = useRouter();
   const [lottieLoaded, setLottieLoaded] = useState(false);
+  const [animationReady, setAnimationReady] = useState(false);
   const animationRef = useRef(null);
 
   // 跳轉會員中心
   useEffect(() => {
-    if (!isLoading && user) {
+    if (!isLoading && user && !window.location.hash.includes("access_token")) {
       window.location.href = "/user";
     }
-  }, [user, router, isLoading]);
+  }, [user, isLoading]);
 
   useEffect(() => {
     if (lottieLoaded || window.lottie) {
@@ -50,6 +54,7 @@ export default function UserLoginPage() {
       console.log("state:", state);
 
       if (accessToken && state === "google_login") {
+        setIsProcessingGoogleLogin(true);
         handleGoogleCallback(accessToken);
       }
     }
@@ -88,17 +93,24 @@ export default function UserLoginPage() {
         console.log("準備呼叫 loginWithToken");
         await loginWithToken(data.data.token, data.data.user);
 
+        await swalSuccess(
+          "登入成功",
+          `歡迎回來，${data.data.user.name || userInfo.name}！`
+        );
+
         // 清除 URL hash
         window.location.hash = "";
-        setTimeout(() => {
-          window.location.href = "/user";
-        }, 300);
+        setIsProcessingGoogleLogin(false);
+        window.location.href = "/user";
       } else {
-        alert("登入失敗：" + data.message);
+        // alert("登入失敗：" + data.message);
+        await swalError("登入失敗", data.message || "請稍後再試");
+        setIsProcessingGoogleLogin(false);
       }
     } catch (error) {
       console.error("Google 登入錯誤:", error);
-      alert("登入過程發生錯誤");
+      await swalError("登入過程發生錯誤");
+      setIsProcessingGoogleLogin(false);
     }
   };
 
@@ -145,6 +157,7 @@ export default function UserLoginPage() {
       // 動畫載入完成後設定遮罩
       animationRef.current.addEventListener("DOMLoaded", function () {
         setupMask();
+        setAnimationReady(true);
       });
     }
   };
@@ -240,7 +253,7 @@ export default function UserLoginPage() {
   }
 
   return (
-    <div>
+    <div className="position-relative">
       {/* 載入 Lottie 腳本 */}
       <Script
         src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"
@@ -257,12 +270,13 @@ export default function UserLoginPage() {
             <div className="header">
               <div className="d-flex align-items-center justify-content-between">
                 <img src="/images/LOGO.png" alt="LOGO" />
-                <a onClick={() =>
-                  (window.location.href = "/")
-                } className="home-link" aria-label="回到首頁"
+                <a
+                  onClick={() => (window.location.href = "/")}
+                  className="home-link"
+                  aria-label="回到首頁"
                   style={{
                     textDecoration: "none",
-                    cursor: "pointer"
+                    cursor: "pointer",
                   }}
                 >
                   <FontAwesomeIcon
@@ -274,12 +288,18 @@ export default function UserLoginPage() {
 
               <h1 className="register-title">會員登入</h1>
               <div className="toggle">
-                <Link href="/user/login" className="toggle-active">
+                <a
+                  className="toggle-active"
+                  onClick={() => (window.location.href = "/user/login")}
+                >
                   登入
-                </Link>
-                <Link href="/user/add" className="toggle-link">
+                </a>
+                <a
+                  className="toggle-link"
+                  onClick={() => (window.location.href = "/user/add")}
+                >
                   註冊
-                </Link>
+                </a>
               </div>
             </div>
             <main>
@@ -372,16 +392,14 @@ export default function UserLoginPage() {
               </form>
             </main>
           </div>
-          <div className="bottom">
-            <a href="/admin/login" className="secret-block">
-              <FontAwesomeIcon icon={faUserSecret} className="faUserSecret" />
-            </a>
-          </div>
         </div>
 
         <div className="hidden">
           {/* 背景圖片 */}
-          <div className="background-image"></div>
+          <div
+            className="background-image"
+            style={{ display: animationReady ? "block" : "none" }}
+          ></div>
 
           {/* 隱藏的 SVG 用於遮罩定義 */}
           <svg style={{ position: "absolute", width: 0, height: 0 }}>
@@ -402,6 +420,11 @@ export default function UserLoginPage() {
       </div>
 
       <div className="round"></div>
+      <div className="bottom">
+        <a href="/admin/login" className="secret-block">
+          <FontAwesomeIcon icon={faUserSecret} className="faUserSecret" />
+        </a>
+      </div>
     </div>
   );
 }

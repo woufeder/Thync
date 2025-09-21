@@ -16,6 +16,7 @@ import {
   faPlus,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
+import { swalError, swalSuccess, swalConfirm } from "@/utils/swal";
 
 export default function UserWishListPage() {
   const { user, setUser, isLoading } = useAuth();
@@ -65,7 +66,7 @@ export default function UserWishListPage() {
               <Breadcrumb />
             </div>
             <div className="product-list">
-              {wishlist.length === 0 && <p>目前沒有收藏商品</p>}
+              {wishlist.length === 0 && <p>目前沒有追蹤商品</p>}
               {wishlist.map((p, index) => (
                 <div key={p.id} className="product-card">
                   <div
@@ -87,9 +88,19 @@ export default function UserWishListPage() {
                         e.preventDefault(); // 阻止預設行為
                         e.stopPropagation(); // 阻止事件冒泡
 
-                        if (!confirm("確定要移除此商品的收藏嗎？")) {
-                          return;
-                        }
+                        const result = await swalConfirm(
+                          "商品",
+                          "確定要取消此商品的追蹤嗎？",
+                          {
+                            confirmButtonText: "確定",
+                            cancelButtonText: "取消",
+                            confirmButtonColor: "var(--Danger500)",
+                            cancelButtonColor: "#4d4d4d",
+                          }
+                        );
+
+                        // 如果用戶取消，直接返回
+                        if (!result.isConfirmed) return;
 
                         try {
                           const token = localStorage.getItem("reactLoginToken");
@@ -107,12 +118,15 @@ export default function UserWishListPage() {
                             setWishlist(
                               wishlist.filter((item) => item.id !== p.id)
                             );
+                            await swalSuccess("取消", "已取消該追蹤商品");
                           } else {
-                            alert(result.message || "移除失敗");
+                            // alert(result.message || "移除失敗");
+                            await swalError("取消", result.message || "取消失敗");
                           }
                         } catch (error) {
-                          console.error("移除收藏錯誤:", error);
-                          alert("移除失敗，請稍後再試");
+                          console.error("移除追蹤錯誤:", error);
+                          // alert("移除失敗，請稍後再試");
+                          await swalError("系統錯誤", "取消失敗，請稍後再試");
                         }
                       }}
                     >
@@ -133,15 +147,19 @@ export default function UserWishListPage() {
                       <p className="price">${p.price}</p>
                       <button
                         className="btn btnCart"
-                        onClick={() => {
+                        onClick={async() => {
                           // 統一加入購物車資料結構
-                          const cart = JSON.parse(localStorage.getItem("cartItems") || "[]");
+                          const cart = JSON.parse(
+                            localStorage.getItem("cartItems") || "[]"
+                          );
                           const exist = cart.find((i) => i.id === p.id);
                           const cartProduct = {
                             id: p.id,
                             product_name: p.name || p.product_name || "",
                             price: p.price,
-                            images: p.images || (p.first_image ? [{ file: p.first_image }] : []),
+                            images:
+                              p.images ||
+                              (p.first_image ? [{ file: p.first_image }] : []),
                             intro: p.intro || "",
                             introImages: p.introImages || [],
                             brand_id: p.brand_id,
@@ -157,8 +175,12 @@ export default function UserWishListPage() {
                           } else {
                             newCart = [...cart, cartProduct];
                           }
-                          localStorage.setItem("cartItems", JSON.stringify(newCart));
-                          alert("已加入購物車");
+                          localStorage.setItem(
+                            "cartItems",
+                            JSON.stringify(newCart)
+                          );
+                          // alert("已加入購物車");
+                          await swalSuccess("加入購物車", "商品已成功加入購物車！");
                         }}
                       >
                         <FontAwesomeIcon icon={faPlus} />

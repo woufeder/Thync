@@ -159,10 +159,9 @@ export default function ArticlePage() {
   if (error || !article) {
     return (
       <div className="article-page">
-        <div className="container header">
-          <Header />
-        </div>
-        <main className="main-content">
+        <Header />
+        <div className="container header"></div>
+        <main className="main-content error">
           <div className="container">
             <div className="error-container">
               <h3>😔 文章載入失敗</h3>
@@ -171,9 +170,8 @@ export default function ArticlePage() {
             </div>
           </div>
         </main>
-        <footer>
-          <Footer />
-        </footer>
+
+        <Footer />
       </div>
     );
   }

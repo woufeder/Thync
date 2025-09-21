@@ -391,6 +391,7 @@ td {
   border-radius: 20px;
   border: var(--danger-500) 1px solid !important;
   overflow: hidden;
+  z-index: 10;
 
   &:before {
     content: "";
@@ -501,5 +502,8 @@ td {
   .detail-button:active {
     background-color: var(--primary-800);
     color: var(--primary-100);
+  }
+  .product-list {
+    justify-content: center;
   }
 }

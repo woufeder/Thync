@@ -6,8 +6,11 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import Script from "next/script";
 import styles from "@/styles/add.css";
+import "@/styles/loader.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHouseChimney } from "@fortawesome/free-solid-svg-icons";
+import Swal from "sweetalert2";
+import { swalTerms, swalPrivacy, swalHint } from "@/utils/swal";
 
 export default function UserAddPage() {
   const [account, setAccount] = useState("");
@@ -15,10 +18,39 @@ export default function UserAddPage() {
   const [password, setPassword] = useState("");
   const [statement, setStatement] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const { user, isLoading, add } = useAuth();
+  const [isGoogleLoaded, setIsGoogleLoaded] = useState(true);
+  const [termsAgreed, setTermsAgreed] = useState(false);
+  const [privacyAgreed, setPrivacyAgreed] = useState(false);
+  const { user, isLoading, add, loginWithToken } = useAuth();
   const router = useRouter();
   const [lottieLoaded, setLottieLoaded] = useState(false);
+  const [animationReady, setAnimationReady] = useState(false);
   const animationRef = useRef(null);
+
+  // 🔥 新增：處理 checkbox 變更的函數
+
+  const handleCheckboxChange = async (e) => {
+    // 如果用戶嘗試勾選但還沒同意條款，顯示提示
+
+    if (e.target.checked && (!termsAgreed || !privacyAgreed)) {
+      e.preventDefault();
+      let missingAgreements = [];
+      if (!termsAgreed) missingAgreements.push("服務條款");
+      if (!privacyAgreed) missingAgreements.push("隱私政策");
+      await swalHint(missingAgreements);
+      return;
+    }
+
+    // 如果已經同意所有條款，允許正常勾選/取消勾選
+    setStatement(e.target.checked);
+  };
+
+  // 跳轉會員中心（如果已登入）
+  useEffect(() => {
+    if (!isLoading && user) {
+      window.location.href = "/user";
+    }
+  }, [user, router, isLoading]);
 
   useEffect(() => {
     if (lottieLoaded || window.lottie) {
@@ -26,9 +58,119 @@ export default function UserAddPage() {
     }
   }, [lottieLoaded]);
 
+  // 處理 Google 登入回傳
+  useEffect(() => {
+    // 檢查 URL 是否有 Google 回傳的 token
+    const hash = window.location.hash;
+    console.log("當前 URL hash:", hash);
+
+    if (hash && hash.includes("access_token")) {
+      const params = new URLSearchParams(hash.substring(1));
+      const accessToken = params.get("access_token");
+      const state = params.get("state");
+
+      console.log("找到 access_token:", accessToken);
+      console.log("state:", state);
+
+      if (accessToken && state === "google_register") {
+        handleGoogleCallback(accessToken);
+      }
+    }
+  }, []);
+
+  const handleGoogleCallback = async (accessToken) => {
+    try {
+      console.log("=== 開始處理 Google 註冊回傳 ===");
+
+      // 1. 用 access_token 取得使用者資訊
+      const userResponse = await fetch(
+        `https://www.googleapis.com/oauth2/v2/userinfo?access_token=${accessToken}`
+      );
+      const userInfo = await userResponse.json();
+      console.log("Google 使用者資訊:", userInfo);
+
+      // 2. 發送到我們的後端（註冊/登入）
+      const response = await fetch(
+        "http://localhost:3007/api/users/google-login-simple",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: userInfo.email,
+            name: userInfo.name,
+            picture: userInfo.picture,
+            googleId: userInfo.id,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      console.log("後端回應:", data);
+
+      if (data.success) {
+        console.log("準備呼叫 loginWithToken");
+        await loginWithToken(data.data.token, data.data.user);
+
+        // 清除 URL hash
+        window.location.hash = "";
+        setTimeout(() => {
+          window.location.href = "/user";
+        }, 300);
+      } else {
+        alert("註冊失敗：" + data.message);
+      }
+    } catch (error) {
+      console.error("Google 註冊錯誤:", error);
+      alert("註冊過程發生錯誤");
+    }
+  };
+
+  const handleGoogleRegister = () => {
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    const redirectUri = "http://localhost:3000/user/add";
+
+    console.log("Client ID:", clientId);
+    console.log("Redirect URI:", redirectUri);
+    console.log("當前頁面 URL:", window.location.href);
+
+    const googleAuthUrl = new URL(
+      "https://accounts.google.com/o/oauth2/v2/auth"
+    );
+    googleAuthUrl.searchParams.set("client_id", clientId);
+    googleAuthUrl.searchParams.set("redirect_uri", redirectUri);
+    googleAuthUrl.searchParams.set("scope", "email profile");
+    googleAuthUrl.searchParams.set("response_type", "token");
+    googleAuthUrl.searchParams.set("state", "google_register");
+
+    console.log("完整 Google Auth URL:", googleAuthUrl.toString());
+    window.location.href = googleAuthUrl.toString();
+  };
+
   const onclick = () => {
     console.log("account:", account, "Mail:", mail, "Password:", password);
     add(account, mail, password);
+  };
+
+  // 服務條款點擊
+  const handleTermsClick = async (e) => {
+    e.preventDefault();
+
+    const result = await swalTerms();
+
+    if (result.isConfirmed) {
+      setTermsAgreed(true);
+    }
+  };
+
+  // 隱私政策點擊
+  const handlePrivacyClick = async (e) => {
+    e.preventDefault();
+
+    const result = await swalPrivacy();
+
+    if (result.isConfirmed) {
+      setPrivacyAgreed(true);
+    }
   };
 
   // Lottie 動畫初始化
@@ -49,6 +191,7 @@ export default function UserAddPage() {
       // 動畫載入完成後設定遮罩
       animationRef.current.addEventListener("DOMLoaded", function () {
         setupMask();
+        setAnimationReady(true);
       });
     }
   };
@@ -124,7 +267,8 @@ export default function UserAddPage() {
         // 設置縮放使遮罩填滿容器
         maskContent.setAttribute(
           "transform",
-          `scale(-${scaleX}, ${scaleY}) translate(-${animationSVG.viewBox.baseVal.width + 200
+          `scale(-${scaleX}, ${scaleY}) translate(-${
+            animationSVG.viewBox.baseVal.width + 200
           }, 0)`
         );
       }
@@ -162,12 +306,13 @@ export default function UserAddPage() {
             <div className="header">
               <div className="d-flex align-items-center justify-content-between">
                 <img src="/images/LOGO.png" alt="LOGO" />
-                <a onClick={() =>
-                  (window.location.href = "/")
-                } className="home-link" aria-label="回到首頁"
+                <a
+                  onClick={() => (window.location.href = "/")}
+                  className="home-link"
+                  aria-label="回到首頁"
                   style={{
                     textDecoration: "none",
-                    cursor: "pointer"
+                    cursor: "pointer",
                   }}
                 >
                   <FontAwesomeIcon
@@ -178,12 +323,18 @@ export default function UserAddPage() {
               </div>
               <h1 className="register-title">會員註冊</h1>
               <div className="toggle">
-                <Link href="/user/login" className="toggle-link">
+                <a
+                  className="toggle-link"
+                  onClick={() => (window.location.href = "/user/login")}
+                >
                   登入
-                </Link>
-                <Link href="/user/add" className="toggle-active">
+                </a>
+                <a
+                  className="toggle-active"
+                  onClick={() => (window.location.href = "/user/add")}
+                >
                   註冊
-                </Link>
+                </a>
               </div>
             </div>
             <main>
@@ -265,15 +416,31 @@ export default function UserAddPage() {
                     name="statement"
                     id="statement"
                     checked={statement}
-                    onChange={(e) => setStatement(e.target.checked)}
+                    onChange={handleCheckboxChange}
                     required
                   />
                   我已閱讀並同意{" "}
-                  <a href="#" className="link">
+                  <a
+                    href="#"
+                    className="link"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      swalTerms();
+                      handleTermsClick(e);
+                    }}
+                  >
                     服務條款
                   </a>{" "}
-                  與
-                  <a href="#" className="link">
+                  與{" "}
+                  <a
+                    href="#"
+                    className="link"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      swalPrivacy();
+                      handlePrivacyClick(e);
+                    }}
+                  >
                     隱私政策
                   </a>
                 </div>
@@ -293,9 +460,18 @@ export default function UserAddPage() {
                   </Link>
                 </p>
 
-                <button type="button" className="btn-google google-pc">
+                <button
+                  type="button"
+                  className="btn-google google-pc"
+                  onClick={handleGoogleRegister}
+                  disabled={!isGoogleLoaded}
+                >
                   <img src="/images/users/Google Logo.png" alt="Google Logo" />
-                  <span>使用 Google 帳號登入</span>
+                  <span>
+                    {isGoogleLoaded
+                      ? "使用 Google 帳號註冊"
+                      : "載入 Google 註冊中..."}
+                  </span>
                 </button>
               </form>
             </main>
@@ -304,7 +480,10 @@ export default function UserAddPage() {
 
         <div className="hidden">
           {/* 背景圖片 */}
-          <div className="background-image"></div>
+          <div
+            className="background-image"
+            style={{ display: animationReady ? "block" : "none" }}
+          ></div>
 
           {/* 隱藏的 SVG 用於遮罩定義 */}
           <svg style={{ position: "absolute", width: 0, height: 0 }}>

@@ -740,28 +740,123 @@ router.post("/forgot-password", async (req, res) => {
       // 發送驗證碼郵件
       await sendEmail({
         email: mail,
-        subject: "密碼重設驗證碼",
+        subject: "重設密碼驗證碼",
         message: `您的驗證碼是：${verificationCode}`,
         html: `
-          <div style="max-width: 600px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif;">
-            <h2 style="color: #333; text-align: center;">密碼重設驗證碼</h2>
-            <p>您好，</p>
-            <p>我們收到您重設密碼的請求。請使用以下驗證碼來重設您的密碼：</p>
-            <div style="text-align: center; margin: 30px 0;">
-              <div style="background-color: #f8f9fa; border: 2px dashed #007bff; 
-                          padding: 20px; border-radius: 10px; display: inline-block;">
-                <h1 style="color: #007bff; margin: 0; font-size: 32px; letter-spacing: 5px;">
-                  ${verificationCode}
-                </h1>
-              </div>
-            </div>
-            <p style="color: #666; font-size: 14px; text-align: center;">
-              此驗證碼將在 <strong>10 分鐘</strong> 後過期。
-            </p>
-            <p style="color: #999; font-size: 12px; text-align: center;">
-              如果您未申請重設密碼，請忽略此郵件。
-            </p>
-          </div>
+          <div
+  style="
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 40px 40px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+      sans-serif;
+    background-color: #D8E2EC;
+  "
+>
+
+  <div
+    style="
+      background-color: white;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    "
+  >
+    <h2
+      style="
+        color: #2c3e50;
+        font-size: 24px;
+        font-weight: 500;
+        margin-bottom: 30px;
+        text-align: center;
+      "
+    >
+      重設密碼驗證碼
+    </h2>
+
+    <p
+      style="
+        color: #555;
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 20px;
+      "
+    >
+      您好，
+    </p>
+
+    <p
+      style="
+        color: #555;
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 40px;
+      "
+    >
+      我們收到您重設密碼的請求。請使用以下驗證碼來重設您的密碼：
+    </p>
+
+    <div style="text-align: center; margin: 40px 0">
+      <div
+        style="
+          display: inline-block;
+          background: #8E7471;
+          padding: 3px;
+          border-radius: 12px;
+        "
+      >
+        <div
+          style="
+            background-color: #F8F7F3;
+            padding: 20px 40px;
+            border-radius: 10px;
+          "
+        >
+          <span
+            style="
+              font-size: 36px;
+              font-weight: bold;
+              color: #8E7471;
+              letter-spacing: 8px;
+              font-family: 'Courier New', monospace;
+            "
+          >
+            ${verificationCode}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <p
+      style="
+        color: #7f8c8d;
+        font-size: 14px;
+        text-align: center;
+        margin-bottom: 30px;
+      "
+    >
+      此驗證碼將在 <strong>10 分鐘</strong> 後過期。
+    </p>
+
+    <p style="color: #7f8c8d; font-size: 14px; line-height: 1.5">
+      如果您未申請重設密碼，請忽略此郵件。
+    </p>
+  </div>
+
+  <div
+    style="
+      text-align: center;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+    "
+  >
+    <p style="color: #95a5a6; font-size: 12px">
+      © 2025 ThynC. All rights reserved.
+    </p>
+  </div>
+</div>
+
         `,
       });
 
@@ -1056,7 +1151,7 @@ function checkToken(req, res, next) {
       }
       // 將解碼後的 payload(加密的 token 內容) 存入 req 物件，之後路由才知道是誰要登出(執行動作)
       req.decoded = decoded;
-      
+
       next();
     });
   } else {
