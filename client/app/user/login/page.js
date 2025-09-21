@@ -95,7 +95,7 @@ export default function UserLoginPage() {
 
         await swalSuccess(
           "登入成功",
-          `歡迎回來，${data.data.user.name || userInfo.name}！`
+          `歡迎回來，${data.data.user.account || userInfo.account}！`
         );
 
         // 清除 URL hash

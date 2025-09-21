@@ -354,11 +354,20 @@ router.post("/", upload.none(), async (req, res) => {
         return result[0];
       });
     if (user) {
-      const err = new Error("提供的帳號已被使用");
-      err.code = 400;
-      err.status = "fail";
-      err.message = "帳號已被使用";
-      throw err;
+      if (Number(user.is_valid) === 1) {
+        const err = new Error("該帳號已被使用");
+        err.code = 400;
+        err.status = "fail";
+        err.message = "該帳號已被使用";
+        throw err;
+      }
+      if (Number(user.is_valid) === 0) {
+        const err = new Error("該帳號不能再次註冊");
+        err.code = 400;
+        err.status = "fail";
+        err.message = "該帳號不能再次註冊";
+        throw err;
+      }
     }
 
     // 檢查 mail 有沒有使用過
@@ -376,10 +385,10 @@ router.post("/", upload.none(), async (req, res) => {
         throw err;
       }
       if (Number(user.is_valid) === 0) {
-        const err = new Error("已刪除信箱不能再次註冊");
+        const err = new Error("該信箱不能再次註冊");
         err.code = 400;
         err.status = "fail";
-        err.message = "已刪除信箱不能再次註冊";
+        err.message = "該信箱不能再次註冊";
         throw err;
       }
     }

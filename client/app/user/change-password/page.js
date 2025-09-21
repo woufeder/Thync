@@ -121,7 +121,7 @@ export default function ResetPasswordPage() {
             </div>
 
             <div id="profile-form" className="form-change-pass">
-              <h1 className="mb-0">會員資料管理</h1>
+              <h1 className="mb-0">變更密碼</h1>
               <form id="change-password-form" autoComplete="on">
                 {/* 舊密碼 */}
                 <div className="field">
@@ -223,7 +223,7 @@ export default function ResetPasswordPage() {
                     ) : (
                       <>
                         <i className="fa-solid fa-key"></i>
-                        &nbsp;&nbsp;變更密碼
+                        &nbsp;&nbsp;確認
                       </>
                     )}
                   </button>

@@ -54,7 +54,7 @@ export default function ForgotPasswordPage() {
       const data = await response.json();
 
       if (data.success) {
-        setMessage("驗證碼已發送至您的信箱，請查收");
+        setMessage("驗證碼已發送至您的信箱");
         setMessageType("success");
 
         // 1秒後跳轉到驗證碼頁面

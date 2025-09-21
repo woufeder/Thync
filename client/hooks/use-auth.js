@@ -46,7 +46,7 @@ export function AuthProvider({ children }) {
       if (result.status === "success") {
         console.log("登入成功");
         // alert(result.message);
-        await swalSuccess("登入成功", "歡迎回來");
+        await swalSuccess("登入成功", `歡迎回來，${result.data.user.account}`);
 
         const token = result.data.token;
         const basicUser = result.data.user;
@@ -129,7 +129,7 @@ export function AuthProvider({ children }) {
       if (result.status === "success") {
         console.log("註冊成功");
 
-        await swalSuccess("註冊成功", result.message || "歡迎來到我們的網站");
+        await swalSuccess("註冊成功", "歡迎您成為我們的會員");
         window.location.href = "/user/login";
       } else {
         console.log("註冊失敗");

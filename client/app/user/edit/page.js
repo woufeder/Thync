@@ -193,16 +193,13 @@ export default function UserEditPage() {
   // 刪除帳號
   const handleDeleteAccount = async () => {
     // if (!window.confirm("確定要刪除帳號嗎？此操作無法復原！")) return;
-    const result = await swalConfirm(
-      "刪除帳號",
-      "是否確認要刪除帳號？提醒您此操作無法復原！",
-      {
-        confirmButtonText: "確認",
-        cancelButtonText: "取消",
-        confirmButtonColor: "var(--Danger500)",
-        cancelButtonColor: "#4d4d4d",
-      }
-    );
+    const result = await swalConfirm("是否確認要刪除帳號？", undefined, {
+      html: `<span style="color:var(--Danger500);font-weight:bold;">警告：此操作無法復原！</span>`,
+      confirmButtonText: "確認",
+      cancelButtonText: "取消",
+      confirmButtonColor: "var(--Danger500)",
+      cancelButtonColor: "#4d4d4d",
+    });
 
     // 如果用戶取消，直接返回
     if (!result.isConfirmed) return;
@@ -221,10 +218,10 @@ export default function UserEditPage() {
       const result = await res.json();
       if (result.status === "success") {
         // alert("帳號已刪除");
-        await swalSuccess("刪除帳號", "已成功刪除帳號");
+        await swalSuccess(user.account, "已成功刪除帳號");
         localStorage.removeItem("reactLoginToken");
-        setUser(null);
-        window.location.href = "/user/login";
+        // setUser(null);
+        window.location.href = "/";
       } else {
         // alert(result.message || "刪除失敗");
         await swalError("刪除帳號", result.message || "刪除失敗");
@@ -346,7 +343,7 @@ export default function UserEditPage() {
                   </div>
                 </div>
 
-                <div className="row mb-4 mb-md-5">
+                <div className="row mb-4 mb-md-5 align-items-end">
                   <div className="col-12 col-md-3">
                     <label className="form-label">電話</label>
                     {isEditing ? (
@@ -607,7 +604,7 @@ export default function UserEditPage() {
                           (window.location.href = "/user/change-password")
                         }
                       >
-                        <i className="fa-solid fa-key me-1"></i> 修改密碼
+                        <i className="fa-solid fa-key me-1"></i>變更密碼
                       </a>
                       <button
                         type="button"
@@ -615,7 +612,7 @@ export default function UserEditPage() {
                         onClick={handleEdit}
                       >
                         <i className="fa-solid fa-pen-to-square me-1"></i>{" "}
-                        編輯個人資料
+                        編輯資料
                       </button>
                       <button
                         type="button"

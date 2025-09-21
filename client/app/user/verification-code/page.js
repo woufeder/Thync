@@ -149,15 +149,12 @@ export default function VerificationPage() {
     e.preventDefault();
 
     if (!mail) {
-      setMessage("請輸入信箱地址");
-
+      setMessage("請輸入信箱");
       setMessageType("error");
-
       return;
     }
 
     setIsLoading(true);
-
     setMessage("");
 
     try {
@@ -165,11 +162,9 @@ export default function VerificationPage() {
         "http://localhost:3007/api/users/forgot-password",
         {
           method: "POST",
-
           headers: {
             "Content-Type": "application/json",
           },
-
           body: JSON.stringify({ mail }),
         }
       );
@@ -177,21 +172,16 @@ export default function VerificationPage() {
       const data = await response.json();
 
       if (data.success) {
-        setMessage("新驗證碼已發送至您的信箱");
-
+        setMessage("驗證碼已再次發送至您的信箱");
         setMessageType("success");
-
         setVerificationCode(""); // 清空舊的驗證碼
       } else {
         setMessage(data.message || "重新發送失敗");
-
         setMessageType("error");
       }
     } catch (error) {
       console.error("重新發送驗證碼錯誤:", error);
-
       setMessage("網路錯誤，請稍後再試");
-
       setMessageType("error");
     } finally {
       setIsLoading(false);
@@ -205,15 +195,12 @@ export default function VerificationPage() {
 
     if (!mail || !verificationCode || !password) {
       setMessage("請填寫所有欄位");
-
       setMessageType("error");
-
       return;
     }
 
     if (password !== confirmPassword) {
       setMessage("兩次密碼輸入不一致");
-
       setMessageType("error");
 
       return;
@@ -221,14 +208,11 @@ export default function VerificationPage() {
 
     if (password.length < 6) {
       setMessage("密碼至少需要6個字元");
-
       setMessageType("error");
-
       return;
     }
 
     setIsLoading(true);
-
     setMessage("");
 
     try {
@@ -236,16 +220,12 @@ export default function VerificationPage() {
         "http://localhost:3007/api/users/verification-code",
         {
           method: "POST",
-
           headers: {
             "Content-Type": "application/json",
           },
-
           body: JSON.stringify({
             mail,
-
             verificationCode,
-
             password,
           }),
         }
@@ -254,25 +234,19 @@ export default function VerificationPage() {
       const data = await response.json();
 
       if (data.success) {
-        setMessage("密碼重設成功！正在跳轉到登入頁面...");
-
+        setMessage("重設密碼成功！即將跳轉回登入頁面...");
         setMessageType("success");
-
         // 3秒後跳轉到登入頁面
-
         setTimeout(() => {
           window.location.href = "/user/login";
-        }, 3000);
+        }, 1000);
       } else {
         setMessage(data.message || "密碼重設失敗");
-
         setMessageType("error");
       }
     } catch (error) {
       console.error("重設密碼錯誤:", error);
-
       setMessage("網路錯誤，請稍後再試");
-
       setMessageType("error");
     } finally {
       setIsLoading(false);
