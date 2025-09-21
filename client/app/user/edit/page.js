@@ -239,7 +239,7 @@ export default function UserEditPage() {
         <div className="d-flex container mt-4 mb-4">
           <Sidebar />
 
-          <div className="main-content">
+          <div className="edit-main-content">
             <div className="breadcrumb">
               <Breadcrumb />
             </div>

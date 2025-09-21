@@ -2,6 +2,7 @@
 
 import "@/styles/wishlist.css";
 import "@/styles/articles.css";
+import "@/styles/loader.css";
 import { useAuth } from "@/hooks/use-auth";
 import Image from "next/image";
 import Link from "next/link";
@@ -40,15 +41,7 @@ export default function UserFavoritesPage() {
   }, [user]);
 
   if (isLoading) {
-    return (
-      <div>
-        <Header />
-        <div className="container">
-          <p>載入中...</p>
-        </div>
-        <Footer />
-      </div>
-    );
+    return <div className="loader"></div>;
   }
 
   if (user) {
@@ -58,12 +51,20 @@ export default function UserFavoritesPage() {
         <div className="d-flex container h-700 mt-4 mb-4">
           <Sidebar />
 
-          <div className="main-content">
+          <div className="favorites-main-content">
             <div className="breadcrumb">
               <Breadcrumb />
             </div>
             <div className="a-cards">
               <div className="row userfavorites">
+                {wishlist.length === 0 && (
+                  <button
+                    className="btn btn-show"
+                    onClick={() => (window.location.href = "/articles")}
+                  >
+                    開始收藏文章
+                  </button>
+                )}
                 {wishlist.map((article) => (
                   <div
                     key={article.id}

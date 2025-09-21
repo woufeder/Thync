@@ -122,9 +122,9 @@ button.logout:active {
   transform: scaleX(-1);
 }
 
-.main-content {
+.edit-main-content {
   display: flex;
-  padding: 30px;
+  padding: 30px 30px 60px 30px;
   flex-direction: column;
   flex: 1 0 0;
   border-radius: 8px;
@@ -133,7 +133,7 @@ button.logout:active {
 .breadcrumb {
   color: var(--primary-800);
 }
-.main-content h1 {
+.edit-main-content h1 {
   font-size: 36px;
   text-align: center;
   background: linear-gradient(90deg, #304a6f 40%, #94afca 80%);
@@ -198,13 +198,13 @@ button.logout:active {
 .btn-password {
   border: none;
   color: var(--primary-800);
-  background: linear-gradient(107deg, #FDDB8A 0%, #FCCA53 100%);
+  background: linear-gradient(107deg, #fddb8a 0%, #fcca53 100%);
   box-shadow: 0 4px 10px 0 rgba(48, 74, 111, 0.25);
 }
 .btn-password:hover,
 .btn-password:active {
   color: var(--primary-800) !important;
-  background: linear-gradient(107deg, #FCCA53 0%, #FCCA53 100%);
+  background: linear-gradient(107deg, #fcca53 0%, #fcca53 100%);
   box-shadow: 0 4px 10px 0 rgba(48, 74, 111, 0.25);
 }
 .btn-edit {
@@ -222,13 +222,13 @@ button.logout:active {
 .btn-del {
   border: none;
   color: var(--bg);
-  background: linear-gradient(107deg, #ECACAC 0%, #F24E1E 100%);
+  background: linear-gradient(107deg, #ecacac 0%, #f24e1e 100%);
   box-shadow: 0 4px 10px 0 rgba(48, 74, 111, 0.25);
 }
 .btn-del:hover,
 .btn-del:active {
   color: var(--bg) !important;
-  background: linear-gradient(107deg, #F24E1E 0%, #F24E1E 100%);
+  background: linear-gradient(107deg, #f24e1e 0%, #f24e1e 100%);
   box-shadow: 0 4px 10px 0 rgba(48, 74, 111, 0.25);
 }
 .btn-success {
@@ -297,8 +297,9 @@ button.logout:active {
   .sidebar {
     display: none;
   }
-  .main-content {
+  .edit-main-content {
     box-shadow: none;
+    padding: 0 30px;
   }
   .form-middle {
     gap: 0;

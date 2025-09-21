@@ -85,7 +85,7 @@ export default function Sidebar() {
               <span className="icon">
                 <i className="fa-solid fa-heart"></i>
               </span>
-              追蹤商品
+              已追蹤商品
             </Link>
             <Link
               href="/user/favorites"

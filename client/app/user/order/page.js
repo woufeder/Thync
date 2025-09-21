@@ -83,82 +83,98 @@ export default function UserOrderPage() {
 
             {/* 電腦版 */}
             <div className="table-container hidden-mobile">
-              <table>
-                <thead>
-                  <tr>
-                    <th>訂單編號</th>
-                    <th>訂單金額</th>
-                    <th>訂購日期</th>
-                    <th>付款方式</th>
-                    <th>付款日期</th>
-                    <th>取貨方式</th>
-                    <th>訂單狀態</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {orders.map((order, idx) => (
-                    <tr key={idx}>
-                      <td>
-                        <a
-                          href={`/user/order/${order.numerical_order}`}
-                          className="order-link"
-                        >
-                          {order.numerical_order}
-                        </a>
-                      </td>
-                      <td>
-                        <p>${Math.floor(order.total)}</p>
-                      </td>
-                      <td>
-                        <p>{formatDate(order.order_date)}</p>
-                      </td>
-                      <td>
-                        <p>
-                          {order.pay_method === "TWQR_OPAY"
-                            ? "信用卡"
-                            : order.pay_method}
-                        </p>
-                      </td>
-                      <td>
-                        <p>
-                          {order.paid_at
-                            ? formatDate(order.paid_at)
-                            : "無付款資訊"}
-                        </p>
-                      </td>
-                      <td>
-                        <p> {order.delivery_method}</p>
-                      </td>
-                      <td>
-                        <p
-                          className={
-                            order.status_now === "paid"
-                              ? "status status-paid"
-                              : order.status_now === "pending"
-                              ? "status status-unpaid"
-                              : order.status_now === "failed"
-                              ? "status status-cancelled"
-                              : "status"
-                          }
-                        >
-                          {order.status_now === "paid"
-                            ? "已付款"
-                            : order.status_now === "pending"
-                            ? "未付款"
-                            : order.status_now === "failed"
-                            ? "訂單失敗"
-                            : order.status_now}
-                        </p>
-                      </td>
+              {orders.length === 0 ? (
+                <button
+                  className="btn btn-show"
+                  onClick={() => (window.location.href = "/products")}
+                >
+                  開始購物
+                </button>
+              ) : (
+                <table>
+                  <thead>
+                    <tr>
+                      <th>訂單編號</th>
+                      <th>訂單金額</th>
+                      <th>訂購日期</th>
+                      <th>付款方式</th>
+                      <th>付款日期</th>
+                      <th>取貨方式</th>
+                      <th>訂單狀態</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {orders.map((order, idx) => (
+                      <tr key={idx}>
+                        <td>
+                          <a
+                            href={`/user/order/${order.numerical_order}`}
+                            className="order-link"
+                          >
+                            {order.numerical_order}
+                          </a>
+                        </td>
+                        <td>
+                          <p>${Math.floor(order.total)}</p>
+                        </td>
+                        <td>
+                          <p>{formatDate(order.order_date)}</p>
+                        </td>
+                        <td>
+                          <p>
+                            {order.pay_method === "TWQR_OPAY"
+                              ? "信用卡"
+                              : order.pay_method}
+                          </p>
+                        </td>
+                        <td>
+                          <p>
+                            {order.paid_at
+                              ? formatDate(order.paid_at)
+                              : "無付款資訊"}
+                          </p>
+                        </td>
+                        <td>
+                          <p> {order.delivery_method}</p>
+                        </td>
+                        <td>
+                          <p
+                            className={
+                              order.status_now === "paid"
+                                ? "status status-paid"
+                                : order.status_now === "pending"
+                                ? "status status-unpaid"
+                                : order.status_now === "failed"
+                                ? "status status-cancelled"
+                                : "status"
+                            }
+                          >
+                            {order.status_now === "paid"
+                              ? "已付款"
+                              : order.status_now === "pending"
+                              ? "未付款"
+                              : order.status_now === "failed"
+                              ? "訂單失敗"
+                              : order.status_now}
+                          </p>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
 
             {/* 手機版 */}
             <div className="orders-container hidden-pc">
-              {orders.length > 0 ? (
+              {orders.length === 0 ? (
+                <button
+                  className="btn btn-show"
+                  onClick={() => (window.location.href = "/products")}
+                >
+                  開始購物
+                </button>
+              ) : (
                 orders.map((order, idx) => (
                   <div key={idx} className="order-card">
                     <div className="order-header">
@@ -207,10 +223,6 @@ export default function UserOrderPage() {
                     </div>
                   </div>
                 ))
-              ) : (
-                <div className="no-orders">
-                  <p>目前沒有訂單資料</p>
-                </div>
               )}
             </div>
           </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import styles from "@/styles/wishlist.css";
+import "@/styles/loader.css";
 import { useAuth } from "@/hooks/use-auth";
 import Image from "next/image";
 import Link from "next/link";
@@ -43,15 +44,7 @@ export default function UserWishListPage() {
   }, [user]);
 
   if (isLoading) {
-    return (
-      <div>
-        <Header />
-        <div className="container">
-          <p>載入中...</p>
-        </div>
-        <Footer />
-      </div>
-    );
+    return <div className="loader"></div>;
   }
 
   if (user) {
@@ -66,7 +59,14 @@ export default function UserWishListPage() {
               <Breadcrumb />
             </div>
             <div className="product-list">
-              {wishlist.length === 0 && <p>目前沒有追蹤商品</p>}
+              {wishlist.length === 0 && (
+                <button
+                  className="btn btn-show"
+                  onClick={() => (window.location.href = "/products")}
+                >
+                  開始追蹤商品
+                </button>
+              )}
               {wishlist.map((p, index) => (
                 <div key={p.id} className="product-card">
                   <div
@@ -121,7 +121,10 @@ export default function UserWishListPage() {
                             await swalSuccess("取消", "已取消該追蹤商品");
                           } else {
                             // alert(result.message || "移除失敗");
-                            await swalError("取消", result.message || "取消失敗");
+                            await swalError(
+                              "取消",
+                              result.message || "取消失敗"
+                            );
                           }
                         } catch (error) {
                           console.error("移除追蹤錯誤:", error);
@@ -147,7 +150,7 @@ export default function UserWishListPage() {
                       <p className="price">${p.price}</p>
                       <button
                         className="btn btnCart"
-                        onClick={async() => {
+                        onClick={async () => {
                           // 統一加入購物車資料結構
                           const cart = JSON.parse(
                             localStorage.getItem("cartItems") || "[]"
@@ -180,7 +183,10 @@ export default function UserWishListPage() {
                             JSON.stringify(newCart)
                           );
                           // alert("已加入購物車");
-                          await swalSuccess("加入購物車", "商品已成功加入購物車！");
+                          await swalSuccess(
+                            "加入購物車",
+                            "商品已成功加入購物車！"
+                          );
                         }}
                       >
                         <FontAwesomeIcon icon={faPlus} />
