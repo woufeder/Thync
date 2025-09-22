@@ -15,7 +15,7 @@
   font-size: 36px;
   font-weight: 700;
   margin-bottom: 16px;
-  background: linear-gradient(90deg,  var(--Primary800), var(--Primary300));
+  background: linear-gradient(90deg, var(--Primary800), var(--Primary300));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -34,7 +34,8 @@
   width: 100%;
   min-width: 375px;
   gap: 15px;
-  flex: 1 1 280px; /* 彈性卡片，保證 RWD */
+  flex: 1 1 280px;
+  /* 彈性卡片，保證 RWD */
 }
 
 .coupon-card .top {
@@ -142,5 +143,10 @@
 
   .coupon-card .name {
     font-size: 20px;
+  }
+
+  .coupon-card {
+    min-width: 300px;
+    /* 彈性卡片，保證 RWD */
   }
 }

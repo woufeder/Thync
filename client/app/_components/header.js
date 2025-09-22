@@ -232,7 +232,7 @@ export default function Header() {
                         <Link href="/user/login" className="btn link">
                           登入
                         </Link>{" "}
-                        <Link href="/user/register" className="btn link">
+                        <Link href="/user/add" className="btn link">
                           註冊
                         </Link>{" "}
                       </>

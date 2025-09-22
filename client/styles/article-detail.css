@@ -285,7 +285,7 @@
         height: auto;
     }
 
-    .container {
+    .main-content.container {
         max-width: 1200px;
         margin: 0 auto;
         display: flex;
@@ -1478,6 +1478,9 @@
 
     /* Enhanced Related Articles Responsive Design */
     @media (max-width: 768px) {
+        .header.navbar.container {
+            flex-direction: row;
+        }
         .related-section {
             margin-top: 60px;
             padding: 32px 0;

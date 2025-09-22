@@ -65,6 +65,8 @@ export default function Breadcrumb({ product }) {
     if (pathname.includes("coupon")) items.push({ label: "我的優惠券", href: "/user/coupon" })
     if (pathname.includes("wishlist")) items.push({ label: "追蹤商品", href: "/user/wishlist" })
     if (pathname.includes("favorites")) items.push({ label: "已收藏文章", href: "/user/favorites" })
+    if (pathname.includes("change-password"))
+      items.push({ label: "變更密碼", href: "/user/change-password" });
 
     // 若為 /user/order/[orderNo]，自動加上訂單號
     const orderDetailMatch = pathname.match(/^\/user\/order\/(od\d+)/);
