@@ -31,6 +31,7 @@ export default function CouponArea() {
       {/* <div className="title">我的優惠券</div> */}
       <div className="coupon-grid">
         {coupons.map((coupon) => (
+        <div key={coupon.id} style={{ position: "relative" }} >
           <CouponCard
             key={coupon.id}
             type={
@@ -55,6 +56,7 @@ export default function CouponArea() {
                 : "usable"
             }
           />
+          </div>
         ))}
       </div>
     </div>

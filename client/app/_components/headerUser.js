@@ -41,34 +41,34 @@ export default function HeaderUser() {
               <p className="dropdown-item-text user_account">{user.account}</p>
               <li>
                 <a className="dropdown-item" href="/user/edit">
-                  <i className="fa-solid fa-user"></i>　會員資料管理
+                  <i className="fa-solid fa-user min-w-18"></i>　會員資料管理
                 </a>
               </li>
               <li>
                 <a className="dropdown-item" href="/user/order">
-                  <i className="fa-solid fa-gift"></i>　訂單查詢
+                  <i className="fa-solid fa-gift min-w-18"></i>　訂單查詢
                 </a>
               </li>
               {/* <li><a className="dropdown-item" href="#"><i className="fa-solid fa-bell"></i>　貨到通知</a></li> */}
               <li>
                 <a className="dropdown-item" href="/user/coupon">
-                  <i className="fa-solid fa-ticket"></i>　我的優惠券
+                  <i className="fa-solid fa-ticket min-w-18"></i>　我的優惠券
                 </a>
               </li>
               <li>
                 <a className="dropdown-item" href="/user/wishlist">
-                  <i className="fa-solid fa-heart"></i>　已追蹤商品
+                  <i className="fa-solid fa-heart min-w-18"></i>　已追蹤商品
                 </a>
               </li>
               <li>
                 <a className="dropdown-item" href="/user/favorites">
-                  <i className="fa-solid fa-bookmark"></i>　已收藏文章
+                  <i className="fa-solid fa-bookmark min-w-18"></i>　已收藏文章
                 </a>
               </li>
               <li>
                 {" "}
                 <a className="dropdown-item " onClick={logout}>
-                  <i className="fa-solid fa-right-to-bracket"></i>　登出
+                  <i className="fa-solid fa-right-to-bracket min-w-18"></i>　登出
                 </a>
               </li>
             </ul>

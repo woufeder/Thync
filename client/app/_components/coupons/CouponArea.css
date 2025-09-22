@@ -86,6 +86,7 @@
   align-self: stretch;
   flex-wrap: wrap;
   position: relative;
+  justify-content: center;
 }
 
 .status-label {
@@ -246,4 +247,35 @@
     min-width: 300px;
     /* 彈性卡片，保證 RWD */
   }
+
+
+
+  /* 已使用標章+已過期標章*/
+  .coupon-stamp-used,.coupon-stamp-expired {
+    left: 70%;
+  }
+
+
+
+
+.user-coupon .nav-link{
+padding: 5px 12px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

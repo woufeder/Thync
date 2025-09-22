@@ -123,7 +123,7 @@ export default function UserOrderPage() {
                         <td>
                           <p>
                             {order.pay_method === "TWQR_OPAY"
-                              ? "信用卡"
+                              ? "ECPAY"
                               : order.pay_method}
                           </p>
                         </td>

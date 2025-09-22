@@ -265,6 +265,10 @@ header {
       margin-bottom: 5px;
       padding-bottom: 8px;
     }
+
+    .min-w-18 {
+      min-width: 18px;
+    }
   }
 
   @media (min-width: 992px) and (max-width: 1547px) {

@@ -386,6 +386,33 @@ td {
     border-bottom: 0;
   }
 }
+
+.user-coupon{
+  .nav-link{
+    font-size: 16px;
+    font-weight: 700;
+    color: #878784;
+    border-radius: 0;
+    border: 0;
+    border-bottom: 3px solid transparent;
+    padding: 5px 32px;
+  }
+
+  .nav-link.active{
+    color: var(--Danger500);
+    border: 0;
+    border-bottom: 3px solid var(--Danger500);
+    background-color: transparent;
+  }
+
+  .nav-link:hover{
+    color: var(--Danger300);
+    background-color: transparent;
+    border: 0;
+    /* border-bottom: 3px solid var(--Danger300); */
+  }
+
+}
 @media (min-width: 769px) {
   .table-container:has(.btn-show) {
     display: flex;

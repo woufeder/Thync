@@ -296,3 +296,7 @@ button.logout:active {
     gap: 20px;
   }
 }
+
+.min-w-18{
+  min-width: 18px;
+}

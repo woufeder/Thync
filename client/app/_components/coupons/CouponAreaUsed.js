@@ -31,17 +31,17 @@ export default function CouponAreaUsed() {
       {/* <div className="title">我的優惠券</div> */}
       <div className="coupon-grid">
         {coupons.map((coupon) => (
-          <div key={coupon.id} style={{ position: "relative" }}>
+          <div key={coupon.id} style={{ position: "relative" }} >
             <div className="coupon-stamp-used">已使用</div>
             <CouponCard
               type={
                 coupon.type === 0
                   ? "折價券"
                   : coupon.type === 1
-                  ? "折扣券"
-                  : coupon.type === 2
-                  ? "免運券"
-                  : "其他"
+                    ? "折扣券"
+                    : coupon.type === 2
+                      ? "免運券"
+                      : "其他"
               }
               name={coupon.code}
               description={coupon.desc}
@@ -49,11 +49,7 @@ export default function CouponAreaUsed() {
                 coupon.expires_at
               ).toLocaleDateString()}`}
               status={
-                new Date(coupon.expires_at) < new Date()
-                  ? "expired"
-                  : coupon.is_used
-                  ? "used"
-                  : "usable"
+                status = "used"
               }
             />
           </div>

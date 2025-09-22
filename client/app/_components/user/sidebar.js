@@ -41,7 +41,7 @@ export default function Sidebar() {
                 pathname.startsWith("/user/edit") ? " active" : ""
               }`}
             >
-              <i className="fa-solid fa-user"></i>會員資料管理
+              <i className="fa-solid fa-user min-w-18"></i>會員資料管理
             </Link>
             <Link
               href="/user/order"
@@ -50,7 +50,7 @@ export default function Sidebar() {
               }`}
             >
               <span className="icon">
-                <i className="fa-solid fa-gift"></i>
+                <i className="fa-solid fa-gift min-w-18"></i>
               </span>
               訂單查詢
             </Link>
@@ -72,7 +72,7 @@ export default function Sidebar() {
               }`}
             >
               <span className="icon">
-                <i className="fa-solid fa-ticket"></i>
+                <i className="fa-solid fa-ticket min-w-18"></i>
               </span>
               我的優惠券
             </Link>
@@ -83,7 +83,7 @@ export default function Sidebar() {
               }`}
             >
               <span className="icon">
-                <i className="fa-solid fa-heart"></i>
+                <i className="fa-solid fa-heart min-w-18"></i>
               </span>
               已追蹤商品
             </Link>
@@ -94,7 +94,7 @@ export default function Sidebar() {
               }`}
             >
               <span className="icon">
-                <i className="fa-solid fa-bookmark"></i>
+                <i className="fa-solid fa-bookmark min-w-18"></i>
               </span>
               已收藏文章
             </Link>

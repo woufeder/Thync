@@ -34,7 +34,7 @@ export default function UserCouponPage() {
             </div>
             <div className="title">我的優惠券</div>
 
-            <div className="nav nav-tabs">
+            <div className="nav nav-tabs user-coupon">
               <div className="nav-item" role="presentation">
                 <button
                   className="nav-link active"
