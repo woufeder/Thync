@@ -28,7 +28,7 @@ export default function CouponArea() {
 
   return (
     <div className="coupon-area">
-      <div className="title">我的優惠券</div>
+      {/* <div className="title">我的優惠券</div> */}
       <div className="coupon-grid">
         {coupons.map((coupon) => (
           <CouponCard
